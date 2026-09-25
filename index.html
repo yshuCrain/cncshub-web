@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <title>反恐精英中文网</title>
+    <link rel="stylesheet" href="./index-style.css">
+    <!-- ↑rel="stylesheet"这个资源是一份CSS样式表。 -->
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <!-- ↓左侧logo，返回主页 -->
+            <a class="site-logo" href="./index.html" aria-label="反恐精英中文网首页">
+                <!-- aria-label是HTML属性，用来给元素提供**供屏幕阅读器读取的名称**
+                帮助视障用户理解按钮、链接或输入框的用途。它不会在页面上显示文字。 -->
+                反恐精英中文网
+            </a>
+            <!-- ↓↓↓中间导航栏↓↓↓ -->
+            <nav class="nav-home" aria-label="网站主导航">
+                <div class="nav-item">
+                    <button class="nav-trigger" type="button">攻略专区</button>
+                        <ul class="nav-dropdown">
+                            <!-- ↑下拉菜单 -->
+                            <li>
+                                <a href="./guides/rookie-guides.html">新手教学</a>
+                            </li>
+                            <li>
+                                <a href="./guides/map-guides.html">服役地图</a>
+                            </li>
+                             <li>
+                                <a href="./guides/super-guides.html">进阶教学</a>
+                            </li>
+                        </ul>
+                </div>
+                <div class="nav-item">
+                    <button class="nav-trigger" type="button">CS赛事</button>
+                    <ul class="nav-dropdown">
+                        <li>
+                            <a href="https://www.hltv.org/" target="_blank">HLTV</a>
+                        </li>
+                        <li>
+                            <a href="#">职业信息</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="nav-item">
+                    <button class="nav-trigger" type="button">玩家创作</button>
+                    <ul class="nav-dropdown">
+                        <!-- ↓专栏页 -->
+                        <li>
+                            <a href="./media/hlae.html">HLAE</a>
+                        </li>
+                        <!-- ↓专栏页 -->
+                        <li>影视美学</li>
+                    </ul>
+                </div>
+                <div class="nav-item">
+                    <button class="nav-trigger" type="button">交易市场</button>
+                    <ul class="nav-dropdown">
+                        <li>价格走势</li>
+                        <li>挂刀搬砖</li>
+                    </ul>
+                </div>
+                <div class="nav-item">
+                    <button class="nav-trigger" type="button">社区贡献</button>
+                    <ul class="nav-dropdown">
+                        <li>网站公告</li>
+                        <li>社区游戏</li>
+                        <li>特别致谢</li>
+                        <li>玩家合影</li>
+                    </ul>
+                </div>
+            </nav>
+            <!-- ↓ 右侧工具 -->
+            <div class="nav-actions">
+                <!-- ↓ 搜索框 -->
+                <div class="search-item">
+                    <button
+                        class="search-trigger"
+                        type="button"
+                        aria-label="打开网站搜索"
+                        aria-controls="site-search-panel"
+                    >
+                        <img src="./assets/images/icons/search.svg" alt="">
+                    </button>
+
+                    <div class="search-panel" id="site-search-panel">
+                        <form
+                            class="nav-search"
+                            action="#"
+                            method="get"
+                            role="search"
+                        >
+                            <input
+                                type="search"
+                                name="q"
+                                placeholder="输入关键词搜索内容"
+                                aria-label="网站内容搜索"
+                                autocomplete="off"
+                                required
+                            >
+                            <button type="submit" aria-label="提交搜索">
+                                <img src="./assets/images/icons/search.svg" alt="">
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <!-- ↓ 主题切换 -->
+                <button
+                    class="theme-button"
+                    id="theme-button"
+                    type="button"
+                    aria-label="深色主题"
+                    aria-pressed="false">
+                    <img src="./assets/images/icons/moon.svg" alt="深色主题">
+                </button>
+                <!-- ↓ 用户登录 
+                <a class="login-button" href="./login.html">
+                    <img src="./assets/images/icons/avatar.svg" alt="用户登录">
+                </a>
+                -->
+                <!-- ↓ 点击音频图标播放音乐 -->
+                <audio
+                    id="theme-audio"
+                    src="./assets/audios/Valve Studio Orchestra - Game Time.flac" 
+                    loop
+                    preload="metadata">
+                </audio>
+                <button
+                    type="button"
+                    class="audio-button"
+                    id="audio-button"
+                    aria-label="播放背景音乐">
+                    <img
+                        id="audio-icon"
+                        src="./assets/images/icons/music-on.svg"
+                        alt="">
+                </button>
+            </div>
+        </div>
+    </header>
+    <!-- ↓主页内容展示 -->
+    <main>
+        <div class="typing-group"> <!-- 包含全部打字段落 -->
+            <p class="typing-text"><span class="typing-source">上手只需片刻，精通却需一生磨砺，投入越多，回报越是丰厚</span></p> <!-- 完整文字用于显示和预留高度 -->
+            <p class="typing-text"><span class="typing-source">那种万事尽在掌握、一切水到渠成的感觉，永远令人心潮澎湃</span></p> <!-- 第二段，作用相同 -->
+            <p class="typing-text"><span class="typing-source">无论是单发爆头、完美的扫转、精密的道具战术、一次团灭对手，或是绝境中的力挽狂澜</span></p> <!-- 长段落按屏幕宽度自动预留多行空间 -->
+            <p class="typing-text typing-large"><span class="typing-source">这就是《反恐精英》</span></p> <!-- 保留最后一段的大字号 -->
+        </div> <!-- 打字区域结束 -->
+        <section class="main-intro">
+            
+
+            <h2>最新消息汇总</h2>
+            <p>这里将展示网站最新发布的CS内容</p>
+            <p>
+                ///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本///测试文本
+            </p>
+
+        </section>
+    </main>
+    <!-- ↓页脚 -->
+    <footer>
+        <p>自由开放的非官方反恐精英网站</p>
+        <p>yushucrain@gmail.com</p>
+    </footer>
+<!-- ↓ 音频触发 -->
+    <script>
+        const audio = document.getElementById("theme-audio");
+        const audioButton = document.getElementById("audio-button");
+        const audioIcon = document.getElementById("audio-icon");
+        audioButton.addEventListener("click", function () {
+            if (audio.paused) {
+                audio.play();
+                audioIcon.src = "./assets/images/icons/music-on.svg";
+                audioButton.setAttribute(
+                    "aria-label",
+                    "暂停背景音乐"
+                );
+            } else {
+                audio.pause();
+                audioIcon.src = "./assets/images/icons/music-off.svg";
+                audioButton.setAttribute(
+                    "aria-label",
+                    "播放背景音乐"
+                );
+            }
+        });
+    </script>
+<!-- ↓ 主页打字效果 -->
+<script>
+    (() => { // 独立作用域，避免与其他脚本变量冲突
+        const lines = document.querySelectorAll(".typing-group .typing-text"); // 获取四个段落
+        const duration = 1000; // 统一动画时长，单位为毫秒
+        const easingPower = 1; // 缓出强度，数值越大，前快后慢越明显
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)"); // 获取动画偏好
+
+        if (reduceMotion.matches) return; // 减少动态效果时直接保留完整文字
+
+        const states = []; // 保存每个段落的动画状态
+
+        lines.forEach((line) => { // 初始化每个段落
+            const source = line.querySelector(".typing-source"); // 获取完整文字层
+            if (!source || !source.textContent) return; // 跳过没有文字的段落
+
+            const characters = Array.from(source.textContent); // 将文本拆分成字符
+            const overlay = document.createElement("span"); // 创建动画层
+            overlay.className = "typing-overlay"; // 应用对应样式
+            overlay.setAttribute("aria-hidden", "true"); // 避免屏幕阅读器重复读取动画文字
+
+            const textNode = document.createTextNode(""); // 创建可更新的文本节点
+            overlay.append(textNode); // 将文本节点放入动画层
+            line.append(overlay); // 将动画层放入当前段落
+            line.classList.add("is-typing"); // 隐藏原文外观，同时保留完整占位
+
+            states.push({ line, overlay, textNode, characters, shown: 0 }); // 保存当前段落的状态
+        }); // 初始化结束
+
+        if (states.length === 0) return; // 没有可播放的段落时结束
+
+        let startTime = null; // 保存所有段落共用的起始时间
+
+        function finishTyping() { // 统一结束所有段落的动画
+            states.forEach((state) => { // 遍历全部段落
+                state.line.classList.remove("is-typing"); // 同时显示完整原文
+                state.overlay.remove(); // 删除动画层和光标
+            }); // 清理结束
+        } // 结束函数定义
+
+        function updateTyping(timestamp) { // 每帧更新所有段落
+            if (reduceMotion.matches) { // 用户在播放期间开启减少动态效果时
+                finishTyping(); // 立即显示全部文字
+                return; // 停止动画
+            } // 偏好判断结束
+
+            if (startTime === null) startTime = timestamp; // 第一帧记录统一起始时间
+            const progress = Math.min((timestamp - startTime) / duration, 1); // 计算 0～1 的时间进度
+
+            if (progress >= 1) { // 达到统一结束时间时
+                finishTyping(); // 四段文字同时完整显示
+                return; // 不再请求下一帧
+            } // 完成判断结束
+
+            const easedProgress = 1 - (1 - progress) ** easingPower; // 四次方缓出：从极快逐渐减慢
+
+            states.forEach((state) => { // 使用同一进度更新每个段落
+                const count = Math.min( // 计算这一帧应该显示多少字符
+                    state.characters.length - 1, // 最后一个字符保留到统一结束时显示
+                    Math.floor(easedProgress * state.characters.length) // 按缓动进度计算字符数量
+                ); // 字符数量计算结束
+
+                if (count !== state.shown) { // 字符数量变化时才更新页面
+                    state.textNode.data = state.characters.slice(0, count).join(""); // 显示当前进度对应的文字
+                    state.shown = count; // 记录已显示的字符数量
+                } // 文字更新结束
+            }); // 所有段落更新结束
+
+            window.requestAnimationFrame(updateTyping); // 请求浏览器绘制下一帧
+        } // 动画函数定义结束
+
+        window.requestAnimationFrame(updateTyping); // 启动统一动画
+    })(); // 立即执行
+</script>
+<!-- ↓ 黑白主题切换 -->
+<script>
+    const themeButton = document.getElementById("theme-button"); // 获取主题切换按钮
+    const themeIcon = themeButton.querySelector("img"); // 获取按钮内部的图标
+    const themeRoot = document.documentElement; // 获取 html 元素，对应 CSS 中的 :root
+    const themeStorageKey = "cncs-theme"; // 用于保存主题偏好的存储名称
+
+    function applyTheme(theme) { // 将指定主题应用到页面
+        const isDark = theme === "dark"; // 判断目标主题是否为深色
+        themeRoot.dataset.theme = theme; // 设置 data-theme，让已有的主题 CSS 生效
+
+        themeIcon.src = isDark // 根据当前主题选择按钮图标
+            ? "./assets/images/icons/sun.svg" // 当前是深色，显示太阳，表示可以切换为浅色
+            : "./assets/images/icons/moon.svg"; // 当前是浅色，显示月亮，表示可以切换为深色
+
+        themeIcon.alt = ""; // 图标作为装饰，按钮名称交给 aria-label 提供
+        themeButton.setAttribute("aria-label", "深色主题"); // 保持开关名称固定，由按下状态表达是否开启
+        themeButton.setAttribute("aria-pressed", String(isDark)); // true 表示深色主题已开启
+        themeButton.title = isDark ? "切换为浅色主题" : "切换为深色主题"; // 鼠标停留时显示下一步操作提示
+    } // 主题应用函数结束
+
+    let initialTheme = window.matchMedia("(prefers-color-scheme: dark)").matches // 获取系统的主题偏好
+        ? "dark" // 系统偏好深色时使用深色
+        : "light"; // 否则使用浅色
+
+    try { // 尝试读取此前保存的主题
+        const savedTheme = localStorage.getItem(themeStorageKey); // 获取本地保存的主题值
+        if (savedTheme === "dark" || savedTheme === "light") { // 只接受有效主题名称
+            initialTheme = savedTheme; // 用户手动选择的主题优先于系统偏好
+        } // 有效值判断结束
+    } catch { // 浏览器可能限制本地存储访问
+        // 存储不可用时，继续使用系统偏好，不影响按钮切换。
+    } // 读取存储结束
+
+    applyTheme(initialTheme); // 页面加载时应用初始主题
+
+    themeButton.addEventListener("click", () => { // 监听按钮点击
+        const nextTheme = themeRoot.dataset.theme === "dark" ? "light" : "dark"; // 计算下一种主题
+        applyTheme(nextTheme); // 立即更新页面和按钮
+
+        try { // 尝试保存用户的选择
+            localStorage.setItem(themeStorageKey, nextTheme); // 下次打开页面时恢复该主题
+        } catch { // 存储失败时仍保留本次切换效果
+            // 不保存偏好也可以正常使用主题切换。
+        } // 保存结束
+    }); // 点击事件结束
+</script>
+</body>
+</html>
