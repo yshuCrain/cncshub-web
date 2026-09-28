@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="反恐精英中文网：新手教学">
+        <title>新手教学</title>
+        <link rel="stylesheet" href="./rookie-guides.css">
+        <!-- 【功能入口】defer：HTML 解析完毕再初始化，不阻塞正文解析。 -->
+        <script src="./rookie-guides.js" defer></script>
+    </head>
+
+    <body>
+        <div class="page-shell">
+            <!-- 【01 顶部导航】文字/链接在这里修改；下划线效果在 CSS 的顶部导航区。 -->
+            <header class="site-header rookie-header">
+                <a class="rookie-brand" href="../index.html">
+                    返回主页
+                </a>
+                <nav class="rookie-nav" aria-label="更多攻略">
+                    <span class="rookie-nav-label">更多攻略</span>
+                    <a href="./map-guides.html">地图专栏</a>
+                    <a href="./super-guides.html">进阶攻略</a>
+                </nav>
+            </header>
+
+            <!-- 【02 首屏】标题字号、字距、两行间距、左右栏比例在 CSS :root 调整。 -->
+            <main>
+                <section class="hero rookie-hero" aria-labelledby="hero-title">
+                    <span class="cross hero-cross-start" aria-hidden="true"></span>
+                    <span class="cross hero-cross-end" aria-hidden="true"></span>
+
+                    <div class="hero-copy">
+                        <p class="eyebrow">COUNTER-STRIKE / ROOKIE GUIDES</p>
+
+                        <h1 id="hero-title">
+                            <span>新手</span>
+                            <span><em>教学</em></span>
+                        </h1>
+
+                        <p class="hero-description">
+                            本篇意在为每一位对CS感兴趣的新人<br>
+                            提供一个良好的游戏体验。
+                        </p>
+
+                        <a class="explore-button" href="#explore">
+                            <span>开始探索</span>
+
+                            <!-- 使用 SVG 箭头，避免文字箭头的基线偏差 -->
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M4 12h16M14 6l6 6-6 6"></path>
+                            </svg>
+                        </a>
+                    </div>
+
+                    <!-- 【02-B 交互键鼠】按键数据、键盘行和实体体验逻辑见 JS initControlGuide。 -->
+                    <section
+                        class="control-guide"
+                        id="control-guide"
+                        aria-labelledby="control-guide-title"
+                        tabindex="-1">
+
+                        <header class="control-guide-header">
+                            <div>
+                                <p class="control-guide-code">CONTROLS / QUICK START</p>
+                                <h2 id="control-guide-title">认识你的操作</h2>
+                            </div>
+
+                            <button
+                                class="control-trial" hidden
+                                id="control-trial"
+                                type="button"
+                                aria-pressed="false"
+                            >
+                                实体按键体验
+                            </button>
+                        </header>
+
+                        <div class="control-legend" aria-label="按键颜色分类">
+                            <span><i class="legend-movement"></i>移动</span>
+                            <span><i class="legend-equipment"></i>武器与交互</span>
+                            <span><i class="legend-communication"></i>交流</span>
+                        </div>
+
+                        <div class="keyboard-scroll" role="region" tabindex="0" aria-label="键盘操作图，可横向滚动">
+                            <!-- 具体按键由 JS controls / rows 生成；CSS --keyboard-min-width 控制最小宽度。 -->
+                            <noscript><p>常用操作：WASD 移动，Shift 静步，Ctrl 下蹲，空格跳跃；请启用 JavaScript 使用交互图。</p></noscript>
+                            <div class="control-keyboard" id="control-keyboard"></div>
+                        </div>
+
+                        <div class="control-mouse-row">
+                            <div class="control-mouse" aria-label="鼠标操作">
+                                <div class="control-mouse-buttons">
+                                    <button
+                                        type="button"
+                                        class="control-mouse-key"
+                                        data-control="MouseLeft"
+                                        aria-label="鼠标左键：开火"
+                                    >L</button>
+
+                                    <button
+                                        type="button"
+                                        class="control-mouse-key"
+                                        data-control="MouseRight"
+                                        aria-label="鼠标右键：次要攻击"
+                                    >R</button>
+                                </div>
+
+                                <div class="control-wheel">
+                                    <button
+                                        type="button"
+                                        data-control="WheelUp"
+                                        aria-label="滚轮向上"
+                                    >↑</button>
+                                    <button
+                                        type="button"
+                                        data-control="WheelDown"
+                                        aria-label="滚轮向下"
+                                    >↓</button>
+                                </div>
+
+                                <span class="control-mouse-caption" aria-hidden="true">MOUSE</span>
+                            </div>
+
+                            <div class="control-mouse-description">
+                                <strong>移动鼠标，调整视角</strong>
+                                <p>点击左右键或滚轮按钮，查看对应说明。</p>
+                                <p class="control-trial-status" id="control-trial-status">
+                                    悬浮或点击按键，查看操作说明。
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="control-detail" role="status" aria-live="polite" aria-atomic="true">
+                            <span class="control-detail-key" id="control-detail-key">W</span>
+                            <div>
+                                <h3 id="control-detail-title">前进</h3>
+                                <p id="control-detail-description">按住 W，角色向前移动。</p>
+                            </div>
+                        </div>
+
+                        <p class="control-guide-note">
+                            参考图中的常用键位示意；具体功能以你的游戏内绑定为准。
+                        </p>
+                    </section>
+
+                </section><!-- 【修补】关闭首屏 hero；正文必须放在首屏网格之外。 -->
+
+                <!-- 【03 正文】八章共用 guide-section；增删章节时同步下面 chapter-rail 的锚点。 -->
+                <div class="guide-content" id="explore">
+                    <!-- 预瞄、急停、开火 -->
+                    <!-- 【章节 aiming】射击教学：三段视频、XY 轴、急停/压枪辅助动画 -->
+                    <section class="guide-section" id="aiming" aria-labelledby="aiming-title">
+                        <header class="guide-heading">
+                            <span class="chapter-number">01 / AIMING</span>
+                            <h2 id="aiming-title">射击教学</h2>
+                        </header>
+
+                        <!-- 两个辅助动画共用鼠标图形 -->
+                        <svg class="svg-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <defs>
+                                <symbol id="lesson-mouse-art" viewBox="0 0 138 205">
+                                    <path
+                                        d="M69 4C27 4 9 31 9 67v66c0 44 24 67 60 67s60-23 60-67V67C129 31 111 4 69 4Z"
+                                        fill="#eef0e9"
+                                        stroke="#7c8579"
+                                        stroke-width="2"
+                                    />
+                                    <path
+                                        d="M64 11C31 13 16 34 16 67v23h48Z"
+                                        fill="var(--mouse-left, #dce1d7)"
+                                        stroke="#7c8579"
+                                        stroke-width="1.5"
+                                    />
+                                    <path
+                                        d="M74 11c33 2 48 23 48 56v23H74Z"
+                                        fill="#dce1d7"
+                                        stroke="#7c8579"
+                                        stroke-width="1.5"
+                                    />
+                                    <rect
+                                        x="64" y="35" width="10" height="31" rx="5"
+                                        fill="#65705f"
+                                    />
+                                    <g
+                                        fill="#253022"
+                                        font-family="Consolas, monospace"
+                                        font-size="13"
+                                        text-anchor="middle"
+                                    >
+                                        <text x="40" y="65">L</text>
+                                        <text x="98" y="65">R</text>
+                                    </g>
+                                </symbol>
+                            </defs>
+                        </svg>
+
+                        <div class="guide-body">
+                            <article class="knowledge-item">
+                                <span class="item-number">01</span>
+
+                                <div class="lesson-content">
+                                    <h3>基础预瞄</h3>
+                                    <p>掌握爆头线，从而更快击杀对手。</p>
+
+                                    <figure class="lesson-media" data-demo="aim">
+                                        <video
+                                            controls
+                                            muted
+                                            playsinline
+                                            loop
+                                            preload="metadata"
+                                            aria-label="基础预瞄视频"
+                                        >
+                                            <source
+                                                src="../assets/xsjx-assets/touxian-1.mp4"
+                                                type="video/mp4"
+                                            >
+                                            浏览器不支持播放此视频。
+                                        </video>
+
+                                        <figcaption class="lesson-media-caption">
+                                            <span>01 / 基础预瞄</span>
+                                            <span class="video-state">移入视频区域播放</span>
+                                        </figcaption>
+                                    </figure>
+
+                                    <h4 class="lesson-question">复杂的地形如何找到爆头线？</h4>
+                                    <p>
+                                        基于人物所处地面的 X 轴，与人物高度的 Y 轴相结合，
+                                        养成这个意识，帮助你更好地找到对应的爆头线。
+                                    </p>
+
+                                    <figure class="aim-figure" id="head-height-demo">
+                                        <div class="aim-image-stage">
+                                            <img
+                                                src="../assets/xsjx-assets/aim2.png"
+                                                alt="不同地形高度上的五个人物，用于对照脚下地面与头部位置"
+                                                width="6000"
+                                                height="4500"
+                                                loading="lazy"
+                                                decoding="async">
+
+                                            <!-- 与图片保持相同比例；坐标轴由下方脚本生成 -->
+                                            <svg
+                                                class="aim-axes"
+                                                viewBox="0 0 1824 1368"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                aria-hidden="true"
+                                            ></svg>
+                                        </div>
+
+                                        <figcaption class="aim-caption">
+                                            <span><b>X</b> 地面参考 <b>Y</b> 高度参考</span>
+                                            <button class="axes-replay" type="button" hidden>
+                                                重播坐标轴
+                                            </button>
+                                        </figcaption>
+                                    </figure>
+                                </div>
+                            </article>
+
+                            <article class="knowledge-item">
+                                <span class="item-number">02</span>
+
+                                <div class="lesson-content">
+                                    <h3>急停</h3>
+                                    <p>
+                                        在移动过程中，释放移动按键并快速点按反方向键，
+                                        即可快速停稳，再按开火键。
+                                    </p>
+
+                                    <figure class="lesson-media" data-demo="strafe">
+                                        <video
+                                            controls
+                                            muted
+                                            playsinline
+                                            loop
+                                            preload="metadata"
+                                            aria-label="急停开枪视频"
+                                        >
+                                            <source
+                                                src="../assets/xsjx-assets/jiting-1.mp4"
+                                                type="video/mp4"
+                                            >
+                                            浏览器不支持播放此视频。
+                                        </video>
+
+                                        <div class="input-demo">
+                                            <div class="demo-heading">
+                                                <span>INPUT SEQUENCE</span>
+                                                <span>A → D → 左键</span>
+                                            </div>
+
+                                            <div class="strafe-devices" aria-hidden="true">
+                                                <div class="lesson-keyboard">
+                                                    <span class="lesson-key key-w">W</span>
+                                                    <span class="lesson-key key-a" data-key="a">A</span>
+                                                    <span class="lesson-key key-s">S</span>
+                                                    <span class="lesson-key key-d" data-key="d">D</span>
+                                                    <span class="lesson-key key-space">SPACE</span>
+                                                </div>
+
+                                                <svg class="lesson-device-mouse" viewBox="0 0 138 205">
+                                                    <use href="#lesson-mouse-art"></use>
+                                                </svg>
+                                            </div>
+
+                                            <p class="demo-cue">长按 A → 松 A 点 D → 松 D 开火</p>
+
+                                            <ol class="demo-steps">
+                                                <li data-step="a">横移</li>
+                                                <li data-step="d">反向急停</li>
+                                                <li data-step="fire">开枪</li>
+                                            </ol>
+                                        </div>
+
+                                        <figcaption class="lesson-media-caption">
+                                            <span>02 / 急停开枪</span>
+                                            <span class="video-state">移入视频区域播放</span>
+                                        </figcaption>
+                                    </figure>
+
+                                    <p class="guide-note">
+                                        按键动画用于说明顺序，时长经过放慢处理；
+                                        实战中应以角色停稳为准，不要照搬演示中的时间间隔。
+                                    </p>
+                                </div>
+                            </article>
+
+                            <article class="knowledge-item">
+                                <span class="item-number">03</span>
+
+                                <div class="lesson-content">
+                                    <h3>压枪教学</h3>
+                                    <p>按住开火键的同时，均匀、缓慢地向下拖动鼠标。</p>
+
+                                    <figure class="lesson-media" data-demo="recoil">
+                                        <video
+                                            controls
+                                            muted
+                                            playsinline
+                                            loop
+                                            preload="metadata"
+                                            aria-label="压枪视频"
+                                        >
+                                            <source
+                                                src="../assets/xsjx-assets/yaqiang-1.mp4"
+                                                type="video/mp4"
+                                            >
+                                            浏览器不支持播放此视频。
+                                        </video>
+
+                                        <div class="input-demo">
+                                            <div class="demo-heading">
+                                                <span>MOUSE MOVEMENT</span>
+                                                <span>按住左键 / 缓慢下移</span>
+                                            </div>
+
+                                            <div class="recoil-device-stage" aria-hidden="true">
+                                                <span class="recoil-track"></span>
+
+                                                <svg
+                                                    class="lesson-device-mouse recoil-mouse"
+                                                    viewBox="0 0 138 205"
+                                                >
+                                                    <use href="#lesson-mouse-art"></use>
+                                                </svg>
+
+                                                <span class="recoil-direction">↘</span>
+                                            </div>
+
+                                            <p class="demo-cue">按住左键，缓慢向下并轻微向右移动</p>
+                                        </div>
+
+                                        <figcaption class="lesson-media-caption">
+                                            <span>03 / 压枪</span>
+                                            <span class="video-state">移入视频区域播放</span>
+                                        </figcaption>
+                                    </figure>
+
+                                    <p class="guide-note">
+                                        鼠标轨迹仅演示本段操作方向，不代表所有武器都使用同一种压枪轨迹。
+                                    </p>
+                                </div>
+                            </article>
+                        </div>
+                    </section>
+
+                    <!-- 【章节 equipment】购买装备：整幅图片 + 框选标注动画 -->
+                    <section
+                        class="guide-section equipment-section"
+                        id="equipment"
+                        aria-labelledby="equipment-title"
+                        >
+                        <header class="guide-heading">
+                            <span class="chapter-number">02 / EQUIPMENT</span>
+                            <h2 id="equipment-title">购买装备</h2>
+                        </header>
+
+                        <figure class="buy-figure" id="buy-guide">
+                            <div
+                                class="buy-scroll"
+                                role="region"
+                                tabindex="0"
+                                aria-label="购买界面标注图，窄屏可横向滚动"
+                            >
+                                <!--
+                                    原图实际尺寸：1919 × 922。
+                                    viewBox 上下额外留白，用来放置图片外的标注。
+                                    图片、框选和引导线共用坐标，缩放时不会错位。
+                                -->
+                                <svg
+                                    class="buy-diagram"
+                                    viewBox="0 -110 1919 1142"
+                                    role="img"
+                                    aria-labelledby="buy-diagram-title buy-diagram-desc"
+                                >
+                                    <title id="buy-diagram-title">购买界面操作指南</title>
+                                    <desc id="buy-diagram-desc">
+                                        标注当前资金、下回合最低金额、护甲与头盔、
+                                        拆弹器、退款按钮、掉落的武器，
+                                        以及按住 Ctrl 购买并投掷的操作提示。
+                                    </desc>
+
+                                    <image
+                                        href="../assets/xsjx-assets/buy.png"
+                                        x="0"
+                                        y="0"
+                                        width="1919"
+                                        height="922"
+                                    />
+
+                                    <!-- x/y 控制位置，width/height 控制框选大小 -->
+                                    <g class="buy-mark" style="--order: 0">
+                                        <rect
+                                            class="buy-box"
+                                            x="256" y="24" width="110" height="40"
+                                            rx="3" pathLength="100"
+                                        />
+                                        <path
+                                            class="buy-leader"
+                                            d="M311 24 V-45 H210"
+                                            pathLength="100"
+                                        />
+                                        <text
+                                            class="buy-label"
+                                            x="195" y="-36"
+                                            text-anchor="end"
+                                        >当前资金</text>
+                                    </g>
+
+                                    <g class="buy-mark" style="--order: 1">
+                                        <rect
+                                            class="buy-box"
+                                            x="1035" y="23" width="165" height="40"
+                                            rx="3" pathLength="100"
+                                        />
+                                        <path
+                                            class="buy-leader"
+                                            d="M1117 23 V-45 H1280"
+                                            pathLength="100"
+                                        />
+                                        <text
+                                            class="buy-label"
+                                            x="1295" y="-36"
+                                        >下回合最低金额</text>
+                                    </g>
+
+                                    <g class="buy-mark" style="--order: 2">
+                                        <rect
+                                            class="buy-box"
+                                            x="264" y="117" width="147" height="195"
+                                            rx="3" pathLength="100"
+                                        />
+                                        <path
+                                            class="buy-leader"
+                                            d="M264 212 H225 V175 H70"
+                                            pathLength="100"
+                                        />
+                                        <text
+                                            class="buy-label"
+                                            x="70" y="151"
+                                        >护甲与头盔</text>
+                                    </g>
+
+                                    <g class="buy-mark" style="--order: 3">
+                                        <rect
+                                            class="buy-box"
+                                            x="264" y="417" width="147" height="94"
+                                            rx="3" pathLength="100"
+                                        />
+                                        <path
+                                            class="buy-leader"
+                                            d="M264 464 H210 V530 H70"
+                                            pathLength="100"
+                                        />
+                                        <text
+                                            class="buy-label"
+                                            x="70" y="568"
+                                        >拆弹器</text>
+                                    </g>
+
+                                    <g class="buy-mark" style="--order: 4">
+                                        <rect
+                                            class="buy-box"
+                                            x="817" y="382" width="42" height="28"
+                                            rx="3" pathLength="100"
+                                        />
+                                        <path
+                                            class="buy-leader"
+                                            d="M859 396 H1240"
+                                            pathLength="100"
+                                        />
+                                        <text
+                                            class="buy-label"
+                                            x="1255" y="405"
+                                        >退款按钮</text>
+                                    </g>
+
+                                    <g class="buy-mark" style="--order: 5">
+                                        <rect
+                                            class="buy-box"
+                                            x="436" y="629" width="145" height="40"
+                                            rx="3" pathLength="100"
+                                        />
+                                        <path
+                                            class="buy-leader"
+                                            d="M436 649 H210 V705 H75"
+                                            pathLength="100"
+                                        />
+                                        <text
+                                            class="buy-label"
+                                            x="75" y="745"
+                                        >掉落的武器</text>
+                                    </g>
+
+                                    <g class="buy-mark" style="--order: 6">
+                                        <rect
+                                            class="buy-box"
+                                            x="504" y="872" width="257" height="42"
+                                            rx="3" pathLength="100"
+                                        />
+                                        <path
+                                            class="buy-leader"
+                                            d="M633 914 V977 H755"
+                                            pathLength="100"
+                                        />
+                                        <text
+                                            class="buy-label"
+                                            x="770" y="986"
+                                        >按住 Ctrl 购买并投掷</text>
+                                    </g>
+                                </svg>
+                            </div>
+
+                            <figcaption class="buy-caption">
+                                BUY MENU / 购买界面指南
+                                <span>窄屏可左右滑动查看完整标注</span>
+                            </figcaption>
+                        </figure>
+
+                        <div class="guide-body equipment-copy">
+                            <article class="knowledge-item">
+                                <span class="item-number">01</span>
+                                <div>
+                                    <h3>护甲的作用</h3>
+                                    <p>没有护甲，身体部位受击时，准心会跟随抖动，导致难以瞄准。</p>
+                                </div>
+                            </article>
+
+                            <article class="knowledge-item">
+                                <span class="item-number">02</span>
+                                <div>
+                                    <h3>头盔</h3>
+                                    <p>降低头部受击的伤害。</p>
+                                </div>
+                            </article>
+
+                            <aside class="guide-note">
+                                感谢网吧大哥，看我玩了一通宵才告诉我要买甲 QAQ。
+                            </aside>
+                        </div>
+                    </section>
+
+                    <!-- 【章节 video】画面设置：真实截图 -->
+                    <section class="guide-section" id="video" aria-labelledby="video-title">
+                        <header class="guide-heading">
+                            <span class="chapter-number">03 / VIDEO</span>
+                            <h2 id="video-title">游戏画面设置</h2>
+                        </header>
+
+                        <div class="guide-body">
+                            <h3>照抄模板</h3>
+                            <div class="settings-card">
+                                <span class="placeholder-index">VIDEO CONFIGURATION</span>
+                                <p>此设置为基础版本</p>
+                                <span>相比较全最低，本设置在流畅运行的前提下，尽量保留好的画面效果。</span>
+                                <span>跳转到：<a href="./super-guides.html">进阶教学</a>，了解最合适自己的画面设置</span>
+                                <img src="../assets/xsjx-assets/graphicssettings.png" alt="游戏画面基础设置示例" width="879" height="1270" loading="lazy" decoding="async">
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 【章节 sensitivity】鼠标灵敏度 -->
+                    <section class="guide-section" id="sensitivity" aria-labelledby="sensitivity-title">
+                        <header class="guide-heading">
+                            <span class="chapter-number">04 / SENSITIVITY</span>
+                            <h2 id="sensitivity-title">鼠标灵敏度</h2>
+                        </header>
+
+                        <div class="guide-body">
+                            <h3>适合自己的，就是最好的</h3>
+                            <p>具体操作如图所示：</p>
+                            <img src="../assets/xsjx-assets/mouse.png" alt="灵敏度设置指南">
+                            <p>先找到一个舒服的起点，再根据自己的操作习惯逐步调整。</p>
+
+                            <div class="sensitivity-reference">
+                                <div>
+                                    <span>鼠标 
+                                        <button
+                                            type="button"
+                                            class="note-trigger"
+                                            aria-expanded="false"
+                                            aria-controls="note-armor"
+                                        >DPI</button>
+                                    </span>
+                                    <div class="note-bubble" id="note-dpi" hidden>
+                                        <p>DPI代表鼠标移动一英寸时传感器上报多少个计数值<br>
+                                        DPI越高，同样的移动距离通常会让屏幕上的光标移动得更远。</p>
+                                    </div>
+                                    <strong>800</strong>
+                                </div>
+                                <span class="reference-divider" aria-hidden="true">/</span>
+                                <div>
+                                    <span>游戏灵敏度参考</span>
+                                    <strong>0.8–1.4</strong>
+                                </div>
+                            </div>
+
+                            <aside class="guide-note">
+                                数据根据综合绝大多数玩家得出。
+                            </aside>
+                        </div>
+                    </section>
+
+                    <!-- 【章节 communication】语音与消息 -->
+                    <section class="guide-section" id="communication" aria-labelledby="communication-title">
+                        <header class="guide-heading">
+                            <span class="chapter-number">05 / COMMUNICATION</span>
+                            <h2 id="communication-title">语音按键</h2>
+                        </header>
+
+                        <div class="guide-body">
+                            <p class="setting-path">具体操作如图所示：</p>
+                            <img src="../assets/xsjx-assets/voice.png" alt="语音按键设置指南">
+
+                            <dl class="key-list">
+                                <div>
+                                    <dt>团队文字消息</dt>
+                                    <dd><kbd>U</kbd></dd>
+                                </div>
+                                <div>
+                                    <dt>全局文字消息</dt>
+                                    <dd><kbd>Y</kbd></dd>
+                                </div>
+                                <div>
+                                    <dt>语音按键建议</dt>
+                                    <dd><kbd>V</kbd><span>或</span><kbd>鼠标侧键</kbd></dd>
+                                </div>
+                            </dl>
+
+                            <p>语音按键推荐绑定为自己觉得合适、方便按到的位置。</p>
+
+                            <aside class="guide-note">
+                                及时且友善的交流，是构建良好游戏环境的重要基石。
+                            </aside>
+                        </div>
+                    </section>
+
+                    <!-- 【章节 crosshair】准心：data-code 必须与预览图一一对应 -->
+                    <section class="guide-section" id="crosshair" aria-labelledby="crosshair-title">
+                        <header class="guide-heading">
+                            <span class="chapter-number">06 / CROSSHAIR</span>
+                            <h2 id="crosshair-title">准心设置</h2>
+                        </header>
+
+                        <div class="guide-body">
+                            <p class="setting-path">常用准心样式：</p>
+                            <p>复制代码后，游戏内操作如图所示。</p>
+                            <img src="../assets/xsjx-assets/crosshair.png" alt="准心设置">
+                            <p>点击预览图，即可复制准心代码。</p>
+
+                            <div class="crosshair-gallery">
+                                <button
+                                    class="crosshair-preview"
+                                    type="button"
+                                    data-code="CSGO-wvqAb-VbzKB-TWoio-LaZUo-XMGuA"
+                                    aria-label="复制十字准心代码"
+                                >
+                                    <img
+                                        src="../assets/xsjx-assets/cs1.png"
+                                        alt="十字准心预览"
+                                        loading="lazy" width="821" height="259" decoding="async">
+                                    <span class="crosshair-name">01 / 十字</span>
+                                </button>
+
+                                <button
+                                    class="crosshair-preview"
+                                    type="button"
+                                    data-code="CSGO-BJav6-VthJE-Tr2HG-x5B9F-SKXzE"
+                                    aria-label="复制十字 2 准心代码"
+                                >
+                                    <img
+                                        src="../assets/xsjx-assets/cs2.png"
+                                        alt="十字 2 准心预览"
+                                        loading="lazy" width="821" height="259" decoding="async">
+                                    <span class="crosshair-name">02 / 十字 2</span>
+                                </button>
+
+                                <button
+                                    class="crosshair-preview"
+                                    type="button"
+                                    data-code="CSGO-44pR2-2B6GF-suXpM-byrcY-O4rmJ"
+                                    aria-label="复制井字准心代码"
+                                >
+                                    <img
+                                        src="../assets/xsjx-assets/cs3.png"
+                                        alt="井字准心预览"
+                                        loading="lazy" width="822" height="260" decoding="async">
+                                    <span class="crosshair-name">03 / 井字</span>
+                                </button>
+
+                                <button
+                                    class="crosshair-preview"
+                                    type="button"
+                                    data-code="CSGO-VFYQo-TFMsY-HJnZB-kZGcP-zyVrC"
+                                    aria-label="复制点准心代码"
+                                >
+                                    <img
+                                        src="../assets/xsjx-assets/cs4.png"
+                                        alt="点准心预览"
+                                        loading="lazy" width="823" height="261" decoding="async">
+                                    <span class="crosshair-name">04 / 点</span>
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 【章节 platforms】平台选择 -->
+                    <section class="guide-section" id="platforms" aria-labelledby="platforms-title">
+                        <header class="guide-heading">
+                            <span class="chapter-number">07 / PLATFORMS</span>
+                            <h2 id="platforms-title">官方还是<br>第三方平台？</h2>
+                        </header>
+
+                        <div class="guide-body">
+                            <h3>官方服务器</h3>
+                            <p>
+                                游戏分为国际服和完美代理的中国服。两者游戏数据互通，
+                                在内容审查、游戏延迟和玩家群体上有所不同。
+                            </p>
+
+                            <dl class="server-list">
+                                <div>
+                                    <dt>国际服启动项</dt>
+                                    <dd><code>-worldwide</code></dd>
+                                </div>
+                                <div>
+                                    <dt>中国服启动项</dt>
+                                    <dd><code>-perfectworld</code></dd>
+                                </div>
+                            </dl>
+
+                            <aside class="guide-note">
+                                开启网络代理后，可能自动跳过服务器选择。
+                                如需进入中国服，可在启动项中添加
+                                <code>-perfectworld</code>。
+                            </aside>
+
+                            <div class="guide-subsection">
+                                <h3>第三方竞技平台</h3>
+                                <p>
+                                    完美世界竞技平台和5E对战平台是CS开放生态衍生出的第三方平台，<br>
+                                    聚集着目前中国大陆地区最多的核心玩家，为专注竞技体验的你提供更好的舞台。
+                                </p>
+                                <p class="guide-note">第三方平台对局不提供游戏内每周奖励。</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 【章节 extras】额外内容 -->
+                    <section class="guide-section" id="extras" aria-labelledby="extras-title">
+                        <header class="guide-heading">
+                            <span class="chapter-number">08 / EXTRA NOTES</span>
+                            <h2 id="extras-title">额外内容</h2>
+                        </header>
+
+                        <div class="guide-body">
+                            <ol class="extra-list">
+                                <li>
+                                    想要获取游戏内每周奖励，需要开通优先账户。
+                                    升级奖励每周一次，每周三刷新重置。
+                                </li>
+                                <li>休闲模式死亡后，不能向存活队友发送讯息。</li>
+                            </ol>
+                        </div>
+                    </section>
+                </div>
+
+            </main>
+
+            <!-- 【04 页脚】 -->
+            <footer class="site-footer" id="about">
+                <span class="cross" aria-hidden="true"></span>
+                <p>自由开放的非官方反恐精英网站</p>
+                <span class="footer-line" aria-hidden="true"></span>
+                <a href="mailto:yushucrain@gmail.com">
+                    联系 <span aria-hidden="true">⟶</span>
+                </a>
+                <span class="cross" aria-hidden="true"></span>
+            </footer>
+        </div>
+
+        <!-- 【05 右侧刻度】href 对应章节 id；激活阈值见 JS CONFIG.railThreshold。 -->
+        <nav class="chapter-rail" aria-label="文章章节导航">
+            <a href="#aiming" aria-label="射击教学">
+                <span class="rail-label">射击教学</span>
+                <span class="rail-tick" aria-hidden="true"></span>
+            </a>
+            <a href="#equipment" aria-label="购买装备">
+                <span class="rail-label">购买装备</span>
+                <span class="rail-tick" aria-hidden="true"></span>
+            </a>
+            <a href="#video" aria-label="游戏画面设置">
+                <span class="rail-label">画面设置</span>
+                <span class="rail-tick" aria-hidden="true"></span>
+            </a>
+            <a href="#sensitivity" aria-label="鼠标灵敏度">
+                <span class="rail-label">灵敏度</span>
+                <span class="rail-tick" aria-hidden="true"></span>
+            </a>
+            <a href="#communication" aria-label="语音按键">
+                <span class="rail-label">语音按键</span>
+                <span class="rail-tick" aria-hidden="true"></span>
+            </a>
+            <a href="#crosshair" aria-label="准心">
+                <span class="rail-label">准心</span>
+                <span class="rail-tick" aria-hidden="true"></span>
+            </a>
+            <a href="#platforms" aria-label="官方与第三方平台">
+                <span class="rail-label">平台选择</span>
+                <span class="rail-tick" aria-hidden="true"></span>
+            </a>
+            <a href="#extras" aria-label="额外内容">
+                <span class="rail-label">额外内容</span>
+                <span class="rail-tick" aria-hidden="true"></span>
+            </a>
+        </nav>
+
+        <div
+            class="copy-toast"
+            id="crosshair-toast"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+        ></div>
+
+    </body>
+</html>
