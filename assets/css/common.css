@@ -1,0 +1,991 @@
+/*
+  全站公共样式表 · 反恐精英中文网
+  ────────────────────────────────────────────────────────────────
+  【定位】本文件是全站唯一的「公共层」，以首页 assets/css/index.css 为基准抽
+          取而成。所有页面必须在自己的私有样式表之前引入它：
+
+              <link rel="stylesheet" href=".../assets/css/common.css">
+              <link rel="stylesheet" href=".../assets/css/＜页面私有＞.css">
+
+          书写顺序决定了「公共层在前、页面层在后」，页面私有规则因此可以安全
+          覆盖公共规则，不需要 !important。
+
+  【职责边界】
+          公共层：@font-face、主题变量、Reset、无障碍、页面骨架（main/footer）、
+                  站点导航与工具栏、导航响应式、减少动态效果。
+          页面层：各自的首屏、章节内容、专有组件。
+          两者不互相 @import。
+
+  【分区索引】
+          01  字体
+          02  主题变量（浅色 / 深色双主题）
+          03  Reset 与基础排版
+          04  焦点样式与无障碍
+          05  页面骨架 main / footer
+          06  置顶导航：固定、滚动显隐、右侧工具栏
+          07  导航响应式（1150 / 600 两档）
+          08  减少动态效果（prefers-reduced-motion）
+
+  【状态类】由 assets/js/site.js 切换，改行为时不要去 CSS 里硬找：
+          .site-header.is-hidden    向下滚动已收起（transform: translateY(-101%)）
+          body.has-fixed-header     该页有非浮层导航，需给 body 补等高上内边距
+          （背景恒定透明，没有 is-scrolled 这类补底色的状态类）
+
+  【两条硬约束】
+          1. url() 相对「本 CSS 文件所在目录」解析，不是相对 HTML。
+             本文件在 assets/css/ 下，引用字体/图片必须用 ../ 前缀。
+          2. 主题由 <html data-theme> 驱动，取值写在 assets/js/theme-init.js。
+             新增颜色一律走变量，不要在组件里写死色值，否则深色模式会漏白。
+
+  【命名避让】公共层占用以下全局名，页面层不要重复定义：
+          --page-bg / --surface / --text / --muted / --border / --hover / --shadow
+          --shell-max / --header-height / --site-header-h
+          .site-header / .header-inner / .site-logo / .nav-* / .search-* /
+          .sr-only / .visually-hidden / .skip-link /
+          body.has-fixed-header
+  ────────────────────────────────────────────────────────────────
+*/
+
+/* ==================== 01 字体 ==================== */
+
+/* 思源黑体：200 / 400 / 500 / 700 四档字重。
+   【关键】url() 相对「本 CSS 文件所在目录」解析。本文件位于 assets/css/，
+   所以要先用 ../ 退回 assets/ 再进 fonts/。写成 ./assets/fonts/ 会解析成
+   assets/css/assets/fonts/ —— 字体静默失效，页面只是「变丑」而不报错。 */
+@font-face {
+    font-family: "Source Han Sans SC";
+    src: url("../fonts/SourceHanSansCN-Light.woff2") format("woff2");
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Source Han Sans SC";
+    src: url("../fonts/SourceHanSansCN-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Source Han Sans SC";
+    src: url("../fonts/SourceHanSansCN-Medium.woff2") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Source Han Sans SC";
+    src: url("../fonts/SourceHanSansCN-Heavy.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ==================== 02 主题变量 ==================== */
+
+/* ↑:root 是伪类选择器，选中页面根元素；HTML 里根元素就是 <html>。
+   color-scheme 同时声明给浏览器：表单控件、滚动条等原生 UI 跟着主题走。 */
+:root {
+    color-scheme: light;
+    --page-bg: #F3F4F4; /* 页面底色 */
+    --surface: #FFFFFF; /* 浮层/面板底色（下拉菜单、搜索面板） */
+    --text: #111315;    /* 正文主色 */
+    --muted: #586168;   /* 次要文字、占位符 */
+    --border: #586168;  /* 分隔线 */
+    --hover: #28397F;   /* 悬停/聚焦强调色 */
+    --shadow: 0 12px 28px rgb(0 0 0 / 10%); /* 浮层投影 */
+
+    /* 版式基准：页面内容最大宽度、导航条高度 */
+    --shell-max: 1920px;
+    --header-height: 80px;
+}
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --page-bg: #111315;
+    --surface: #1D2024;
+    --text: #ffffff;
+    --muted: #A6AFB2;
+    --border: #A6AFB2;
+    --hover: #FFA11B;
+    --shadow: 0 12px 28px rgba(0 0 0 / 30%);
+}
+
+/* ==================== 03 Reset 与基础排版 ==================== */
+
+/* 【关键】box-sizing: border-box 让 width 等于最终实际宽度，
+   padding 和 border 不再额外撑大盒子——后续所有尺寸计算都依赖这一条。 */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* 锚点跳转平滑滚动；「减少动态效果」偏好下由 08 区关掉。 */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family: "Source Han Sans SC", sans-serif;
+    background: var(--page-bg);
+    color: var(--text);
+    min-height: 100vh;  /* 页面至少占满一屏，作为兼容写法 */
+    min-height: 100dvh; /* 支持时采用动态视口高度，适应手机浏览器工具栏变化 */
+    -webkit-font-smoothing: antialiased;
+}
+
+/* 按钮和输入框默认不继承字体，会出现「正文是思源、按钮是系统字体」的割裂感。 */
+button,
+input {
+    font: inherit;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+    /* 让链接使用父元素文字颜色并去掉下划线，便于把链接设计成导航项或按钮。 */
+}
+
+/* -webkit- 前缀属性：在支持它的移动浏览器中去掉触摸元素时的默认高亮色。
+   它只改变触摸高亮外观，不会禁用点击。 */
+button,
+a,
+input {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* 图片默认不溢出容器，避免大图在窄屏上把布局撑破。 */
+img {
+    max-width: 100%;
+}
+
+/* ==================== 04 焦点样式与无障碍 ==================== */
+
+/* :where(a, button, input) 匹配链接、按钮或输入框。:where() 及其内部选择器
+   不增加优先级，方便页面层覆盖；外面的 :focus-visible 仍然贡献优先级。
+   :focus-visible 由浏览器判断「此刻是否需要明显焦点提示」，典型场景是键盘 Tab。
+   它不严格等于「只有键盘操作」——文本输入框被鼠标点击后也可能匹配。 */
+:where(a, button, input):focus-visible {
+    outline: 2px solid var(--text);
+    outline-offset: 4px;
+    /* outline 不占布局空间，出现时不会把相邻元素挤开。 */
+}
+
+/* 只在视觉上隐藏，屏幕阅读器仍会朗读。
+   不要用 display:none 或 visibility:hidden —— 那样辅助设备也读不到了。
+   .sr-only 与 .visually-hidden 是同一能力的两个名字，历史页面两种都在用，
+   这里统一提供，避免各页面各写一份。 */
+.sr-only,
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* 跳转到主内容的快捷入口：平时藏在屏幕外，被键盘聚焦时落到左上角。 */
+.skip-link {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 2000;
+    padding: 10px 16px;
+    background: var(--text);
+    color: var(--page-bg);
+    transform: translateY(-180%);
+}
+
+.skip-link:focus {
+    transform: translateY(0);
+}
+
+/* ==================== 05 页面骨架 ==================== */
+
+/* 【注意】这里不写 text-align: center。
+   居中是首页的排版选择（index.css 里再补），不是全站规则——
+   新手教学页是左对齐的瑞士网格布局，一旦在公共层居中就会被整体打破。 */
+main {
+    display: block;
+    width: 100%;
+    max-width: var(--shell-max);
+    margin: 0 auto;
+    overflow-wrap: anywhere;
+    /* 允许很长的网址、连续字符在必要时从任意位置断行，避免撑破容器。 */
+}
+
+/* 页脚：原来是 height: 80px，文字一多就会被裁掉。
+   改成最小高度 + 垂直居中，窄屏也安全。 */
+footer {
+    min-height: 80px;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    text-align: center;
+    margin-top: auto; /* 正文下方剩余空间由它吸收，把页脚推到底部 */
+    flex-shrink: 0;   /* 防止页脚高度被压缩 */
+}
+
+/* ==================== 06 置顶导航：固定、滚动显隐、右侧工具栏 ==================== */
+
+/* 【置顶形态】导航条始终固定在视窗顶部（position: fixed），向下滚动时收起、
+   向上滚动时弹回，由 assets/js/site.js 的 initStickyHeader 切换 .is-hidden。
+   两种形态差别只在初始外观，定位方式完全相同：
+     .is-overlay      首屏型页面（首页），初始透明浮在首屏视频上
+     不带该类         常规内容页，初始带一条底边线，滚动后自动补实底
+
+   【为什么必须 fixed 而不是 sticky】sticky 需要一个参与文档流的滚动祖先，
+   而首页的导航原本 absolute 在 .hero 里；fixed 两种页面统一处理，
+   定位基准恒为视窗，行为可预测。代价是它脱离文档流，需要给 <body> 补等高
+   上内边距（见下面 .has-fixed-header）。 */
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: transparent;
+    border: 0;
+    overflow: visible;
+    /* 位移用「快出慢回」的缓动曲线，回弹更有质感；
+       背景色单独给一条较短的线性过渡，避免随之产生突兀明暗跳变。 */
+    transform: translateY(0);
+    transition: transform 0.34s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* 【收起】整条导航移出视窗上方。不用 display:none / visibility:hidden：
+   前者会让 transition 失效（元素直接消失，没有滑动过程），
+   后者虽然动画还在，但会让内部元素瞬间不可聚焦、动画观感割裂。 */
+.site-header.is-hidden {
+    transform: translateY(-101%);
+    /* ↑101% 而不是 100%：留出 1% 避免某些缩放下四舍五入露出 1px 亮边。 */
+}
+
+/* 【背景恒定透明】这是全站约定，不要给 .site-header 加 background。
+   曾经由 JS 在滚离首屏后补 var(--surface) 实底，按需求已移除——
+   代价是内容页向下滚动时，正文文字会从导航文字底下穿过。
+   若某天要恢复实底，在 .site-header 上加 background 即可，
+   并在 site.js 里补回 is-scrolled 的切换逻辑（见 git 历史）。 */
+
+/* 非浮层形态补一条底边线，与正文分开；首页浮层形态不加，避免破坏视频整体感。 */
+.site-header:not(.is-overlay) {
+    border-bottom: 1px solid var(--border);
+}
+
+/* 【关键】导航 fixed 之后不再占据文档流空间，正文会顶到它下面被遮住。
+   --site-header-h 由 site.js 用 ResizeObserver 实测写入（px），
+   因此断点切换时高度变化会自动跟随，不必在每个媒体查询里手写一遍数值。
+   首屏型页面（is-overlay）不需要留白——它的 .hero 本来就要占满首屏。 */
+body.has-fixed-header {
+    padding-top: var(--site-header-h, 80px);
+}
+
+/* 三列栅格：logo / 栏目 / 工具栏。position: static 让下拉菜单和搜索面板
+   以整个 header 为定位参照，从而铺满网页宽度。 */
+.header-inner {
+    position: static;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: stretch;
+    gap: 24px;
+    width: 100%;
+    max-width: none; /* 原值 auto 对 max-width 是非法的，浏览器会直接忽略这一行 */
+    height: var(--header-height);
+    min-height: 0;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* 网站名称 & logo */
+.site-logo {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    margin: 0;
+    color: var(--text);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+}
+
+.site-logo img {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    flex-shrink: 0; /* .site-logo 是 flex 容器，窄屏下防止 logo 被压扁 */
+}
+
+/* 五个栏目均分中间空间，并占满导航栏高度 */
+.nav-home {
+    justify-self: center;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 0;
+    min-width: 0;
+    max-width: 1080px;
+    margin: 0;
+    overflow: visible;
+}
+
+/* ── 树状下拉的几何常量 ──────────────────────────────────────────
+   【改一个必须一起改】整棵树共用同一套 x 坐标，推导关系如下（均相对本栏）：
+
+     文字左缘    = 40px                ← 选项文字与子项文字严格对齐
+     方块        = left 20px, 6×6      → 中心 x = 23
+     下拉菜单    = left 20px           ← 让树与方块共用一个坐标原点
+     主干竖线    = left 3px (= 23 − 20)
+     子项横线    = left 3px, 宽 9px    → 到 12
+     子项方点    = left 12px, 3×3      → 到 15，距文字 5px
+     子项文字    = padding-left 20px（下拉内坐标）→ 绝对 40px ✓
+
+   【为什么选项文字要左对齐】树的所有装饰都锚定在固定的 x 坐标上；
+   选项文字一旦居中，它的左缘就随文字宽度浮动，子项文字永远对不上。
+   因此五个栏目统一改为左对齐，左缘由 --tree-text 定死。 */
+.nav-item {
+    position: relative; /* 下拉菜单的定位基准 */
+    display: flex;
+    min-width: 0;
+    --tree-text: 40px;      /* 文字统一左缘 */
+    --tree-stem-top: -37px; /* 主干起点：方块下缘（负值探入栏目条区域） */
+    --tree-row-center: 22px; /* 子项行中心到行顶的距离，决定主干收尾位置 */
+}
+
+.nav-trigger {
+    position: relative; /* 方块 ::before 的定位基准 */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    height: 100%;
+    padding: 0 16px 0 var(--tree-text);
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--text);
+    font-size: 18px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 0.18s ease;
+    /* 过渡要写在基础规则上，不能写在 :hover 里。
+       写在 :hover 上的话，鼠标移入有渐变、移出却瞬间跳回，手感是断的。 */
+}
+
+/* 栏目按钮不显示箭头指示符 */
+.nav-trigger::after {
+    content: none;
+}
+
+/* 选项前的实心方块。
+   【关键】绝对定位、不占布局——出现/消失时文字不会左右跳动。 */
+.nav-trigger::before {
+    content: "";
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    background: var(--text);
+    transform: translateY(-50%) scale(0);
+    transition: transform 0.22s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.nav-item:is(.is-open, :not([data-nav-ready]):hover, :not([data-nav-ready]):focus-within) > .nav-trigger {
+    color: var(--hover);
+}
+
+.nav-item:is(.is-open, :not([data-nav-ready]):hover, :not([data-nav-ready]):focus-within) > .nav-trigger::before {
+    background: var(--hover);
+    transform: translateY(-50%) scale(1);
+}
+
+/* 栏目高度与导航栏一致，因此 top: 100% 紧贴导航栏底边 */
+.nav-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 20px; /* 与方块左缘对齐，树的坐标以此为原点 */
+    right: auto;
+    z-index: 2;
+    width: max-content;
+    min-width: max(100%, 160px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background: transparent; /* 【需求】子选项无背景，直接透出页面 */
+    border: 0;
+    font-weight: 400;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.16s ease, visibility 0.16s;
+}
+
+.nav-item:is(.is-open, :not([data-nav-ready]):hover, :not([data-nav-ready]):focus-within) > .nav-dropdown {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* 主干竖线：从方块下缘一直长到最后一行子项的中心。
+   bottom 用 --tree-row-center 而不是 0——多长一条都会戳出最后一个拐角。
+   生长用 scaleY + transform-origin: top，视觉上是从方块处「往下长」。 */
+.nav-dropdown::before {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: var(--tree-stem-top);
+    bottom: var(--tree-row-center);
+    width: 1px;
+    background: var(--border);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.34s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.nav-item:is(.is-open, :not([data-nav-ready]):hover, :not([data-nav-ready]):focus-within) > .nav-dropdown::before {
+    background: var(--hover);
+    transform: scaleY(1);
+    transition-delay: 0.06s;
+}
+
+/* 每一行子项：容器负责淡入 + 轻微右移入场；行高必须锁定，
+   否则主干收尾位置（bottom: --tree-row-center）会算不准。 */
+.nav-dropdown li {
+    --i: 0; /* 出场序号，由 nth-child 写入，供下面的 stagger 延迟使用 */
+    position: relative;
+    line-height: 20px;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+        opacity 0.22s ease,
+        transform 0.22s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* 子项横线：从主干长出来 */
+.nav-dropdown li::before {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 50%;
+    width: 9px;
+    height: 1px;
+    background: var(--border);
+    transform: translateY(-50%) scaleX(0);
+    transform-origin: left;
+    transition: transform 0.24s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* 子项末端的小方点：横线长完后再弹出 */
+.nav-dropdown li::after {
+    content: "";
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    width: 3px;
+    height: 3px;
+    background: var(--border);
+    transform: translateY(-50%) scale(0);
+    transition: transform 0.16s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.nav-item:is(.is-open, :not([data-nav-ready]):hover, :not([data-nav-ready]):focus-within) > .nav-dropdown li {
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: calc(0.10s + var(--i) * 0.06s);
+}
+
+.nav-item:is(.is-open, :not([data-nav-ready]):hover, :not([data-nav-ready]):focus-within) > .nav-dropdown li::before {
+    background: var(--hover);
+    transform: translateY(-50%) scaleX(1);
+    transition-delay: calc(0.16s + var(--i) * 0.06s);
+}
+
+.nav-item:is(.is-open, :not([data-nav-ready]):hover, :not([data-nav-ready]):focus-within) > .nav-dropdown li::after {
+    background: var(--hover);
+    transform: translateY(-50%) scale(1);
+    transition-delay: calc(0.30s + var(--i) * 0.06s);
+}
+
+/* 出场顺序：第 1 项 --i 为默认 0，其余依次递增。
+   【注意】延迟只写在展开态——收起态回到基础规则的 delay 0，
+   这样鼠标移开时整棵树立即一起收走，不会按相反顺序慢慢退场。 */
+.nav-item:is(.is-open, :not([data-nav-ready]):hover, :not([data-nav-ready]):focus-within) > .nav-dropdown li:nth-child(2) { --i: 1; }
+.nav-item:is(.is-open, :not([data-nav-ready]):hover, :not([data-nav-ready]):focus-within) > .nav-dropdown li:nth-child(3) { --i: 2; }
+.nav-item:is(.is-open, :not([data-nav-ready]):hover, :not([data-nav-ready]):focus-within) > .nav-dropdown li:nth-child(4) { --i: 3; }
+.nav-item:is(.is-open, :not([data-nav-ready]):hover, :not([data-nav-ready]):focus-within) > .nav-dropdown li:nth-child(5) { --i: 4; }
+.nav-item:is(.is-open, :not([data-nav-ready]):hover, :not([data-nav-ready]):focus-within) > .nav-dropdown li:nth-child(6) { --i: 5; }
+
+.nav-dropdown a {
+    display: block;
+    padding: 12px 16px 12px 20px; /* 左 20px = 子项文字与选项文字对齐的关键 */
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 400;
+    white-space: nowrap;
+    transition: color 0.18s ease;
+}
+
+/* 暂时没有链接的子选项也保持一致的排版 */
+.nav-dropdown li:not(:has(a)) {
+    padding: 12px 16px 12px 20px;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.nav-dropdown a:hover,
+.nav-dropdown a:focus-visible {
+    color: var(--hover);
+}
+
+/* 右侧工具栏 */
+.nav-actions {
+    position: static;
+    display: flex;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    gap: 4px;
+    min-width: 0;
+}
+
+/* 四个工具按钮共用一套尺寸与状态 */
+.site-header .theme-button,
+.site-header .login-button,
+.site-header .audio-button,
+.site-header .search-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    transition: color 0.18s ease;
+}
+
+.site-header .nav-actions img {
+    display: block;
+    width: 24px;
+    height: 24px;
+}
+
+/* 现有图标仍通过 img 引入，深色模式下反相显示 */
+:root[data-theme="dark"] .site-header .nav-actions img {
+    filter: invert(1);
+}
+
+/* 主题按钮的月亮/太阳两个图标都写在 HTML 里，这里按主题决定显示哪一个。
+   选择器里带上 img 是为了和上面的 .nav-actions img（优先级 0,3,1）打平，
+   靠书写顺序取胜。比用 JS 换 src 更快——页面一绘制就是正确的图标，不会闪一下。 */
+.site-header .theme-button img.icon-sun { display: none; }
+:root[data-theme="dark"] .site-header .theme-button img.icon-moon { display: none; }
+:root[data-theme="dark"] .site-header .theme-button img.icon-sun { display: block; }
+
+/* 搜索触发按钮：尺寸沿用右侧工具栏那一档（42px），
+   只是拉满导航条高度、去掉圆角，与左右邻居齐平。
+   弹层本体不在导航里，见下面「06-B 搜索弹层」。 */
+.site-header .search-trigger {
+    align-self: stretch;
+    height: auto;
+    border-radius: 0;
+}
+
+/* 鼠标点击时不需要焦点框，键盘 Tab 导航时才需要。
+   注意不能写成 :focus { outline: none } —— 那样连搜索框的焦点框也一起没了，
+   键盘用户会完全看不出焦点落在哪。正确写法是 :focus:not(:focus-visible)。 */
+.site-header :is(a, button, input):focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* 键盘导航：给轮廓 + 文字变色，双重提示 */
+.site-header :is(a, button, input):focus-visible {
+    outline: 2px solid var(--hover);
+    outline-offset: 2px;
+    border-radius: 0;
+}
+
+.site-header :is(a, button):focus-visible {
+    color: var(--hover);
+}
+
+.site-header .nav-actions button:hover,
+.site-header .login-button:hover {
+    color: var(--hover);
+}
+
+/* 背景音乐元素本身不显示，只由 .audio-button 控制播放 */
+#theme-audio {
+    display: none;
+}
+
+/* ==================== 06-B 搜索弹层（点击后居中 · 线框 · 全场景高斯模糊） ==================== */
+
+/* 【为什么弹层必须挂在 <body> 直接子级】
+   .site-header 带了 transform（滚动显隐靠 translateY 位移），而 transform 会成为
+   position: fixed 后代的包含块。弹层若留在导航栏里，inset: 0 解析出来只有导航条
+   那 80px 高，撑不满视口。所以每个页面都要把 .search-overlay 放在 body 层。
+
+   【为什么不用 hover】需求是「点击打开」。hover 展开在触屏上等价于点击后粘住，
+   且鼠标划过就会误触；改成点击 + Esc / 点空白关闭，行为更可预期。
+   开关由 assets/js/site.js 的 initSearchOverlay 控制。 */
+
+.search-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 400; /* 高于置顶导航(100)与新手页媒体放大层(200) */
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 18px;
+    padding: 24px;
+    overflow-y: auto;
+
+    /* ── 高斯模糊玻璃 ──
+       backdrop-filter 模糊的是「元素背后的一切」，与祖先结构无关，
+       所以放在 body 层依然能盖住整站。saturate 补一点饱和度，
+       避免模糊后画面发灰。 */
+    backdrop-filter: blur(18px) saturate(125%);
+    -webkit-backdrop-filter: blur(18px) saturate(125%);
+    /* 底纱只做压暗/提亮，不遮死内容。用 --page-bg 混入：
+       浅色主题下它是浅色 → 半透明白纱；深色主题下它是深色 → 半透明黑纱。
+       一套写法两个主题都成立。 */
+    background: color-mix(in srgb, var(--page-bg) 42%, transparent);
+
+    opacity: 0;
+    transition: opacity 0.24s ease;
+}
+
+/* hidden 由 JS 切换；必须显式写 display:none，
+   否则 hidden 属性会被上面的 display:grid 覆盖掉。 */
+.search-overlay[hidden] {
+    display: none;
+}
+
+.search-overlay.is-open {
+    opacity: 1;
+}
+
+/* ── 线框搜索框：只有描边，没有填充 ── */
+.search-overlay-form {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: min(760px, 100%);
+    padding: 18px 20px;
+    border: 1px solid var(--text);
+    background: transparent; /* 【需求】无背景 */
+    transform: translateY(-10px);
+    opacity: 0;
+    transition:
+        transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1) 0.04s,
+        opacity 0.3s ease 0.04s;
+}
+
+.search-overlay.is-open .search-overlay-form {
+    transform: none;
+    opacity: 1;
+}
+
+.search-overlay-input {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    font-size: clamp(18px, 2.4vw, 26px);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+}
+
+.search-overlay-input::placeholder {
+    color: var(--muted);
+    font-weight: 200;
+    opacity: 1;
+}
+
+/* 去掉浏览器给 type=search 自带的清除叉，它会在线框里捅出一个圆点按钮 */
+.search-overlay-input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.search-overlay-submit {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    transition:
+        border-color 0.18s ease,
+        color 0.18s ease;
+}
+
+.search-overlay-submit:hover,
+.search-overlay-submit:focus-visible {
+    border-color: var(--hover);
+    color: var(--hover);
+}
+
+.search-overlay-submit img {
+    display: block;
+    width: 22px;
+    height: 22px;
+}
+
+/* 现有图标仍通过 img 引入，深色模式下反相显示（与导航栏图标同一套处理） */
+:root[data-theme="dark"] .search-overlay-submit img {
+    filter: invert(1);
+}
+
+/* 右上角关闭按钮：绝对定位相对弹层（弹层本身是 fixed，所以这就等于贴视口）。
+   × 用内联 SVG + currentColor 绘制，跟随 --text 自动换色，深色模式不用额外处理。 */
+.search-overlay-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    transition:
+        border-color 0.18s ease,
+        color 0.18s ease;
+}
+
+.search-overlay-close:hover,
+.search-overlay-close:focus-visible {
+    border-color: var(--hover);
+    color: var(--hover);
+}
+
+.search-overlay-close svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+}
+
+.search-overlay-hint {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-align: center;
+}
+
+/* 结果与输入框共享线框宽度；长列表在弹层内部滚动。 */
+.search-status {
+    width: min(760px, 100%);
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+.search-results {
+    width: min(760px, 100%);
+    max-height: min(48dvh, 460px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--border);
+    list-style: none;
+}
+.search-results[hidden] { display: none; }
+.search-results li { border-bottom: 1px solid var(--border); }
+.search-results a { display: grid; gap: 6px; padding: 14px 4px; }
+.search-results strong { font-size: 17px; font-weight: 500; }
+.search-results span { color: var(--muted); font-size: 12px; line-height: 1.7; overflow-wrap: anywhere; }
+.search-results a:is(:hover, :focus-visible) strong { color: var(--hover); }
+.search-results a:focus-visible { outline-offset: -2px; }
+
+/* 弹层打开期间锁住页面滚动，否则背后的内容还能滚，玻璃效果会穿帮 */
+body.search-open {
+    overflow: hidden;
+}
+
+/* 不支持 backdrop-filter 的浏览器借不到模糊，只能靠加深底纱把背景压下去，
+   让搜索框与提示文字依然从画面里浮出来。能支持时这条整块不生效。 */
+@supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
+    .search-overlay {
+        background: color-mix(in srgb, var(--page-bg) 88%, transparent);
+    }
+}
+
+/* ==================== 07 导航响应式 ==================== */
+
+/* 窄屏：网站名称与工具栏放第一行，栏目放第二行 */
+@media (max-width: 1150px) {
+    .header-inner {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-rows: 72px 52px;
+        height: auto;
+        padding: 0 20px;
+        gap: 0 16px;
+    }
+
+    .site-logo {
+        font-size: 40px;
+    }
+
+    .nav-home {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        margin: 0;
+    }
+
+    .nav-actions {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    /* 窄屏栏目行高 52px，方块下缘距下拉顶部 = 52 − (26 + 3) = 23px。
+       主干起点必须跟着变，否则竖线与方块之间会断开一截。 */
+    .nav-item {
+        --tree-stem-top: -23px;
+    }
+}
+
+@media (max-width: 600px) {
+    .header-inner {
+        grid-template-rows: 60px 48px;
+        padding: 0 12px;
+        column-gap: 8px;
+    }
+
+    .site-logo {
+        font-size: clamp(18px, 4.4vw, 26px);
+    }
+
+    .nav-actions {
+        gap: 0;
+    }
+
+    .site-header .theme-button,
+    .site-header .login-button,
+    .site-header .audio-button,
+    .site-header .search-trigger {
+        width: 32px;
+    }
+
+    .site-header .nav-actions img {
+        width: 22px;
+        height: 22px;
+    }
+
+    .nav-trigger {
+        padding: 0 3px 0 8px;
+        justify-content: center; /* 窄屏回到居中：树状装饰在这一档整体收起 */
+        font-size: 12px;
+        /* 过渡已转移到 .nav-trigger 基础规则，这里不再重复声明 */
+    }
+
+    /* 窄屏空间有限：树状装饰整体移除，子项直接淡入，不做生长动画。 */
+    .nav-trigger::before,
+    .nav-dropdown::before,
+    .nav-dropdown li::before,
+    .nav-dropdown li::after {
+        content: none;
+    }
+
+    .nav-dropdown {
+        left: 0;
+        min-width: 136px;
+    }
+
+    .nav-dropdown li {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .nav-dropdown a,
+    .nav-dropdown li:not(:has(a)) {
+        padding-left: 14px;
+    }
+
+    /* 最后两栏的下拉菜单改为右对齐，避免超出屏幕 */
+    .nav-item:nth-last-child(-n + 2) .nav-dropdown {
+        left: auto;
+        right: 0;
+    }
+
+    /* 窄屏弹层：描边与内边距收一档，键盘提示换行也不断 */
+    .search-overlay {
+        padding: 16px;
+        gap: 14px;
+    }
+
+    .search-overlay-form {
+        padding: 14px 14px;
+        gap: 10px;
+    }
+
+    .search-overlay-submit {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* ==================== 08 减少动态效果 ==================== */
+
+/* 所有动效降级集中放在这一处，避免同一个媒体查询散落全文件。
+   这里只处理公共层的动效；各页面私有动效在各自的样式表末尾处理。 */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    /* 下拉面板与树状装饰去掉所有过渡：仍然展开/收起（这是功能而非装饰），
+       但方块、竖线、横线、方点、文字全部瞬时到位。 */
+    .nav-trigger::before,
+    .nav-dropdown,
+    .nav-dropdown::before,
+    .nav-dropdown li,
+    .nav-dropdown li::before,
+    .nav-dropdown li::after {
+        transition: none;
+    }
+
+    /* 置顶导航取消滑动过渡：仍然会隐藏/显示（这是功能而非装饰）。 */
+    .site-header {
+        transition: none;
+    }
+
+    /* 搜索弹层：淡入与位移取消，但弹层照旧开合（这是功能而非装饰）。
+       注意 form 的初始位是 translateY(-10px)，过渡没了之后它会直接停在
+       终态 —— 因为 .is-open 的 transform:none 是立即生效的，不受影响。 */
+    .search-overlay,
+    .search-overlay-form {
+        transition: none;
+    }
+}

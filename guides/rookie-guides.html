@@ -4,156 +4,257 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="反恐精英中文网：新手教学">
-        <title>新手教学</title>
-        <link rel="stylesheet" href="./rookie-guides.css">
+        <title>新手教学 - 反恐精英中文网</title>
+        <meta name="theme-color" content="#F3F4F4" media="(prefers-color-scheme: light)">
+        <meta name="theme-color" content="#111315" media="(prefers-color-scheme: dark)">
+        <!-- ↑手机浏览器地址栏配色，取值要和 CSS 里 :root 的 --page-bg 保持一致。 -->
+        <link rel="icon" href="../assets/images/logo/dark-logo.svg" type="image/svg+xml">
+
+        <!-- 【路径】样式与脚本已统一迁到 assets/ 下；本页在 guides/ 目录内，
+             所以要先用 ../ 退回站点根目录。 -->
+        <script src="../assets/js/theme-init.js"></script>
+        <!-- ↑全站公共：首帧前定主题。必须同步、必须在头部，不能加 defer。 -->
+        <link rel="stylesheet" href="../assets/css/common.css">
+        <!-- ↑全站公共层：字体、主题变量、Reset、导航条、页脚。必须排在私有样式之前，
+             本页的配色变量（--paper / --ink / --accent 等）就是引用它定义的主题变量。 -->
+        <link rel="stylesheet" href="../assets/css/rookie-guides.css">
+        <!-- ↑本页私有样式。 -->
         <!-- 【功能入口】defer：HTML 解析完毕再初始化，不阻塞正文解析。 -->
-        <script src="./rookie-guides.js" defer></script>
+        <script src="../assets/js/search-index.js" defer></script>
+        <script src="../assets/js/site.js" defer></script>
+        <!-- ↑全站公共交互：置顶导航滚动显隐、主题切换、背景音乐。 -->
+        <script src="../assets/js/rookie-guides.js" defer></script>
+        <!-- ↑本页私有脚本：键鼠交互、教学视频、媒体放大、章节刻度导航。 -->
     </head>
 
     <body>
+        <a class="skip-link" href="#main">跳转到主要内容</a>
         <div class="page-shell">
-            <!-- 【01 顶部导航】文字/链接在这里修改；下划线效果在 CSS 的顶部导航区。 -->
-            <header class="site-header rookie-header">
-                <a class="rookie-brand" href="../index.html">
-                    返回主页
-                </a>
-                <nav class="rookie-nav" aria-label="更多攻略">
-                    <span class="rookie-nav-label">更多攻略</span>
-                    <a href="./map-guides.html">地图专栏</a>
-                    <a href="./super-guides.html">进阶攻略</a>
-                </nav>
+            <!-- 【01 顶部导航】全站统一导航条（公共层 common.css）。
+                 本页在 guides/ 内，站内路径用 ./ 与 ../assets/，回首页用 ../index.html。 -->
+            <header class="site-header">
+                <div class="header-inner">
+                    <a class="site-logo" href="../index.html" aria-label="反恐精英中文网首页">
+                        <img src="../assets/images/logo/dark-logo.svg" alt="">反恐精英中文网
+                    </a>
+
+                    <nav class="nav-home" aria-label="网站主导航">
+                        <div class="nav-item">
+                            <button class="nav-trigger" type="button">攻略专区</button>
+                            <ul class="nav-dropdown">
+                                <li><a href="./rookie-guides.html">新手教学</a></li>
+                                <li><a href="./map-guides.html">服役地图</a></li>
+                                <li><a href="./super-guides.html">进阶教学</a></li>
+                            </ul>
+                        </div>
+                        <div class="nav-item">
+                            <button class="nav-trigger" type="button">CS赛事</button>
+                            <ul class="nav-dropdown">
+                                <li>
+                                    <a href="https://www.hltv.org/" target="_blank" rel="noopener noreferrer">HLTV</a>
+                                    <!-- ↑rel="noopener" 必须加：新标签页拿到 window.opener 后可以篡改原页面地址，
+                                         这是 target="_blank" 的一个已知安全风险。 -->
+                                </li>
+                                <li>职业信息</li>
+                            </ul>
+                        </div>
+                        <div class="nav-item">
+                            <button class="nav-trigger" type="button">玩家创作</button>
+                            <ul class="nav-dropdown">
+                                <li><a href="../media/hlae.html">HLAE</a></li>
+                                <li>影视美学</li>
+                            </ul>
+                        </div>
+                        <div class="nav-item">
+                            <button class="nav-trigger" type="button">交易市场</button>
+                            <ul class="nav-dropdown">
+                                <li>价格走势</li>
+                                <li>挂刀搬砖</li>
+                            </ul>
+                        </div>
+                        <div class="nav-item">
+                            <button class="nav-trigger" type="button">社区贡献</button>
+                            <ul class="nav-dropdown">
+                                <li>网站公告</li>
+                                <li>社区游戏</li>
+                                <li>特别致谢</li>
+                                <li>玩家合影</li>
+                            </ul>
+                        </div>
+                    </nav>
+
+                    <div class="nav-actions">
+                        <button class="search-trigger" type="button" aria-label="打开网站搜索" aria-controls="site-search-overlay" aria-expanded="false"><img src="../assets/images/icons/search.svg" alt=""></button>
+
+                        <!-- ↓ 主题切换：两个图标都写在 HTML 里，由 CSS 按主题显隐。 -->
+                        <button
+                            class="theme-button"
+                            id="theme-button"
+                            type="button"
+                            aria-label="深色主题"
+                            aria-pressed="false">
+                            <img class="icon icon-moon" src="../assets/images/icons/moon.svg" alt="">
+                            <img class="icon icon-sun" src="../assets/images/icons/sun.svg" alt="">
+                        </button>
+
+                        <audio
+                            id="theme-audio"
+                            src="../assets/audios/Valve Studio Orchestra - Game Time.flac"
+                            loop
+                            preload="none">
+                        </audio>
+                        <button
+                            type="button"
+                            class="audio-button"
+                            id="audio-button"
+                            aria-label="播放背景音乐">
+                            <img
+                                id="audio-icon"
+                                src="../assets/images/icons/music-off.svg"
+                                alt="音乐默认关闭">
+                        </button>
+                    </div>
+                </div>
             </header>
 
             <!-- 【02 首屏】标题字号、字距、两行间距、左右栏比例在 CSS :root 调整。 -->
-            <main>
+            <main id="main">
                 <section class="hero rookie-hero" aria-labelledby="hero-title">
-                    <span class="cross hero-cross-start" aria-hidden="true"></span>
-                    <span class="cross hero-cross-end" aria-hidden="true"></span>
-
-                    <div class="hero-copy">
-                        <p class="eyebrow">COUNTER-STRIKE / ROOKIE GUIDES</p>
-
-                        <h1 id="hero-title">
-                            <span>新手</span>
-                            <span><em>教学</em></span>
-                        </h1>
-
-                        <p class="hero-description">
-                            本篇意在为每一位对CS感兴趣的新人<br>
-                            提供一个良好的游戏体验。
-                        </p>
-
-                        <a class="explore-button" href="#explore">
-                            <span>开始探索</span>
-
-                            <!-- 使用 SVG 箭头，避免文字箭头的基线偏差 -->
-                            <svg viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M4 12h16M14 6l6 6-6 6"></path>
-                            </svg>
-                        </a>
-                    </div>
-
-                    <!-- 【02-B 交互键鼠】按键数据、键盘行和实体体验逻辑见 JS initControlGuide。 -->
+                    <!-- 【02-B 交互键鼠】首屏布局：
+                         左「页面标题」小块 + 右「键鼠舞台」。
+                         舞台自包含：组件标题与键盘、鼠标全部收在舞台内；
+                         首屏之外直接进入后续章节。
+                         按键数据与实体按键联动逻辑见 JS initControlGuide。 -->
                     <section
                         class="control-guide"
                         id="control-guide"
                         aria-labelledby="control-guide-title"
                         tabindex="-1">
 
-                        <header class="control-guide-header">
-                            <div>
-                                <p class="control-guide-code">CONTROLS / QUICK START</p>
-                                <h2 id="control-guide-title">认识你的操作</h2>
-                            </div>
+                        <!-- 左列：页面大标题与导语（对应示意图左上的小块） -->
+                        <div class="hero-copy">
+                            <p class="eyebrow">COUNTER-STRIKE / ROOKIE GUIDES</p>
 
-                            <button
-                                class="control-trial" hidden
-                                id="control-trial"
-                                type="button"
-                                aria-pressed="false"
-                            >
-                                实体按键体验
-                            </button>
-                        </header>
+                            <h1 id="hero-title">
+                                <span>新手</span>
+                                <span><em>教学</em></span>
+                            </h1>
 
-                        <div class="control-legend" aria-label="按键颜色分类">
-                            <span><i class="legend-movement"></i>移动</span>
-                            <span><i class="legend-equipment"></i>武器与交互</span>
-                            <span><i class="legend-communication"></i>交流</span>
+                            <p class="hero-description">
+                                本篇意在为每一位对CS感兴趣的新人<br>
+                                提供一个良好的游戏体验。
+                            </p>
+
+                            <a class="explore-button" href="#explore">
+                                <span>开始探索</span>
+
+                                <!-- 使用 SVG 箭头，避免文字箭头的基线偏差 -->
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 12h16M14 6l6 6-6 6"></path>
+                                </svg>
+                            </a>
                         </div>
 
-                        <div class="keyboard-scroll" role="region" tabindex="0" aria-label="键盘操作图，可横向滚动">
-                            <!-- 具体按键由 JS controls / rows 生成；CSS --keyboard-min-width 控制最小宽度。 -->
-                            <noscript><p>常用操作：WASD 移动，Shift 静步，Ctrl 下蹲，空格跳跃；请启用 JavaScript 使用交互图。</p></noscript>
-                            <div class="control-keyboard" id="control-keyboard"></div>
-                        </div>
-
-                        <div class="control-mouse-row">
-                            <div class="control-mouse" aria-label="鼠标操作">
-                                <div class="control-mouse-buttons">
-                                    <button
-                                        type="button"
-                                        class="control-mouse-key"
-                                        data-control="MouseLeft"
-                                        aria-label="鼠标左键：开火"
-                                    >L</button>
-
-                                    <button
-                                        type="button"
-                                        class="control-mouse-key"
-                                        data-control="MouseRight"
-                                        aria-label="鼠标右键：次要攻击"
-                                    >R</button>
+                        <!-- 右列：键鼠舞台。舞台自包含：头带（组件标题）也在框内。 -->
+                        <div class="control-stage">
+                            <header class="control-guide-header">
+                                <div>
+                                    <p class="control-guide-code">CONTROLS / QUICK START</p>
+                                    <h2 id="control-guide-title">认识你的操作</h2>
                                 </div>
+                            </header>
 
-                                <div class="control-wheel">
-                                    <button
-                                        type="button"
-                                        data-control="WheelUp"
-                                        aria-label="滚轮向上"
-                                    >↑</button>
-                                    <button
-                                        type="button"
-                                        data-control="WheelDown"
-                                        aria-label="滚轮向下"
-                                    >↓</button>
-                                </div>
-
-                                <span class="control-mouse-caption" aria-hidden="true">MOUSE</span>
+                            <div class="keyboard-scroll" role="region" tabindex="0" aria-label="CS2 默认键位示意图；在首屏内按下实体按键，可点亮对应键帽并显示功能提示">
+                                <!-- 具体按键由 JS controls / rows 生成；CSS --keyboard-min-width 控制最小宽度。 -->
+                                <noscript><p>常用操作：WASD 移动，Shift 静步，Ctrl 下蹲，空格跳跃；请启用 JavaScript 使用交互图。</p></noscript>
+                                <div class="control-keyboard" id="control-keyboard"></div>
                             </div>
 
-                            <div class="control-mouse-description">
-                                <strong>移动鼠标，调整视角</strong>
-                                <p>点击左右键或滚轮按钮，查看对应说明。</p>
-                                <p class="control-trial-status" id="control-trial-status">
-                                    悬浮或点击按键，查看操作说明。
-                                </p>
-                            </div>
-                        </div>
+                            <!-- 鼠标示意图：纯描边线稿（外形与比例严格对齐参考图），
+                                 三个分区（左键 / 右键 / 滚轮）可点击、可被实体鼠标联动点亮，
+                                 键名与功能注释直接标在分区上，交互说明见 JS initControlGuide。 -->
+                            <div class="control-mouse-row">
+                                <svg
+                                    class="control-mouse"
+                                    viewBox="0 0 240 326"
+                                    role="group"
+                                    aria-label="鼠标键位示意图：左键开火，右键次要攻击，滚轮切换武器"
+                                    focusable="false">
+                                    <!-- 左右键高亮路径绕开滚轮，避免填色穿过滚轮。 -->
+                                    <g class="control-mouse-part" data-control="MouseLeft"
+                                       role="button" tabindex="0" aria-label="鼠标左键：开火">
+                                        <path class="part-shape"
+                                              d="M2 152 V120 A118 118 0 0 1 120 2 V36 A22 22 0 0 0 98 58 V86 A22 22 0 0 0 120 108 V152 Z"></path>
+                                        <text class="part-cap" x="63" y="84" text-anchor="middle">LMB</text>
+                                        <text class="part-fn" x="63" y="106" text-anchor="middle">开火</text>
+                                    </g>
 
-                        <div class="control-detail" role="status" aria-live="polite" aria-atomic="true">
-                            <span class="control-detail-key" id="control-detail-key">W</span>
-                            <div>
-                                <h3 id="control-detail-title">前进</h3>
-                                <p id="control-detail-description">按住 W，角色向前移动。</p>
-                            </div>
-                        </div>
+                                    <!-- 右键分区：横缝以上的右半区（沿顶右圆角） -->
+                                    <g class="control-mouse-part" data-control="MouseRight"
+                                       role="button" tabindex="0" aria-label="鼠标右键：次要攻击">
+                                        <path class="part-shape"
+                                              d="M120 152 V108 A22 22 0 0 0 142 86 V58 A22 22 0 0 0 120 36 V2 A118 118 0 0 1 238 120 V152 Z"></path>
+                                        <text class="part-cap" x="177" y="84" text-anchor="middle">RMB</text>
+                                        <text class="part-fn" x="177" y="106" text-anchor="middle">次要攻击</text>
+                                    </g>
 
-                        <p class="control-guide-note">
-                            参考图中的常用键位示意；具体功能以你的游戏内绑定为准。
-                        </p>
+                                    <!-- 滚轮分区：点击整个滚轮胶囊 -->
+                                    <g class="control-mouse-part" data-control="Wheel"
+                                       role="button" tabindex="0" aria-label="滚轮：切换武器">
+                                        <rect class="part-shape" x="98" y="36" width="44" height="72" rx="22" ry="22"></rect>
+                                        <text class="part-note" text-anchor="middle">
+                                            <tspan x="120" y="56">滚轮</tspan>
+                                            <tspan x="120" y="74">切换</tspan>
+                                            <tspan x="120" y="92">武器</tspan>
+                                        </text>
+                                    </g>
+
+                                    <!-- 线稿放在高亮上层，保持外缘、中缝与滚轮轮廓清晰。 -->
+                                    <g class="control-mouse-outline" aria-hidden="true">
+                                        <rect x="2" y="2" width="236" height="322" rx="118" ry="118"></rect>
+                                        <line x1="2" y1="152" x2="238" y2="152"></line>
+                                        <line x1="120" y1="2" x2="120" y2="36"></line>
+                                        <line x1="120" y1="108" x2="120" y2="152"></line>
+                                        <rect x="98" y="36" width="44" height="72" rx="22" ry="22"></rect>
+                                    </g>
+
+                                    <!-- 实体滚轮向上 / 向下时显示对应方向箭头。 -->
+                                    <g aria-hidden="true">
+                                        <path class="wheel-arrow wheel-arrow-up" d="M120 30 V14 M112 22 L120 14 L128 22"></path>
+                                        <path class="wheel-arrow wheel-arrow-down" d="M120 116 V140 M112 132 L120 140 L128 132"></path>
+                                    </g>
+                                </svg>
+                            </div>
+
+                            <!-- 实体按键联动提示：首屏可见时按下按键，点亮键帽并浮出功能名。 -->
+                            <p class="control-hint" id="control-hint" role="status" aria-live="polite" hidden></p>
+                        </div><!-- /control-stage -->
                     </section>
 
-                </section><!-- 【修补】关闭首屏 hero；正文必须放在首屏网格之外。 -->
+                </section><!-- 关闭首屏 hero；正文必须放在首屏之外。 -->
+
+                <nav class="guide-index" aria-label="新手教学目录">
+                    <a href="#aiming"><span class="index-number">01</span><span class="index-name">射击教学</span><span class="index-arrow" aria-hidden="true">↗</span></a>
+                    <a href="#equipment"><span class="index-number">02</span><span class="index-name">购买装备</span><span class="index-arrow" aria-hidden="true">↗</span></a>
+                    <a href="#video"><span class="index-number">03</span><span class="index-name">画面设置</span><span class="index-arrow" aria-hidden="true">↗</span></a>
+                    <a href="#sensitivity"><span class="index-number">04</span><span class="index-name">鼠标灵敏度</span><span class="index-arrow" aria-hidden="true">↗</span></a>
+                    <a href="#communication"><span class="index-number">05</span><span class="index-name">语音按键</span><span class="index-arrow" aria-hidden="true">↗</span></a>
+                    <a href="#crosshair"><span class="index-number">06</span><span class="index-name">准心设置</span><span class="index-arrow" aria-hidden="true">↗</span></a>
+                    <a href="#platforms"><span class="index-number">07</span><span class="index-name">平台选择</span><span class="index-arrow" aria-hidden="true">↗</span></a>
+                    <a href="#extras"><span class="index-number">08</span><span class="index-name">额外内容</span><span class="index-arrow" aria-hidden="true">↗</span></a>
+                </nav>
 
                 <!-- 【03 正文】八章共用 guide-section；增删章节时同步下面 chapter-rail 的锚点。 -->
                 <div class="guide-content" id="explore">
                     <!-- 预瞄、急停、开火 -->
                     <!-- 【章节 aiming】射击教学：三段视频、XY 轴、急停/压枪辅助动画 -->
                     <section class="guide-section" id="aiming" aria-labelledby="aiming-title">
-                        <header class="guide-heading">
+                        <header class="guide-heading aiming-header">
+                            <div>
                             <span class="chapter-number">01 / AIMING</span>
                             <h2 id="aiming-title">射击教学</h2>
+                        </div>
+                            <p class="aiming-lede">先找准<strong>爆头线</strong>，再停稳开枪，最后控制后坐力。<br>从这三项基础开始练习。</p>
                         </header>
 
                         <!-- 两个辅助动画共用鼠标图形 -->
@@ -162,28 +263,28 @@
                                 <symbol id="lesson-mouse-art" viewBox="0 0 138 205">
                                     <path
                                         d="M69 4C27 4 9 31 9 67v66c0 44 24 67 60 67s60-23 60-67V67C129 31 111 4 69 4Z"
-                                        fill="#eef0e9"
-                                        stroke="#7c8579"
+                                        fill="none"
+                                        stroke="var(--line)"
                                         stroke-width="2"
                                     />
                                     <path
                                         d="M64 11C31 13 16 34 16 67v23h48Z"
-                                        fill="var(--mouse-left, #dce1d7)"
-                                        stroke="#7c8579"
+                                        fill="var(--mouse-left, transparent)"
+                                        stroke="var(--line)"
                                         stroke-width="1.5"
                                     />
                                     <path
                                         d="M74 11c33 2 48 23 48 56v23H74Z"
-                                        fill="#dce1d7"
-                                        stroke="#7c8579"
+                                        fill="transparent"
+                                        stroke="var(--line)"
                                         stroke-width="1.5"
                                     />
                                     <rect
                                         x="64" y="35" width="10" height="31" rx="5"
-                                        fill="#65705f"
+                                        fill="var(--ink)"
                                     />
                                     <g
-                                        fill="#253022"
+                                        fill="var(--ink)"
                                         font-family="Consolas, monospace"
                                         font-size="13"
                                         text-anchor="middle"
@@ -195,8 +296,8 @@
                             </defs>
                         </svg>
 
-                        <div class="guide-body">
-                            <article class="knowledge-item">
+                        <div class="guide-body aiming-grid">
+                            <article class="knowledge-item aiming-unit">
                                 <span class="item-number">01</span>
 
                                 <div class="lesson-content">
@@ -204,20 +305,32 @@
                                     <p>掌握爆头线，从而更快击杀对手。</p>
 
                                     <figure class="lesson-media" data-demo="aim">
-                                        <video
-                                            controls
-                                            muted
-                                            playsinline
-                                            loop
-                                            preload="metadata"
-                                            aria-label="基础预瞄视频"
-                                        >
-                                            <source
-                                                src="../assets/xsjx-assets/touxian-1.mp4"
-                                                type="video/mp4"
-                                            >
-                                            浏览器不支持播放此视频。
-                                        </video>
+                                        <!-- 【布局】media-frame 是固定比例的预览框；点击 ⤢ 在 lightbox 中放大 -->
+                                        <div class="media-frame">
+                                            <video
+                                                muted
+                                                playsinline
+                                                loop
+                                                preload="none"
+                                                aria-label="基础预瞄视频"
+
+                                                poster="../assets/images/rookie-guides/touxian-1-poster.webp">
+                                                <source
+                                                    src="../assets/images/rookie-guides/touxian-1.mp4"
+                                                    type="video/mp4"
+                                                >
+                                                浏览器不支持播放此视频。
+                                            </video>
+
+                                            <button
+                                                class="zoom-trigger video-open"
+                                                type="button"
+                                                data-type="video"
+                                                data-src="../assets/images/rookie-guides/touxian-1.mp4"
+                                                data-caption="01 / 基础预瞄"
+                                                aria-label="放大播放：基础预瞄"
+                                            ><span class="media-play-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5 19 12 8 19Z"></path></svg></span><span class="media-play-label">放大播放 <span aria-hidden="true">↗</span></span></button>
+                                        </div>
 
                                         <figcaption class="lesson-media-caption">
                                             <span>01 / 基础预瞄</span>
@@ -225,16 +338,18 @@
                                         </figcaption>
                                     </figure>
 
-                                    <h4 class="lesson-question">复杂的地形如何找到爆头线？</h4>
+                                    <details class="lesson-detail"><summary>复杂的地形如何找到爆头线？<span aria-hidden="true">+</span></summary>
+                                        <div class="lesson-detail-body">
                                     <p>
                                         基于人物所处地面的 X 轴，与人物高度的 Y 轴相结合，
                                         养成这个意识，帮助你更好地找到对应的爆头线。
                                     </p>
 
                                     <figure class="aim-figure" id="head-height-demo">
-                                        <div class="aim-image-stage">
+                                        <!-- 【关键】图片与 XY 坐标轴 SVG 共用 4:3 比例，缩放不错位。 -->
+                                        <div class="media-frame aim-image-stage">
                                             <img
-                                                src="../assets/xsjx-assets/aim2.png"
+                                                src="../assets/images/rookie-guides/aim2.png"
                                                 alt="不同地形高度上的五个人物，用于对照脚下地面与头部位置"
                                                 width="6000"
                                                 height="4500"
@@ -248,6 +363,15 @@
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 aria-hidden="true"
                                             ></svg>
+
+                                            <button
+                                                class="zoom-trigger"
+                                                type="button"
+                                                data-type="image"
+                                                data-src="../assets/images/rookie-guides/aim2.png"
+                                                data-caption="X 地面参考 / Y 高度参考 — 爆头线对照"
+                                                aria-label="放大查看：爆头线对照图"
+                                            >⤢</button>
                                         </div>
 
                                         <figcaption class="aim-caption">
@@ -257,10 +381,12 @@
                                             </button>
                                         </figcaption>
                                     </figure>
+                                        </div>
+                                    </details>
                                 </div>
                             </article>
 
-                            <article class="knowledge-item">
+                            <article class="knowledge-item aiming-unit">
                                 <span class="item-number">02</span>
 
                                 <div class="lesson-content">
@@ -271,20 +397,32 @@
                                     </p>
 
                                     <figure class="lesson-media" data-demo="strafe">
-                                        <video
-                                            controls
-                                            muted
-                                            playsinline
-                                            loop
-                                            preload="metadata"
-                                            aria-label="急停开枪视频"
-                                        >
-                                            <source
-                                                src="../assets/xsjx-assets/jiting-1.mp4"
-                                                type="video/mp4"
-                                            >
-                                            浏览器不支持播放此视频。
-                                        </video>
+                                        <!-- 【布局】media-frame 是固定比例的预览框；点击 ⤢ 在 lightbox 中放大 -->
+                                        <div class="media-frame">
+                                            <video
+                                                muted
+                                                playsinline
+                                                loop
+                                                preload="none"
+                                                aria-label="急停开枪视频"
+
+                                                poster="../assets/images/rookie-guides/jiting-1-poster.webp">
+                                                <source
+                                                    src="../assets/images/rookie-guides/jiting-1.mp4"
+                                                    type="video/mp4"
+                                                >
+                                                浏览器不支持播放此视频。
+                                            </video>
+
+                                            <button
+                                                class="zoom-trigger video-open"
+                                                type="button"
+                                                data-type="video"
+                                                data-src="../assets/images/rookie-guides/jiting-1.mp4"
+                                                data-caption="02 / 急停开枪"
+                                                aria-label="放大播放：急停开枪"
+                                            ><span class="media-play-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5 19 12 8 19Z"></path></svg></span><span class="media-play-label">放大播放 <span aria-hidden="true">↗</span></span></button>
+                                        </div>
 
                                         <div class="input-demo">
                                             <div class="demo-heading">
@@ -328,7 +466,7 @@
                                 </div>
                             </article>
 
-                            <article class="knowledge-item">
+                            <article class="knowledge-item aiming-unit">
                                 <span class="item-number">03</span>
 
                                 <div class="lesson-content">
@@ -336,20 +474,32 @@
                                     <p>按住开火键的同时，均匀、缓慢地向下拖动鼠标。</p>
 
                                     <figure class="lesson-media" data-demo="recoil">
-                                        <video
-                                            controls
-                                            muted
-                                            playsinline
-                                            loop
-                                            preload="metadata"
-                                            aria-label="压枪视频"
-                                        >
-                                            <source
-                                                src="../assets/xsjx-assets/yaqiang-1.mp4"
-                                                type="video/mp4"
-                                            >
-                                            浏览器不支持播放此视频。
-                                        </video>
+                                        <!-- 【布局】media-frame 是固定比例的预览框；点击 ⤢ 在 lightbox 中放大 -->
+                                        <div class="media-frame">
+                                            <video
+                                                muted
+                                                playsinline
+                                                loop
+                                                preload="none"
+                                                aria-label="压枪视频"
+
+                                                poster="../assets/images/rookie-guides/yaqiang-1-poster.webp">
+                                                <source
+                                                    src="../assets/images/rookie-guides/yaqiang-1.mp4"
+                                                    type="video/mp4"
+                                                >
+                                                浏览器不支持播放此视频。
+                                            </video>
+
+                                            <button
+                                                class="zoom-trigger video-open"
+                                                type="button"
+                                                data-type="video"
+                                                data-src="../assets/images/rookie-guides/yaqiang-1.mp4"
+                                                data-caption="03 / 压枪"
+                                                aria-label="放大播放：压枪"
+                                            ><span class="media-play-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5 19 12 8 19Z"></path></svg></span><span class="media-play-label">放大播放 <span aria-hidden="true">↗</span></span></button>
+                                        </div>
 
                                         <div class="input-demo">
                                             <div class="demo-heading">
@@ -396,9 +546,11 @@
                         <header class="guide-heading">
                             <span class="chapter-number">02 / EQUIPMENT</span>
                             <h2 id="equipment-title">购买装备</h2>
+                            <p class="chapter-intro">先熟悉购买界面，再了解护甲与头盔的作用。</p>
                         </header>
 
-                        <figure class="buy-figure" id="buy-guide">
+                        <figure class="buy-figure media-window" id="buy-guide">
+                            <div class="media-window-bar"><span>BUY MENU / 购买界面标注</span><button class="zoom-trigger" type="button" data-type="diagram" data-src="#buy-guide .buy-diagram" data-caption="购买界面操作指南" aria-label="放大查看购买界面标注图">放大查看 <span aria-hidden="true">↗</span></button></div>
                             <div
                                 class="buy-scroll"
                                 role="region"
@@ -424,7 +576,7 @@
                                     </desc>
 
                                     <image
-                                        href="../assets/xsjx-assets/buy.png"
+                                        href="../assets/images/rookie-guides/buy.png"
                                         x="0"
                                         y="0"
                                         width="1919"
@@ -436,7 +588,7 @@
                                         <rect
                                             class="buy-box"
                                             x="256" y="24" width="110" height="40"
-                                            rx="3" pathLength="100"
+                                            rx="0" pathLength="100"
                                         />
                                         <path
                                             class="buy-leader"
@@ -454,7 +606,7 @@
                                         <rect
                                             class="buy-box"
                                             x="1035" y="23" width="165" height="40"
-                                            rx="3" pathLength="100"
+                                            rx="0" pathLength="100"
                                         />
                                         <path
                                             class="buy-leader"
@@ -471,7 +623,7 @@
                                         <rect
                                             class="buy-box"
                                             x="264" y="117" width="147" height="195"
-                                            rx="3" pathLength="100"
+                                            rx="0" pathLength="100"
                                         />
                                         <path
                                             class="buy-leader"
@@ -488,7 +640,7 @@
                                         <rect
                                             class="buy-box"
                                             x="264" y="417" width="147" height="94"
-                                            rx="3" pathLength="100"
+                                            rx="0" pathLength="100"
                                         />
                                         <path
                                             class="buy-leader"
@@ -505,7 +657,7 @@
                                         <rect
                                             class="buy-box"
                                             x="817" y="382" width="42" height="28"
-                                            rx="3" pathLength="100"
+                                            rx="0" pathLength="100"
                                         />
                                         <path
                                             class="buy-leader"
@@ -522,7 +674,7 @@
                                         <rect
                                             class="buy-box"
                                             x="436" y="629" width="145" height="40"
-                                            rx="3" pathLength="100"
+                                            rx="0" pathLength="100"
                                         />
                                         <path
                                             class="buy-leader"
@@ -539,7 +691,7 @@
                                         <rect
                                             class="buy-box"
                                             x="504" y="872" width="257" height="42"
-                                            rx="3" pathLength="100"
+                                            rx="0" pathLength="100"
                                         />
                                         <path
                                             class="buy-leader"
@@ -555,7 +707,7 @@
                             </div>
 
                             <figcaption class="buy-caption">
-                                BUY MENU / 购买界面指南
+                                资金 / 护甲 / 装备 / 退款
                                 <span>窄屏可左右滑动查看完整标注</span>
                             </figcaption>
                         </figure>
@@ -583,6 +735,7 @@
                         </div>
                     </section>
 
+                    <div class="guide-pair">
                     <!-- 【章节 video】画面设置：真实截图 -->
                     <section class="guide-section" id="video" aria-labelledby="video-title">
                         <header class="guide-heading">
@@ -592,13 +745,15 @@
 
                         <div class="guide-body">
                             <h3>照抄模板</h3>
-                            <div class="settings-card">
-                                <span class="placeholder-index">VIDEO CONFIGURATION</span>
-                                <p>此设置为基础版本</p>
-                                <span>相比较全最低，本设置在流畅运行的前提下，尽量保留好的画面效果。</span>
-                                <span>跳转到：<a href="./super-guides.html">进阶教学</a>，了解最合适自己的画面设置</span>
-                                <img src="../assets/xsjx-assets/graphicssettings.png" alt="游戏画面基础设置示例" width="879" height="1270" loading="lazy" decoding="async">
-                            </div>
+                            <p class="section-lede">在流畅运行的前提下，尽量保留好的画面效果。</p>
+                            <p class="section-link"><a href="./super-guides.html">进阶教学 <span aria-hidden="true">↗</span></a><span>进一步了解适合自己的画面设置</span></p>
+                            <figure class="media-window media-window--settings" style="--image-min-width: 640px">
+                                <div class="media-window-bar"><span>画面设置 / 基础模板</span><button class="zoom-trigger" type="button" data-type="image" data-src="../assets/images/rookie-guides/graphicssettings.png" data-caption="画面设置 / 基础模板" aria-label="放大查看：画面设置 / 基础模板">放大查看 <span aria-hidden="true">↗</span></button></div>
+                                <div class="media-viewport" id="window-graphicssettings" role="region" tabindex="0" aria-label="画面设置 / 基础模板，可在窗口内滚动查看完整图片">
+                                    <img src="../assets/images/rookie-guides/graphicssettings.png" alt="画面设置 / 基础模板" width="879" height="1270" loading="lazy" decoding="async">
+                                </div>
+                                <figcaption class="media-window-caption"><span>窗口内滚动查看</span><span aria-hidden="true">↑ ↓ / ← →</span></figcaption>
+                            </figure>
                         </div>
                     </section>
 
@@ -611,18 +766,17 @@
 
                         <div class="guide-body">
                             <h3>适合自己的，就是最好的</h3>
-                            <p>具体操作如图所示：</p>
-                            <img src="../assets/xsjx-assets/mouse.png" alt="灵敏度设置指南">
+
                             <p>先找到一个舒服的起点，再根据自己的操作习惯逐步调整。</p>
 
                             <div class="sensitivity-reference">
                                 <div>
-                                    <span>鼠标 
+                                    <span>鼠标
                                         <button
                                             type="button"
                                             class="note-trigger"
                                             aria-expanded="false"
-                                            aria-controls="note-armor"
+                                            aria-controls="note-dpi"
                                         >DPI</button>
                                     </span>
                                     <div class="note-bubble" id="note-dpi" hidden>
@@ -631,7 +785,7 @@
                                     </div>
                                     <strong>800</strong>
                                 </div>
-                                <span class="reference-divider" aria-hidden="true">/</span>
+                                <span class="reference-divider" aria-hidden="true"></span>
                                 <div>
                                     <span>游戏灵敏度参考</span>
                                     <strong>0.8–1.4</strong>
@@ -641,9 +795,18 @@
                             <aside class="guide-note">
                                 数据根据综合绝大多数玩家得出。
                             </aside>
+                            <figure class="media-window media-window--sensitivity" style="--image-min-width: 640px">
+                                <div class="media-window-bar"><span>鼠标灵敏度 / 设置步骤</span><button class="zoom-trigger" type="button" data-type="image" data-src="../assets/images/rookie-guides/mouse.png" data-caption="鼠标灵敏度 / 设置步骤" aria-label="放大查看：鼠标灵敏度 / 设置步骤">放大查看 <span aria-hidden="true">↗</span></button></div>
+                                <div class="media-viewport" id="window-mouse" role="region" tabindex="0" aria-label="鼠标灵敏度 / 设置步骤，可在窗口内滚动查看完整图片">
+                                    <img src="../assets/images/rookie-guides/mouse.png" alt="鼠标灵敏度 / 设置步骤" width="963" height="548" loading="lazy" decoding="async">
+                                </div>
+                                <figcaption class="media-window-caption"><span>窗口内滚动查看</span><span aria-hidden="true">↑ ↓ / ← →</span></figcaption>
+                            </figure>
                         </div>
                     </section>
+                    </div>
 
+                    <div class="guide-pair">
                     <!-- 【章节 communication】语音与消息 -->
                     <section class="guide-section" id="communication" aria-labelledby="communication-title">
                         <header class="guide-heading">
@@ -652,8 +815,7 @@
                         </header>
 
                         <div class="guide-body">
-                            <p class="setting-path">具体操作如图所示：</p>
-                            <img src="../assets/xsjx-assets/voice.png" alt="语音按键设置指南">
+
 
                             <dl class="key-list">
                                 <div>
@@ -671,6 +833,13 @@
                             </dl>
 
                             <p>语音按键推荐绑定为自己觉得合适、方便按到的位置。</p>
+                            <figure class="media-window media-window--compact" style="--image-min-width: 640px">
+                                <div class="media-window-bar"><span>语音按键 / 设置步骤</span><button class="zoom-trigger" type="button" data-type="image" data-src="../assets/images/rookie-guides/voice.png" data-caption="语音按键 / 设置步骤" aria-label="放大查看：语音按键 / 设置步骤">放大查看 <span aria-hidden="true">↗</span></button></div>
+                                <div class="media-viewport" id="window-voice" role="region" tabindex="0" aria-label="语音按键 / 设置步骤，可在窗口内滚动查看完整图片">
+                                    <img src="../assets/images/rookie-guides/voice.png" alt="语音按键 / 设置步骤" width="950" height="828" loading="lazy" decoding="async">
+                                </div>
+                                <figcaption class="media-window-caption"><span>窗口内滚动查看</span><span aria-hidden="true">↑ ↓ / ← →</span></figcaption>
+                            </figure>
 
                             <aside class="guide-note">
                                 及时且友善的交流，是构建良好游戏环境的重要基石。
@@ -688,7 +857,13 @@
                         <div class="guide-body">
                             <p class="setting-path">常用准心样式：</p>
                             <p>复制代码后，游戏内操作如图所示。</p>
-                            <img src="../assets/xsjx-assets/crosshair.png" alt="准心设置">
+                            <figure class="media-window media-window--short" style="--image-min-width: 640px">
+                                <div class="media-window-bar"><span>准心设置 / 导入步骤</span><button class="zoom-trigger" type="button" data-type="image" data-src="../assets/images/rookie-guides/crosshair.png" data-caption="准心设置 / 导入步骤" aria-label="放大查看：准心设置 / 导入步骤">放大查看 <span aria-hidden="true">↗</span></button></div>
+                                <div class="media-viewport" id="window-crosshair" role="region" tabindex="0" aria-label="准心设置 / 导入步骤，可在窗口内滚动查看完整图片">
+                                    <img src="../assets/images/rookie-guides/crosshair.png" alt="准心设置 / 导入步骤" width="863" height="361" loading="lazy" decoding="async">
+                                </div>
+                                <figcaption class="media-window-caption"><span>窗口内滚动查看</span><span aria-hidden="true">↑ ↓ / ← →</span></figcaption>
+                            </figure>
                             <p>点击预览图，即可复制准心代码。</p>
 
                             <div class="crosshair-gallery">
@@ -699,7 +874,7 @@
                                     aria-label="复制十字准心代码"
                                 >
                                     <img
-                                        src="../assets/xsjx-assets/cs1.png"
+                                        src="../assets/images/rookie-guides/cs1.png"
                                         alt="十字准心预览"
                                         loading="lazy" width="821" height="259" decoding="async">
                                     <span class="crosshair-name">01 / 十字</span>
@@ -712,7 +887,7 @@
                                     aria-label="复制十字 2 准心代码"
                                 >
                                     <img
-                                        src="../assets/xsjx-assets/cs2.png"
+                                        src="../assets/images/rookie-guides/cs2.png"
                                         alt="十字 2 准心预览"
                                         loading="lazy" width="821" height="259" decoding="async">
                                     <span class="crosshair-name">02 / 十字 2</span>
@@ -725,7 +900,7 @@
                                     aria-label="复制井字准心代码"
                                 >
                                     <img
-                                        src="../assets/xsjx-assets/cs3.png"
+                                        src="../assets/images/rookie-guides/cs3.png"
                                         alt="井字准心预览"
                                         loading="lazy" width="822" height="260" decoding="async">
                                     <span class="crosshair-name">03 / 井字</span>
@@ -738,7 +913,7 @@
                                     aria-label="复制点准心代码"
                                 >
                                     <img
-                                        src="../assets/xsjx-assets/cs4.png"
+                                        src="../assets/images/rookie-guides/cs4.png"
                                         alt="点准心预览"
                                         loading="lazy" width="823" height="261" decoding="async">
                                     <span class="crosshair-name">04 / 点</span>
@@ -746,7 +921,9 @@
                             </div>
                         </div>
                     </section>
+                    </div>
 
+                    <div class="guide-pair guide-pair--notes">
                     <!-- 【章节 platforms】平台选择 -->
                     <section class="guide-section" id="platforms" aria-labelledby="platforms-title">
                         <header class="guide-heading">
@@ -806,6 +983,9 @@
                             </ol>
                         </div>
                     </section>
+                    </div>
+
+
                 </div>
 
             </main>
@@ -858,6 +1038,26 @@
             </a>
         </nav>
 
+        <!-- 【功能入口】媒体放大层：内容由 JS initMediaLightbox 动态填充。 -->
+        <div
+            class="lightbox"
+            id="media-lightbox"
+            role="dialog"
+            aria-modal="true"
+            aria-label="媒体放大查看"
+            aria-describedby="lightbox-caption"
+            hidden
+        >
+            <button class="lightbox-close" type="button" aria-label="关闭放大查看">✕</button>
+            <figure class="lightbox-figure">
+                <figcaption class="lightbox-toolbar">
+                    <span class="lightbox-caption" id="lightbox-caption"></span>
+                    <button class="lightbox-fit" type="button" aria-pressed="false" hidden>适应宽度</button>
+                </figcaption>
+                <div class="lightbox-stage" role="region" tabindex="0" aria-label="放大媒体，可滚动查看"></div>
+            </figure>
+        </div>
+
         <div
             class="copy-toast"
             id="crosshair-toast"
@@ -866,5 +1066,23 @@
             aria-atomic="true"
         ></div>
 
-    </body>
+
+    <!-- ↓ 全站搜索弹层。必须挂在 <body> 直接子级：
+         .site-header 带 transform（滚动显隐），会成为 position:fixed 后代的包含块，
+         弹层若留在导航里，inset:0 只会解析出导航条那点高度，撑不满视口。 -->
+    <div class="search-overlay" id="site-search-overlay" role="dialog" aria-modal="true"
+         aria-label="网站搜索" hidden>
+        <form class="search-overlay-form" action="#" method="get" role="search">
+            <input class="search-overlay-input" type="search" name="q"
+                   placeholder="输入关键词搜索内容" aria-label="网站内容搜索"
+                   autocomplete="off" required>
+            <button class="search-overlay-submit" type="submit" aria-label="提交搜索">
+                <img src="../assets/images/icons/search.svg" alt="">
+            </button>
+        </form>
+        <p class="search-overlay-hint">按 ESC 或点击空白处关闭</p>
+        <button class="search-overlay-close" type="button" aria-label="关闭搜索"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M5 5 19 19"/><path d="M19 5 5 19"/></svg></button>
+    </div>
+
+</body>
 </html>

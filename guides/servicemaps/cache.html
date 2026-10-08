@@ -1,23 +1,21 @@
-<!DOCTYPE html><!-- 声明这是一个html文件 -->
-<!-- 【修复】lang 原为 en 但正文是中文，会让屏幕阅读器用英文语音读中文；已改为 zh-CN。 -->
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 【修复】title 原为 IDE 默认值 "Document"，会直接显示在标签页与搜索结果里。 -->
-    <title>HLAE 玩家创作 - 反恐精英中文网</title>
-    <meta name="description" content="反恐精英中文网：HLAE 玩家创作专栏，录制与运镜工具入门。">
+    <title>死城之谜 Cache - 服役地图攻略</title>
+    <meta name="description" content="反恐精英中文网：死城之谜 Cache 的攻防站位与常用道具点位。">
     <meta name="theme-color" content="#F3F4F4" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#111315" media="(prefers-color-scheme: dark)">
-    <link rel="icon" href="../assets/images/logo/dark-logo.svg" type="image/svg+xml">
+    <link rel="icon" href="../../assets/images/logo/dark-logo.svg" type="image/svg+xml">
 
-    <!-- 【路径】本页在 media/ 内，用 ../ 退回站点根目录。 -->
-    <script src="../assets/js/theme-init.js"></script>
+    <!-- 【路径】本页在 guides/servicemaps/ 内，用 ../../ 退回站点根目录。 -->
+    <script src="../../assets/js/theme-init.js"></script>
     <!-- ↑全站公共：首帧前定主题。必须同步、必须在头部，不能加 defer。 -->
-    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../../assets/css/common.css">
     <!-- ↑全站公共层：字体、主题变量、Reset、导航条、页脚。必须排在私有样式之前。 -->
-    <link rel="stylesheet" href="../assets/css/map-guides.css">
-    <!-- ↑本页暂无专有样式，先共用内容区排版（main 留白 / .map-section 分隔）。 -->
+    <link rel="stylesheet" href="../../assets/css/map-guides.css">
+    <!-- ↑地图页私有样式：内容区留白与章节分隔。 -->
 </head>
 <body>
     <a class="skip-link" href="#main">跳转到主要内容</a>
@@ -25,17 +23,17 @@
     <!-- ↓ 全站统一导航条（公共层 common.css） -->
     <header class="site-header">
         <div class="header-inner">
-            <a class="site-logo" href="../index.html" aria-label="反恐精英中文网首页">
-                <img src="../assets/images/logo/dark-logo.svg" alt="">反恐精英中文网
+            <a class="site-logo" href="../../index.html" aria-label="反恐精英中文网首页">
+                <img src="../../assets/images/logo/dark-logo.svg" alt="">反恐精英中文网
             </a>
 
             <nav class="nav-home" aria-label="网站主导航">
                 <div class="nav-item">
                     <button class="nav-trigger" type="button">攻略专区</button>
                     <ul class="nav-dropdown">
-                        <li><a href="../guides/rookie-guides.html">新手教学</a></li>
-                        <li><a href="../guides/map-guides.html">服役地图</a></li>
-                        <li><a href="../guides/super-guides.html">进阶教学</a></li>
+                        <li><a href="../rookie-guides.html">新手教学</a></li>
+                        <li><a href="../map-guides.html">服役地图</a></li>
+                        <li><a href="../super-guides.html">进阶教学</a></li>
                     </ul>
                 </div>
                 <div class="nav-item">
@@ -50,7 +48,7 @@
                 <div class="nav-item">
                     <button class="nav-trigger" type="button">玩家创作</button>
                     <ul class="nav-dropdown">
-                        <li><a href="./hlae.html">HLAE</a></li>
+                        <li><a href="../../media/hlae.html">HLAE</a></li>
                         <li>影视美学</li>
                     </ul>
                 </div>
@@ -73,26 +71,34 @@
             </nav>
 
             <div class="nav-actions">
-                <button class="search-trigger" type="button" aria-label="打开网站搜索" aria-controls="site-search-overlay" aria-expanded="false"><img src="../assets/images/icons/search.svg" alt=""></button>
+                <button class="search-trigger" type="button" aria-label="打开网站搜索" aria-controls="site-search-overlay" aria-expanded="false"><img src="../../assets/images/icons/search.svg" alt=""></button>
 
                 <button class="theme-button" id="theme-button" type="button" aria-label="深色主题" aria-pressed="false">
-                    <img class="icon icon-moon" src="../assets/images/icons/moon.svg" alt="">
-                    <img class="icon icon-sun" src="../assets/images/icons/sun.svg" alt="">
+                    <img class="icon icon-moon" src="../../assets/images/icons/moon.svg" alt="">
+                    <img class="icon icon-sun" src="../../assets/images/icons/sun.svg" alt="">
                 </button>
 
-                <audio id="theme-audio" src="../assets/audios/Valve Studio Orchestra - Game Time.flac" loop preload="none"></audio>
+                <audio id="theme-audio" src="../../assets/audios/Valve Studio Orchestra - Game Time.flac" loop preload="none"></audio>
                 <button type="button" class="audio-button" id="audio-button" aria-label="播放背景音乐">
-                    <img id="audio-icon" src="../assets/images/icons/music-off.svg" alt="音乐默认关闭">
+                    <img id="audio-icon" src="../../assets/images/icons/music-off.svg" alt="音乐默认关闭">
                 </button>
             </div>
         </div>
     </header>
 
     <main id="main">
-        <h1>HLAE</h1>
+        <h1>
+            <img src="../../assets/images/servicemaps/icons/map_icon_de_cache.svg" alt="">
+            死城之谜 Cache
+        </h1>
+
+        <nav aria-label="返回地图总览">
+            <a href="../map-guides.html">← 返回服役地图总览</a>
+        </nav>
+
         <section class="map-section">
-            <h2>HLAE 玩家创作</h2>
-            <p>这里介绍 HLAE 的安装、录制与运镜基础。</p>
+            <h2>攻防站位</h2>
+            <p>这里介绍 Cache 的常规站位与轮转路线。</p>
         </section>
     </main>
 
@@ -100,10 +106,10 @@
         <p>自由开放的非官方反恐精英网站<br>yushucrain@gmail.com</p>
     </footer>
 
-    <script src="../assets/js/search-index.js" defer></script>
+    <script src="../../assets/js/search-index.js" defer></script>
 
 
-    <script src="../assets/js/site.js" defer></script>
+    <script src="../../assets/js/site.js" defer></script>
 
     <!-- ↓ 全站搜索弹层。必须挂在 <body> 直接子级：
          .site-header 带 transform（滚动显隐），会成为 position:fixed 后代的包含块，
@@ -115,7 +121,7 @@
                    placeholder="输入关键词搜索内容" aria-label="网站内容搜索"
                    autocomplete="off" required>
             <button class="search-overlay-submit" type="submit" aria-label="提交搜索">
-                <img src="../assets/images/icons/search.svg" alt="">
+                <img src="../../assets/images/icons/search.svg" alt="">
             </button>
         </form>
         <p class="search-overlay-hint">按 ESC 或点击空白处关闭</p>

@@ -3,112 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>服役地图攻略</title>
-    <link rel="stylesheet" href="./servicemaps-style.css">
+    <title>服役地图攻略 - 反恐精英中文网</title>
+    <meta name="description" content="反恐精英中文网：服役地图攻略总览，含荒漠迷城、炽热沙城二、炼狱小镇、核子危机、远古遗迹、阿努比斯与死城之谜。">
+    <meta name="theme-color" content="#F3F4F4" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#111315" media="(prefers-color-scheme: dark)">
+    <!-- ↑手机浏览器地址栏配色，取值要和 CSS 里 :root 的 --page-bg 保持一致。 -->
+    <link rel="icon" href="../assets/images/logo/dark-logo.svg" type="image/svg+xml">
+
+    <!-- 【路径】本页在 guides/ 内，用 ../ 退回站点根目录。 -->
+    <script src="../assets/js/theme-init.js"></script>
+    <!-- ↑全站公共：首帧前定主题。必须同步、必须在头部，不能加 defer。 -->
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <!-- ↑全站公共层：字体、主题变量、Reset、导航条、页脚。必须排在私有样式之前。 -->
+    <link rel="stylesheet" href="../assets/css/map-guides.css">
+    <!-- ↑本页私有样式：地图导航条与章节排版。 -->
 </head>
 <body>
-<!-- ↓基础栏+地图导航站 -->
-    <header>
-        <h1>
-            <a href="../index.html"><img src="../assets/images/icons/home.svg" alt="主页">反恐精英中文网</a>
-        </h1>
-<!-- ↓地图导航 -->
-        <nav>
+    <a class="skip-link" href="#main">跳转到主要内容</a>
+
+    <!-- ↓ 全站统一导航条（公共层 common.css）。内容页不写 is-overlay，
+         因此它跟随文档流并带一条底边线；只有首页的导航浮在视频上。 -->
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="site-logo" href="../index.html" aria-label="反恐精英中文网首页">
+                <img src="../assets/images/logo/dark-logo.svg" alt="">反恐精英中文网
+            </a>
+
+            <nav class="nav-home" aria-label="网站主导航">
+                <div class="nav-item">
+                    <button class="nav-trigger" type="button">攻略专区</button>
+                    <ul class="nav-dropdown">
+                        <li><a href="./rookie-guides.html">新手教学</a></li>
+                        <li><a href="./map-guides.html">服役地图</a></li>
+                        <li><a href="./super-guides.html">进阶教学</a></li>
+                    </ul>
+                </div>
+                <div class="nav-item">
+                    <button class="nav-trigger" type="button">CS赛事</button>
+                    <ul class="nav-dropdown">
+                        <li>
+                            <a href="https://www.hltv.org/" target="_blank" rel="noopener noreferrer">HLTV</a>
+                            <!-- ↑rel="noopener" 必须加：新标签页拿到 window.opener 后可以篡改原页面地址，
+                                 这是 target="_blank" 的一个已知安全风险。 -->
+                        </li>
+                        <li>职业信息</li>
+                    </ul>
+                </div>
+                <div class="nav-item">
+                    <button class="nav-trigger" type="button">玩家创作</button>
+                    <ul class="nav-dropdown">
+                        <li><a href="../media/hlae.html">HLAE</a></li>
+                        <li>影视美学</li>
+                    </ul>
+                </div>
+                <div class="nav-item">
+                    <button class="nav-trigger" type="button">交易市场</button>
+                    <ul class="nav-dropdown">
+                        <li>价格走势</li>
+                        <li>挂刀搬砖</li>
+                    </ul>
+                </div>
+                <div class="nav-item">
+                    <button class="nav-trigger" type="button">社区贡献</button>
+                    <ul class="nav-dropdown">
+                        <li>网站公告</li>
+                        <li>社区游戏</li>
+                        <li>特别致谢</li>
+                        <li>玩家合影</li>
+                    </ul>
+                </div>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="search-trigger" type="button" aria-label="打开网站搜索" aria-controls="site-search-overlay" aria-expanded="false"><img src="../assets/images/icons/search.svg" alt=""></button>
+
+                <button class="theme-button" id="theme-button" type="button" aria-label="深色主题" aria-pressed="false">
+                    <img class="icon icon-moon" src="../assets/images/icons/moon.svg" alt="">
+                    <img class="icon icon-sun" src="../assets/images/icons/sun.svg" alt="">
+                </button>
+
+                <audio id="theme-audio" src="../assets/audios/Valve Studio Orchestra - Game Time.flac" loop preload="none"></audio>
+                <button type="button" class="audio-button" id="audio-button" aria-label="播放背景音乐">
+                    <img id="audio-icon" src="../assets/images/icons/music-off.svg" alt="音乐默认关闭">
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="main">
+        <h1>服役地图攻略</h1>
+
+        <!-- ↓ 地图导航：横向滑动选择地图 -->
+        <nav aria-label="服役地图">
             <ul class="maps-nav">
                 <li>
-                    <button class="map-item" data-map="mirage">
-                        <img src="../Assets/images/ServiceMaps/icons/map_icon_de_mirage.svg" alt="荒漠迷城Mirage">
-                    </button>
+                    <a class="map-item" href="./servicemaps/mirage.html">
+                        <img src="../assets/images/servicemaps/icons/map_icon_de_mirage.svg" alt="荒漠迷城Mirage">
+                    </a>
                 </li>
                 <li>
-                    <button class="map-item" data-map="dust2">
-                        <img src="../Assets/images/ServiceMaps/icons/map_icon_de_dust2.svg" alt="炽热沙城二DustⅡ">
-                    </button>
+                    <a class="map-item" href="./servicemaps/dust2.html">
+                        <img src="../assets/images/servicemaps/icons/map_icon_de_dust2.svg" alt="炽热沙城二DustⅡ">
+                    </a>
                 </li>
                 <li>
-                    <button class="map-item" data-map="inferno">
-                        <img src="../Assets/images/ServiceMaps/icons/map_icon_de_inferno.svg" alt="炼狱小镇Inferno">
-                    </button>
+                    <a class="map-item" href="./servicemaps/inferno.html">
+                        <img src="../assets/images/servicemaps/icons/map_icon_de_inferno.svg" alt="炼狱小镇Inferno">
+                    </a>
                 </li>
                 <li>
-                    <button class="map-item" data-map="nuke">
-                        <img src="../Assets/images/ServiceMaps/icons/map_icon_de_nuke.svg" alt="核子危机Nuke">
-                    </button>
+                    <a class="map-item" href="./servicemaps/nuke.html">
+                        <img src="../assets/images/servicemaps/icons/map_icon_de_nuke.svg" alt="核子危机Nuke">
+                    </a>
                 </li>
                 <li>
-                    <button class="map-item" data-map="ancient">
-                        <img src="../Assets/images/ServiceMaps/icons/map_icon_de_ancient.svg" alt="远古遗迹Ancient">
-                    </button>
+                    <a class="map-item" href="./servicemaps/ancient.html">
+                        <img src="../assets/images/servicemaps/icons/map_icon_de_ancient.svg" alt="远古遗迹Ancient">
+                    </a>
                 </li>
                 <li>
-                    <button class="map-item" data-map="anubis">
-                        <img src="../Assets/images/ServiceMaps/icons/map_icon_de_anubis.svg" alt="阿努比斯Anubis">
-                    </button>
+                    <a class="map-item" href="./servicemaps/anubis.html">
+                        <img src="../assets/images/servicemaps/icons/map_icon_de_anubis.svg" alt="阿努比斯Anubis">
+                    </a>
                 </li>
                 <li>
-                    <button class="map-item" data-map="cache">
-                        <img src="../Assets/images/ServiceMaps/icons/map_icon_de_cache.svg" alt="死城之谜Cache">
-                    </button>
+                    <a class="map-item" href="./servicemaps/cache.html">
+                        <img src="../assets/images/servicemaps/icons/map_icon_de_cache.svg" alt="死城之谜Cache">
+                    </a>
                 </li>
             </ul>
         </nav>
-    </header>
-<!-- ↓内容主体 -->
-    <main>
+
+        <h2>攻防站位</h2>
         <ul>
-            <li><h2>CT</h2>
+            <li><h3>CT</h3>
                 <ul>
                     <li><a href="#ct-mid">CT-中路</a></li>
                     <li><a href="#ct-b2">CT-B2</a></li>
                     <li><a href="#ct-a2">CT-A2</a></li>
                 </ul>
             </li>
-            <li><h2>T</h2>
+            <li><h3>T</h3>
                 <ul>
                     <li><a href="#t-mid">T-中路</a></li>
                     <li><a href="#t-b2">T-B2</a></li>
                     <li><a href="#t-a2">T-A2</a></li>
                 </ul>
             </li>
-
         </ul>
+
         <section id="ct-mid" class="map-section ct-side">
             <h3>CT-中路</h3>
-                <p>
-                    这里介绍
-                </p>
+            <p>这里介绍</p>
         </section>
         <section id="ct-b2" class="map-section ct-side">
             <h3>CT-B2</h3>
-                <p>
-                    这里介绍
-                </p>
+            <p>这里介绍</p>
         </section>
         <section id="ct-a2" class="map-section ct-side">
             <h3>CT-A2</h3>
-                <p>
-                    这里介绍
-                </p>
+            <p>这里介绍</p>
         </section>
         <section id="t-mid" class="map-section t-side">
             <h3>T-中路</h3>
-                <p>
-                    这里介绍
-                </p>
+            <p>这里介绍</p>
         </section>
         <section id="t-b2" class="map-section t-side">
             <h3>T-B2</h3>
-                <p>
-                    这里介绍
-                </p>
+            <p>这里介绍</p>
         </section>
         <section id="t-a2" class="map-section t-side">
-            <h3>CT-A2</h3>
-                <p>
-                    这里介绍
-                </p>
+            <h3>T-A2</h3>
+            <!-- ↑正文标题是 T-A2，与锚点 id 一致；索引里写错成 CT-A2 已一并修正。 -->
+            <p>这里介绍</p>
         </section>
-        
     </main>
+
+    <footer>
+        <p>自由开放的非官方反恐精英网站<br>yushucrain@gmail.com</p>
+    </footer>
+
+    <script src="../assets/js/search-index.js" defer></script>
+
+
+    <script src="../assets/js/site.js" defer></script>
+    <!-- ↑全站公共交互：主题切换、背景音乐。 -->
+
+    <!-- ↓ 全站搜索弹层。必须挂在 <body> 直接子级：
+         .site-header 带 transform（滚动显隐），会成为 position:fixed 后代的包含块，
+         弹层若留在导航里，inset:0 只会解析出导航条那点高度，撑不满视口。 -->
+    <div class="search-overlay" id="site-search-overlay" role="dialog" aria-modal="true"
+         aria-label="网站搜索" hidden>
+        <form class="search-overlay-form" action="#" method="get" role="search">
+            <input class="search-overlay-input" type="search" name="q"
+                   placeholder="输入关键词搜索内容" aria-label="网站内容搜索"
+                   autocomplete="off" required>
+            <button class="search-overlay-submit" type="submit" aria-label="提交搜索">
+                <img src="../assets/images/icons/search.svg" alt="">
+            </button>
+        </form>
+        <p class="search-overlay-hint">按 ESC 或点击空白处关闭</p>
+        <button class="search-overlay-close" type="button" aria-label="关闭搜索"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M5 5 19 19"/><path d="M19 5 5 19"/></svg></button>
+    </div>
+
 </body>
 </html>

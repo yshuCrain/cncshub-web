@@ -1,0 +1,922 @@
+/*
+  新手教学 · 样式表
+  ────────────────────────────────────────────────────────────────
+  【职责边界】本文件只服务于「新手教学页 guides/rookie-guides.html」。
+              全站公共层 → assets/css/common.css  ← 必须先在 <head> 引入
+              首页样式   → assets/css/index.css
+              地图页样式 → assets/css/map-guides.css
+              四者互不 @import；公共层在前、页面层在后，页面层可安全覆盖。
+
+  【配色】本页不再自带色板。--paper / --ink / --muted-ink / --line / --accent / --panel
+          全部是对 assets/css/common.css 主题变量的引用，因此：
+            · 与首页共用同一套色板，改首页即改本页；
+            · [data-theme="dark"] 自动生效，本文件里没有任何深***板。
+          例外（刻意保留固定色）：键鼠硬件模拟、键位分类色、媒体框/放大层/XY 轴
+          等「叠在深色素材上的图层」——它们跟着主题变浅就会看不清。
+
+  【分区索引】
+    01  基础样式与页面参数        :root 变量、纸面底色、排版基线
+    02  顶部导航与悬浮下划线
+    03  首屏文案与开始探索按钮
+    04  交互键鼠组件
+    05  八章节的共同布局
+    06  射击视频、XY 坐标轴与按键动画
+    07  购买装备：整图与标注动画
+    08  画面设置、灵敏度和键位列表
+    09  文字注释效果
+    10  准心图片与复制提示
+    11  固定章节刻度导航
+    12  页脚
+    13  响应式：从宽到窄（1120 / 1100 / 760 / 600 四档断点）
+    14  减少动态效果（prefers-reduced-motion）
+
+  【注释标记约定】
+    【调参】可以安全修改的数值，改坏不会破坏结构
+    【关键】影响行为的结构，改动前需理解上下游依赖
+    【修补】针对具体问题的修复点，不要随手删除
+    【布局】【效果】说明该组规则的意图
+
+  【重要】CSS 里的 url() 是相对「本文件所在目录」解析，不是相对 HTML。
+          本文件在 assets/css/ 下，引用图片必须用 ../images/ 前缀。
+  ────────────────────────────────────────────────────────────────
+*/
+
+/* ==================== 01 基础样式与页面参数 ==================== */
+
+/* 【调参区】--page-* 页面宽度；--rail-* 右侧预留/刻度；--hero-* 首屏列宽/留白；--title-* 标题字号/字距/行距；--chapter-* 正文章节；--gallery-gap 图片间隔。手机覆盖见文件末尾。 */
+
+/* ══ 配色：全部映射到公共层 common.css 的主题变量 ══
+   本页 2000 行里到处在用 --paper / --ink / --accent 这些名字，全部保留，
+   只把「值」换成对公共变量的引用。好处有两点：
+     1. [data-theme="dark"] 一切换，本页自动跟随全站，不再需要维护第二套色板
+        （原先本文件末尾那份 :root[data-theme="dark"] 手写深***板已删除）；
+     2. 首页改配色，这一页跟着变，不会出现「首页和教学页色温不一致」。
+   变量是惰性求值的：--paper 存的是 token 序列 var(--page-bg)，
+   真正用到它的元素上才解析，所以深色覆盖能正确穿透。
+   ────────────────────────────────────────────────────────────
+   【保留固定色的例外】下面这些不跟随主题，属于「叠在深色素材上的图层」，
+   一旦跟着主题变浅就会看不清，属于刻意为之：
+     · 键鼠硬件模拟（.control-* 的实体色）
+     · 媒体框、放大层、XY 轴（--buy-accent 等标注色）
+   ════════════════════════════════════════════════════════════ */
+:root {
+    --paper: var(--page-bg);      /* 纸面 = 页面底色 */
+    --ink: var(--text);          /* 墨色 = 正文主色 */
+    --muted-ink: var(--muted);   /* 次级文字 */
+    --line: var(--border);       /* 分隔线 */
+    /* 浅一档的虚线：由 --border 派生，深浅两色都成立。
+       不支持 color-mix 的浏览器会忽略第二条，退回与 --line 同色。 */
+    --line-soft: var(--border);
+    --line-soft: color-mix(in srgb, var(--border) 42%, transparent);
+    --accent: var(--hover);      /* 强调色 = 全站悬停/聚焦色 */
+    --panel: var(--surface);     /* 面板底 = 浮层色（本页暂未使用） */
+    --page-max: 1760px; /* 页面最大宽度：宽屏充分利用左侧空间 */
+    --page-left: 40px; /* 最小左侧留白 */
+    --rail-reserve: 180px; /* 右侧导航预留空间 */
+    --hero-gap: clamp(36px, 4vw, 64px); /* 首屏两列之间的距离（control-guide 主网格的列间距） */
+    --hero-padding: 56px 40px; /* 首屏内边距：上下 / 左右 */
+    --title-size: clamp(80px, 6.8vw, 104px); /* 大标题字号；clamp(最小值, 随视口变化值, 最大值)。6.8vw/104：标题列按线框收窄后，两字一行仍要放得下 */
+    --title-tracking: 0.1em; /* 标题中文字之间的距离 */
+    --title-row-gap: var(--title-tracking); /* 配合 1 倍行高，让上下与左右的字形留白接近 */
+    --copy-gap: 32px; /* 英文说明、标题、文案、按钮之间的距离 */
+    --chapter-columns: minmax(180px, 0.8fr) minmax(0, 1.6fr); /* 章节左侧标题 / 右侧正文的列宽比例 */
+    --chapter-heading-padding: 44px 32px; /* 章节标题内边距 */
+    --chapter-body-padding: 44px 40px; /* 章节正文内边距 */
+    --rail-width: 142px; /* 刻度导航整体宽度 */
+    --rail-right: 18px; /* 导航距离窗口右侧的距离 */
+    --rail-active-width: 44px; /* 当前章节刻度的长度 */
+    --gallery-gap: 20px; /* 准心图片之间的距离 */
+    /* 键盘最小宽度 540px：60 列网格 + 4px 间隙下 1u 键帽约 20.3px，
+       与 11px 键帽字仍匹配；再窄就在组件内横向滚动。
+       从 560 下调到 540 是为舞台让出余量——并排时键盘列必须留够这个值。 */
+    --keyboard-min-width: 540px;
+}
+
+/* 【已删除】原先这里有一份本页专属的 :root[data-theme="dark"] 深***板。
+   现在 --paper / --ink 等已经直接引用公共变量，深色主题会自动穿透，
+   那份手写色板既多余又会和全站色温打架，已整体移除。 */
+
+/* 【已上移】box-sizing、scroll-behavior、button/input 字体继承、a 的默认样式、
+   .visually-hidden、.skip-link 等公共 Reset 与无障碍规则，已统一放进
+   assets/css/common.css，本文件不再重复声明。
+   下面只保留新手教学页自己的字体与纸面底色。 */
+
+body {
+    margin: 0;
+    color: var(--ink);
+    /* 沿用全站纸面底色，以线框与文字层级组织内容。 */
+    background: var(--paper);
+    /* 站字体排在最前，与首页/子页保持同一套字形；后三个是全站统一字体的兜底。 */
+    font-family: "Source Han Sans SC",
+        "Microsoft YaHei",
+        "PingFang SC",
+        system-ui,
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* 【保留在本页】新手教学页大量用 figure / p / h1 / h2 承载排版，
+   归零浏览器默认外边距是瑞士网格精确对齐的前提。
+   这条是页面私有规则，不适合放进公共层——它会连带改掉其他页面的默认间距。 */
+figure,
+p,
+h1,
+h2 {
+    margin: 0;
+}
+
+/* 焦点环沿用本页强调色，与全站 key color 体系一致 */
+a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 5px;
+}
+
+.svg-library {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+/* 【关键】正文宽度扣除右侧导航空间；不要只把 width 改成 100%，否则会遮挡导航。 */
+.page-shell {
+    width: min(var(--page-max), calc(100% - var(--page-left) - var(--rail-reserve)));
+    margin-left: auto;
+    margin-right: var(--rail-reserve);
+}
+
+/* ==================== 02 顶部导航 ==================== */
+
+/* 【已迁移】本页原来那套纸面风的私有导航条（.rookie-header / .rookie-brand /
+   .rookie-nav 及其下划线动画）已整体删除，改为全站统一的 .site-header，
+   样式全部来自 assets/css/common.css。
+
+   两处务必记住：
+   1. 不要再定义 .site-header —— 它是公共层的选择器，同名会互相污染。
+   2. 导航是 position: fixed 且自带滚动显隐，公共层会给 body 加
+      .has-fixed-header 并补等高上内边距；本页的 .page-shell 不需要、
+      也不应该再手动为首屏留 header 的空间。 */
+
+/* ==================== 03 首屏文案与开始探索按钮 ==================== */
+
+.cross {
+    position: relative;
+    display: block;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+}
+
+.cross::before,
+.cross::after {
+    position: absolute;
+    background: var(--ink);
+    content: "";
+}
+
+.cross::before {
+    top: 9px;
+    left: 0;
+    width: 20px;
+    height: 1px;
+}
+
+.cross::after {
+    top: 0;
+    left: 9px;
+    width: 1px;
+    height: 20px;
+}
+
+/* 【已删除】hero 两角的十字定位标（.hero-cross-*）：
+   属于边框辅助装饰，随「删除边框辅助线」一并移除；
+   .cross 基础样式保留，页脚仍在使用。 */
+
+.rookie-hero {
+    position: relative;
+    padding: var(--hero-padding);
+    /* 【已删除】左右两道 1px 虚线边框——边框辅助线，随本轮一并移除。 */
+
+    /* 首屏内部布局交给 .control-guide 的主网格：
+       左标题 / 右键鼠舞台，一行两列。 */
+}
+
+.rookie-hero .hero-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    gap: var(--copy-gap);
+}
+
+.rookie-hero .eyebrow {
+    font-family: Consolas, monospace;
+    color: var(--muted-ink);
+    font-size: 11px;
+    line-height: 1.6;
+    letter-spacing: 0.12em;
+}
+
+.rookie-hero h1 {
+    display: grid;
+    font-family: inherit;
+    font-weight: 900;
+    margin: 6px 0;
+    line-height: 1;
+    font-size: var(--title-size);
+    gap: var(--title-row-gap);
+    letter-spacing: var(--title-tracking);
+}
+
+.rookie-hero .hero-description {
+    margin: 0;
+    color: var(--muted-ink);
+    font-size: 14px;
+    line-height: 2;
+    letter-spacing: 0.04em;
+}
+
+/* 【布局】inline-flex + align-items/justify-content 使文字、SVG 箭头与按钮居中；gap 控制二者距离。 */
+.explore-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    min-height: 52px;
+    padding: 14px 24px;
+    border: 1px solid var(--ink);
+    color: var(--paper);
+    background: var(--ink);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    transition: background-color 0.2s ease;
+    min-width: min(210px, 100%);
+    max-width: 100%;
+}
+
+.explore-button svg {
+    display: block;
+    flex: 0 0 24px;
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.explore-button:hover {
+    /* 原为写死的 #343d36。改用全站强调色后，深浅两色的对比方向依然成立：
+       浅色主题 --hover 是深靛蓝，按钮文字 --paper 是浅色；
+       深色主题 --hover 是琥珀橙，按钮文字 --paper 是深色。 */
+    background: var(--accent);
+}
+
+.rookie-hero h1 > span {
+    display: block;
+    white-space: nowrap; /* 两字一行是版式底线：列宽再紧也不许逐字换行 */
+}
+
+.rookie-hero h1 em {
+    color: var(--accent);
+    font-style: normal;
+}
+
+/* ==================== 04 交互键鼠组件 ==================== */
+
+.control-guide {
+    /* 【调参】配色适配浅色纸面：深色实体键帽保留，外层不再有深色卡片背景。
+       【已删除】--movement / --equipment / --communication 六个分类色变量——
+       颜色区分功能已移除，键帽统一一套实体色，点亮反馈统一用全站 --accent。 */
+    --control-text: var(--ink);
+    --control-muted: var(--muted-ink);
+    --control-line: var(--line);
+    --control-stroke-width: 1px; /* 键盘边框与鼠标线稿共用同一描边宽度 */
+    min-width: 0;
+    display: grid;
+    /* 0.45 / 1.55：键鼠舞台是这一屏的主导体量（示意图中的大蓝框），标题列相对收窄。
+       列宽不是随手定的：舞台内键盘列必须 ≥ 键盘最小宽度 540px，
+       否则 Backspace / Enter / 右 Shift 会被滚出可视区。
+       1440 宽度下按此比例分列，键盘列约 560px + 舞台内边距，刚好放下整个键盘，
+       同时标题列 ≥230px 保证「新手」「教学」两字一行不被挤成逐字换行。
+       头带已收进舞台内部，这里只剩「标题 | 舞台」一行两列。 */
+    grid-template-columns: minmax(230px, 0.45fr) minmax(0, 1.55fr);
+    grid-template-areas:
+        "copy stage";
+    gap: var(--hero-gap); /* 单行两列：间距只作用在标题列与舞台之间 */
+    /* start：左列标题块顶对齐、不随舞台拉伸——示意图中两个方块高度不同。 */
+    align-items: start;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--control-text);
+}
+
+/* 左列：页面标题块（示意图左上的小块），顶对齐、不随舞台拉伸。 */
+.control-guide .hero-copy {
+    grid-area: copy;
+}
+
+/* 弹性空隙集中在键鼠区与脚注之间：脚注始终贴住首屏底部。 */
+/* 【已删除】.control-guide-note（说明带右下角脚注）：
+   说明带整体移除，键位功能名改为直接印在键帽上。 */
+
+/* 舞台内头带：组件标题一行，底部一道细线与键鼠内容分开。
+   【已删除】颜色图例（.control-legend*）与「实体按键体验」开关
+   （.control-trial*）——颜色区分与开关均已按需求移除。 */
+.control-guide-header {
+    grid-area: shead;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px 28px;
+    padding: 0 0 14px;
+    border-bottom: 1px solid var(--control-line);
+}
+
+.control-guide-code {
+    margin: 0 0 4px;
+    color: var(--control-muted);
+    font: 10px/1.5 Consolas, monospace;
+    letter-spacing: 0.12em;
+    overflow-wrap: anywhere;
+}
+
+.control-guide-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+}
+
+/* 【布局】键鼠舞台：自包含的大框——头带、键盘、鼠标全部收在框内，
+   首屏之外直接进入后续章节。
+   【已删除】外框描边（原强调色 1px 边框）——边框辅助线，随本轮一并移除；
+   舞台保留内边距与网格分组，靠留白组织，不再画框。 */
+.control-stage {
+    position: relative; /* 实体按键的提示浮层以舞台为定位基准 */
+    grid-area: stage;
+    min-width: 0;
+    padding: clamp(18px, 2vw, 26px);
+    display: grid;
+    /* 鼠标列 180-200px：给键盘列让出 ≥560px 的最低宽度（含滚动内边距）。
+       说明带已删除，舞台只剩头带 + 键盘/鼠标两行。 */
+    grid-template-columns: minmax(0, 1fr) minmax(180px, 200px);
+    grid-template-areas:
+        "shead  shead"
+        "kb     mouse";
+    gap: 18px 24px;
+    align-items: start;
+}
+
+.keyboard-scroll {
+    grid-area: kb;
+    /* 键盘在舞台内自动落位第一列，可横向滚动 */
+    overflow-x: auto;
+    padding: 3px 2px 12px;
+    scrollbar-width: thin;
+    scrollbar-color: #637582 transparent;
+}
+
+/* 【布局】键盘只在组件内部横向滚动，保留可点击的键帽宽度。 */
+/* 【关键】60 列网格 = 15u 键盘总宽（粒度 0.25u）：所有行共用同一网格，
+   键帽按 span 跨列，因此各行左右边缘对齐、纵向列线严格成列，
+   呈现标准 60% 键盘轮廓（Tab 1.5u / Caps 1.75u / Shift 2.25u / 空格最长）。 */
+.control-keyboard {
+    display: grid;
+    grid-template-columns: repeat(60, minmax(0, 1fr));
+    gap: 5px 4px;
+    min-width: var(--keyboard-min-width);
+}
+
+/* 行容器只保留语义结构；键帽全部交给键盘网格统一布局对齐。 */
+.control-key-row {
+    display: contents;
+}
+
+.control-key {
+    /* 【调参】线框风格（参考用户提供的键盘线框图）：
+       去除键帽底色，统一为 1px 直角描边；线色用 --control-line（跟主题），
+       功能名与字符直接叠在透明底上。 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    grid-column: span 4; /* 默认 1u；JS 按每颗键的 u 值内联覆盖 */
+    min-width: 0;
+    height: 42px; /* 上行键帽字 + 下行功能名，比单行键帽高 */
+    padding: 0 2px; /* 左右收窄：给 1u 键帽上的三字功能名留足宽度 */
+    border: var(--control-stroke-width) solid var(--control-line);
+    border-radius: 0; /* 直角：线框风格 */
+    background: transparent;
+    color: var(--control-text);
+    cursor: pointer;
+    transition: background-color 0.15s,
+        border-color 0.15s,
+        transform 0.1s;
+}
+
+.control-key .key-cap {
+    font: 11px/1 Consolas, monospace;
+    letter-spacing: 0.04em;
+}
+
+.control-key .key-fn {
+    max-width: 100%;
+    color: var(--control-muted);
+    font-size: 9px;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.control-key.is-placeholder {
+    border-color: color-mix(in srgb, var(--control-line) 45%, transparent);
+    color: var(--control-muted);
+    cursor: default;
+}
+
+.control-key.is-placeholder .key-fn {
+    color: color-mix(in srgb, var(--control-muted) 75%, transparent);
+}
+
+.control-key:hover:not(.is-placeholder) {
+    border-color: var(--control-text);
+    background: color-mix(in srgb, var(--control-text) 5%, transparent);
+}
+
+/* 按下/点亮：实心强调色反转，是线框键盘上唯一的高亮语义。 */
+.control-key.is-down {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--paper);
+    transform: translateY(2px);
+}
+
+.control-key.is-down .key-fn {
+    color: var(--paper);
+}
+
+.control-mouse-row {
+    grid-area: mouse;
+    /* 舞台第二列：鼠标示意稿在列内水平垂直居中，与键盘高度呼应 */
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0;
+    padding: 0;
+    border-top: 0;
+}
+
+/* 【重绘】鼠标图形：纯描边 SVG 线稿，外形与比例对齐参考图——
+   上下半圆的胶囊体（宽高比 236 : 322 ≈ 0.73），横缝在全高约 46% 处，
+   中缝连接滚轮上下两端，滚轮为 44 × 72 的竖直胶囊。
+   描边颜色和宽度与键盘一致，缩放时仍保持 1px。 */
+.control-mouse {
+    display: block;
+    width: 100%;
+    max-width: 168px;
+    height: auto;
+    fill: none;
+    stroke: var(--control-line);
+    stroke-width: var(--control-stroke-width);
+    stroke-linecap: square;
+}
+
+.control-mouse :is(rect, line, path) {
+    vector-effect: non-scaling-stroke;
+}
+
+.control-mouse-outline,
+.control-mouse .part-note,
+.control-mouse .wheel-arrow {
+    pointer-events: none;
+}
+
+/* 【交互分区】鼠标三区（左键 / 右键 / 滚轮）：
+   基础线稿保持参考图外形；分区叠加在对应区域内，
+   悬停淡染、点亮实心强调色，与键帽的 is-down 语义一致。 */
+.control-mouse .part-shape {
+    stroke: none;
+    fill: transparent;
+    cursor: pointer;
+    transition: fill 0.15s ease;
+}
+
+.control-mouse-part {
+    outline: none;
+}
+
+.control-mouse-part:hover .part-shape {
+    fill: color-mix(in srgb, var(--control-text) 6%, transparent);
+}
+
+.control-mouse-part.is-down .part-shape {
+    fill: var(--accent);
+}
+
+.control-mouse-part:focus-visible .part-shape {
+    stroke: var(--accent);
+    stroke-width: 2.5;
+}
+
+/* 分区上的键名 + 功能注释：随分区一起点亮反白。 */
+.control-mouse text {
+    stroke: none;
+    font-family: Consolas, "Microsoft YaHei", monospace;
+}
+
+.control-mouse .part-cap {
+    fill: var(--control-text);
+    font-size: 15px;
+    letter-spacing: 0.08em;
+}
+
+.control-mouse .part-fn {
+    fill: var(--control-muted);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+}
+
+.control-mouse-part.is-down .part-cap,
+.control-mouse-part.is-down .part-fn {
+    fill: var(--paper);
+}
+
+/* 滚轮内部三行注释；点亮时反白，始终收在胶囊轮廓内。 */
+.control-mouse .part-note {
+    fill: var(--control-muted);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+}
+
+.control-mouse-part.is-down .part-note {
+    fill: var(--paper);
+}
+
+/* 箭头沿中缝显示滚动方向，不覆盖滚轮内的文字。 */
+.control-mouse .wheel-arrow {
+    stroke: var(--accent);
+    stroke-width: 1.5px;
+    stroke-linejoin: round;
+    opacity: 0;
+}
+
+.control-mouse[data-wheel-direction="up"] .wheel-arrow-up,
+.control-mouse[data-wheel-direction="down"] .wheel-arrow-down {
+    opacity: 1;
+    animation: wheel-arrow-pulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes wheel-arrow-pulse {
+    from { opacity: 0.45; }
+    to { opacity: 1; }
+}
+
+/* 实体按键提示浮层：小线框芯片，贴在被点亮键帽的上方/下方。
+   定位基准是 .control-stage（position: relative）。 */
+.control-hint {
+    position: absolute;
+    z-index: 3;
+    margin: 0;
+    padding: 7px 11px;
+    border: 1px solid var(--control-line);
+    background: var(--page-bg);
+    color: var(--control-text);
+    font-family: Consolas, "Microsoft YaHei", monospace;
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.control-hint.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+/* 【已删除】说明带整块（.control-detail*）：
+   按需求移除底部说明条，键位功能名改为直接印在键帽上；
+   实体按键的功能提示由 .control-hint 浮层按需显示。 */
+
+.control-guide button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+.control-guide:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 5px;
+}
+
+.keyboard-scroll:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+/* 05 正文：同一网格内，用字号、列宽和留白区分训练、设置与补充信息。 */
+.guide-content { padding: 0 40px; --media-accent: #FFA11B; }
+.guide-index {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0 40px 24px;
+    border-block: 1px solid var(--line);
+}
+.guide-index a { display: flex; align-items: baseline; gap: 12px; min-width: 0; padding: 15px 18px; border-right: 1px solid var(--line-soft); }
+.guide-index a:nth-child(4n) { border-right: 0; }
+.guide-index a:nth-child(n + 5) { border-top: 1px solid var(--line-soft); }
+.index-number { color: var(--accent); font: 11px/1.4 Consolas, monospace; }
+.index-name { font-size: 14px; font-weight: 500; }
+.index-arrow { margin-left: auto; color: var(--muted-ink); }
+.guide-index a:hover { color: var(--accent); }
+.guide-section { position: relative; min-width: 0; padding: 40px 0; border-top: 1px solid var(--line); scroll-margin-top: calc(var(--site-header-h, 80px) + 24px); }
+.guide-pair { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(28px, 4vw, 64px); align-items: start; }
+.guide-pair--notes { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); }
+.guide-heading { padding: 0; margin-bottom: 24px; }
+.chapter-number { color: var(--muted-ink); font: 11px/1.5 Consolas, monospace; letter-spacing: 0.1em; }
+.guide-heading h2 { margin: 12px 0 0; font-size: clamp(30px, 2.5vw, 40px); font-weight: 700; line-height: 1.2; letter-spacing: -0.035em; }
+.chapter-intro { max-width: 28ch; margin-top: 20px; color: var(--muted-ink); font-size: 14px; line-height: 1.8; }
+.guide-body { min-width: 0; padding: 0; font-size: 14px; line-height: 1.8; overflow-wrap: anywhere; }
+.guide-body h3 { margin: 0 0 10px; font-size: 21px; font-weight: 700; line-height: 1.4; }
+.guide-body p { margin: 0; }
+.guide-body > p + p { margin-top: 8px; }
+.knowledge-item { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 12px; }
+.knowledge-item + .knowledge-item { margin-top: 24px; }
+.item-number { padding-top: 5px; color: var(--accent); font: 11px/1.4 Consolas, monospace; }
+.guide-note, .guide-body .guide-note { margin-top: 18px; padding-left: 12px; border-left: 1px solid var(--accent); color: var(--muted-ink); font-size: 12px; line-height: 1.8; }
+.guide-subsection { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--line-soft); }
+.guide-body kbd { display: inline-grid; place-items: center; min-width: 34px; min-height: 30px; padding: 3px 9px; border: 1px solid var(--line); border-radius: 0; font: 12px/1.4 Consolas, "Microsoft YaHei", monospace; }
+.guide-body code { padding: 4px 8px; border: 1px solid var(--line-soft); font: 13px/1.5 Consolas, monospace; user-select: all; }
+.guide-body a { text-decoration: underline; text-underline-offset: 4px; }
+.extra-list { display: grid; gap: 24px; margin: 0; padding-left: 22px; }
+.extra-list li::marker { color: var(--accent); font-family: Consolas, monospace; }
+.section-lede { color: var(--muted-ink); }
+.section-link { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 16px; font-size: 12px; }
+.section-link > a { color: var(--accent); }
+.section-link > span { color: var(--muted-ink); }
+.setting-path { margin-bottom: 10px !important; font-weight: 500; }
+
+/* 06 射击：预瞄占较宽一列，视频用缩略预览，补充图按需展开。 */
+#aiming { padding-block: 44px; }
+.aiming-header { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: end; gap: 32px; margin-bottom: 32px; }
+.aiming-header h2 { font-size: clamp(44px, 4.5vw, 68px); line-height: 1.05; letter-spacing: -0.04em; }
+.aiming-lede { max-width: 42ch; color: var(--muted-ink); font-size: 14px; line-height: 1.8; }
+.aiming-lede strong { color: var(--ink); font-weight: 700; }
+.aiming-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) repeat(2, minmax(0, 1fr)); gap: clamp(20px, 2.4vw, 36px); align-items: start; }
+.aiming-unit { padding-top: 16px; border-top: 1px solid var(--line-soft); }
+.aiming-unit + .aiming-unit { margin-top: 0; }
+.lesson-content { display: flex; flex-direction: column; min-width: 0; gap: 12px; }
+.lesson-content > h3 { margin: 0; font-size: 26px; letter-spacing: -0.035em; }
+.lesson-content > p:not(.guide-note) { min-height: 3.6em; color: var(--muted-ink); }
+.lesson-content > .guide-note { margin-top: 0; }
+.lesson-media, .aim-figure { min-width: 0; margin: 0; border: 1px solid var(--line); background: transparent; }
+.media-frame { position: relative; overflow: hidden; background: #111315; }
+.media-frame > video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: #111315; }
+.media-frame.aim-image-stage > img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: contain; }
+.zoom-trigger { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 32px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 0; background: transparent; color: var(--ink); font-family: inherit; font-size: 11px; line-height: 1.4; cursor: pointer; }
+.zoom-trigger:hover, .zoom-trigger:focus-visible { border-color: var(--accent); color: var(--accent); }
+.media-frame > .zoom-trigger:not(.video-open) { position: absolute; top: 8px; right: 8px; min-width: 32px; border-color: #f3f4f480; color: #f3f4f4; background: #111315cc; }
+.video-open { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; color: #f3f4f4; }
+.video-open:hover, .video-open:focus-visible { color: #f3f4f4; }
+.media-play-icon { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid #f3f4f4a6; background: #111315a6; transition: opacity 0.18s; }
+.media-play-icon svg { width: 24px; height: 24px; fill: currentColor; }
+.media-play-label { position: absolute; bottom: 10px; right: 10px; padding: 6px 9px; border: 1px solid #f3f4f480; background: #111315cc; font-size: 11px; }
+.lesson-media.is-playing .media-play-icon { opacity: 0; }
+.lesson-media-caption, .aim-caption { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px 12px; padding: 9px 12px; border-top: 1px solid var(--line-soft); font-size: 10px; line-height: 1.6; }
+.video-state { color: var(--muted-ink); }
+.lesson-media.is-playing .video-state { color: var(--accent); }
+.lesson-detail { margin-top: 4px; border-block: 1px solid var(--line-soft); }
+.lesson-detail summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; font-size: 13px; font-weight: 500; cursor: pointer; list-style: none; }
+.lesson-detail summary::-webkit-details-marker { display: none; }
+.lesson-detail summary > span { font: 20px/1 Consolas, monospace; color: var(--accent); }
+.lesson-detail[open] summary > span { transform: rotate(45deg); }
+.lesson-detail-body { display: grid; gap: 14px; padding-bottom: 16px; font-size: 13px; line-height: 1.8; }
+.axes-replay { padding: 5px 8px; border: 1px solid var(--line); background: transparent; color: var(--ink); font: inherit; cursor: pointer; }
+.aim-image-stage { position: relative; }
+.aim-axes { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.axis-line { fill: none; stroke: var(--media-accent); stroke-width: 1; stroke-linecap: square; vector-effect: non-scaling-stroke; stroke-dasharray: 100; stroke-dashoffset: 100; }
+.axis-label { fill: var(--media-accent); stroke: #111315; stroke-width: 2; paint-order: stroke fill; font: 700 26px Consolas, monospace; opacity: 0; }
+.aim-figure.axes-visible .axis-x { animation: draw-axis 0.7s ease-out var(--delay) both; }
+.aim-figure.axes-visible .axis-y { animation: draw-axis 0.8s ease-out calc(var(--delay) + 0.55s) both; }
+.aim-figure.axes-visible .axis-label { animation: show-axis-label 0.3s ease calc(var(--delay) + 1s) both; }
+.aim-caption b { margin-right: 5px; font-family: Consolas, monospace; }
+@keyframes draw-axis { to { stroke-dashoffset: 0; } }
+@keyframes show-axis-label { to { opacity: 1; } }
+
+/* 教学辅助图沿用首屏线框键鼠的颜色与直角键帽。 */
+.input-demo { padding: 12px; border-top: 1px solid var(--line); background: transparent; }
+.demo-heading { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px 12px; color: var(--muted-ink); font: 10px/1.6 Consolas, "Microsoft YaHei", monospace; }
+.strafe-devices { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 24px; padding: 18px 0 14px; }
+.lesson-keyboard { display: grid; grid-template-columns: repeat(3, 34px); grid-template-rows: 32px 32px 22px; gap: 5px; }
+.lesson-key { display: grid; place-items: center; border: 1px solid var(--line); border-radius: 0; background: transparent; color: var(--ink); font: 14px/1 Consolas, monospace; }
+.lesson-key.key-w { grid-column: 2; }
+.lesson-key.key-a { grid-column: 1; grid-row: 2; }
+.lesson-key.key-s { grid-column: 2; grid-row: 2; }
+.lesson-key.key-d { grid-column: 3; grid-row: 2; }
+.lesson-key.key-space { grid-column: 1 / -1; grid-row: 3; font-size: 9px; letter-spacing: 0.08em; }
+.lesson-key.is-pressed { border-color: var(--accent); background: var(--accent); color: var(--paper); transform: translateY(2px); }
+.lesson-device-mouse { display: block; flex-shrink: 0; width: 64px; height: 96px; --mouse-left: transparent; }
+.lesson-device-mouse.is-pressed { --mouse-left: var(--accent); }
+.demo-cue { min-height: 3.2em; display: grid; place-items: center; margin: 0; font-size: 11px; line-height: 1.6; text-align: center; }
+.demo-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 8px 0 0; padding: 0; list-style: none; }
+.demo-steps li { padding: 6px 2px; border-bottom: 1px solid var(--line); color: var(--muted-ink); font-size: 10px; text-align: center; }
+.demo-steps li.is-current { color: var(--accent); border-color: var(--accent); }
+.recoil-device-stage { position: relative; width: min(160px, 100%); height: 196px; margin: 8px auto 0; }
+.recoil-mouse { position: absolute; top: 12px; left: calc(50% - 32px); }
+.recoil-track { position: absolute; top: 28px; left: 50%; height: 148px; border-left: 1px solid var(--line-soft); }
+.recoil-direction { position: absolute; right: 8px; bottom: 18px; color: var(--accent); font-size: 24px; }
+
+/* 07 购买：标题与说明作边栏，带七处标注的图占主栏。 */
+#equipment {
+    display: grid;
+    grid-template-columns: minmax(180px, 0.75fr) minmax(0, 2fr);
+    grid-template-areas: "heading media" "heading copy";
+    gap: 24px 40px;
+    --buy-accent: var(--media-accent);
+    --buy-box-time: 0.7s;
+    --buy-line-time: 0.4s;
+    --buy-step: 0.08s;
+}
+#equipment > .guide-heading { grid-area: heading; }
+#equipment .guide-heading h2 { font-size: clamp(38px, 3.4vw, 52px); }
+#equipment .buy-figure { grid-area: media; width: 100%; margin: 0; }
+.buy-scroll { overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.buy-diagram { display: block; width: 100%; min-width: 900px; height: auto; }
+.buy-box, .buy-leader { fill: none; stroke: var(--buy-accent); stroke-linecap: square; stroke-linejoin: miter; vector-effect: non-scaling-stroke; }
+.buy-box { stroke-width: 2; }
+.buy-leader { stroke-width: 1; }
+.buy-label { fill: var(--ink); font-family: "Source Han Sans SC", sans-serif; font-size: 27px; font-weight: 700; stroke: var(--paper); stroke-width: 8px; stroke-linejoin: miter; paint-order: stroke fill; }
+.buy-figure.is-ready .buy-box, .buy-figure.is-ready .buy-leader { stroke-dasharray: 100; stroke-dashoffset: 100; opacity: 0; }
+.buy-figure.is-ready .buy-label { opacity: 0; }
+.buy-figure.is-ready.is-visible .buy-box { animation: buy-draw var(--buy-box-time) ease-out calc(var(--order) * var(--buy-step)) both; }
+.buy-figure.is-ready.is-visible .buy-leader { animation: buy-draw var(--buy-line-time) ease-out calc(var(--buy-box-time) + 6 * var(--buy-step) + 0.1s + var(--order) * var(--buy-step)) both; }
+.buy-figure.is-ready.is-visible .buy-label { animation: buy-label-in 0.25s ease-out calc(var(--buy-box-time) + 6 * var(--buy-step) + 0.1s + var(--order) * var(--buy-step) + var(--buy-line-time)) both; }
+@keyframes buy-draw { from { opacity: 1; stroke-dashoffset: 100; } to { opacity: 1; stroke-dashoffset: 0; } }
+@keyframes buy-label-in { from { opacity: 0; } to { opacity: 1; } }
+.buy-caption { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 6px 16px; padding: 10px 12px; border-top: 1px solid var(--line); color: var(--muted-ink); font-size: 11px; line-height: 1.6; }
+#equipment > .equipment-copy { grid-area: copy; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; width: 100%; margin: 0; padding: 0; }
+.equipment-copy .knowledge-item + .knowledge-item { margin: 0; }
+.equipment-copy .guide-note { grid-column: 1 / -1; margin: 0; }
+
+/* 08 设置：长截图保持原比例，滚动发生在线框窗口内。 */
+.media-window { min-width: 0; margin: 20px 0 0; border: 1px solid var(--line); background: transparent; }
+.media-window-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.media-window-bar > span { font-size: 11px; font-weight: 500; line-height: 1.5; }
+.media-window-bar > .zoom-trigger { flex-shrink: 0; }
+.media-viewport { max-height: var(--window-height, 360px); overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.media-viewport > img { display: block; width: 100%; min-width: var(--image-min-width, 640px); max-width: none; height: auto; }
+.media-window--settings { --window-height: 420px; }
+.media-window--sensitivity { --window-height: 340px; }
+.media-window--compact { --window-height: 280px; }
+.media-window--short { --window-height: 220px; }
+.media-window-caption { display: flex; justify-content: space-between; gap: 12px; padding: 8px 12px; border-top: 1px solid var(--line-soft); color: var(--muted-ink); font: 10px/1.6 Consolas, "Microsoft YaHei", monospace; }
+.media-viewport:focus-visible, .buy-scroll:focus-visible, .lesson-detail summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.sensitivity-reference { display: grid; grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1.5fr); align-items: center; gap: 24px; margin: 24px 0 0; }
+.sensitivity-reference > div { display: grid; gap: 8px; min-width: 0; }
+.sensitivity-reference > div > span { color: var(--muted-ink); font-size: 12px; }
+.sensitivity-reference strong { font: 500 clamp(32px, 3vw, 48px)/1.1 Consolas, monospace; letter-spacing: -0.07em; }
+.reference-divider { width: 1px; height: 52px; background: var(--line-soft); }
+.key-list, .server-list { margin: 18px 0; }
+.key-list > div, .server-list > div { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; padding: 10px 0; border-bottom: 1px solid var(--line-soft); }
+.key-list dt, .server-list dt { color: var(--muted-ink); font-size: 13px; }
+.key-list dd, .server-list dd { display: flex; align-items: center; gap: 8px; margin: 0; }
+.key-list dd > span { color: var(--muted-ink); font-size: 12px; }
+
+/* 09 注释与复制提示：统一使用直角、细线和站点主题色。 */
+.note-trigger { display: inline; padding: 0; border: 0; background: transparent; color: var(--accent); font: inherit; text-decoration: underline dotted; text-underline-offset: 4px; cursor: pointer; }
+.note-trigger:hover, .note-trigger[aria-expanded="true"] { text-decoration-style: solid; }
+.note-bubble { position: fixed; z-index: 200; width: 280px; max-width: calc(100vw - 24px); padding: 14px 16px; border: 1px solid var(--line); border-radius: 0; background: var(--paper); color: var(--ink); font-size: 12px; line-height: 1.8; overflow-wrap: anywhere; }
+.note-bubble strong { display: block; margin-bottom: 6px; font-size: 14px; }
+.copy-toast { position: fixed; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); z-index: 300; max-width: calc(100% - 32px); padding: 12px 20px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); font-size: 13px; line-height: 1.6; pointer-events: none; opacity: 0; transform: translate(-50%, 6px); transition: opacity 0.18s, transform 0.18s; }
+.copy-toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+.crosshair-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 20px; }
+.crosshair-preview { min-width: 0; padding: 0; border: 1px solid var(--line); border-radius: 0; background: transparent; color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.crosshair-preview > img { display: block; width: 100%; height: auto; }
+.crosshair-name { display: flex; justify-content: space-between; align-items: center; padding: 9px 10px; border-top: 1px solid var(--line-soft); color: var(--muted-ink); font-size: 11px; line-height: 1.5; }
+.crosshair-name::after { content: "复制 ↗"; font-size: 10px; }
+.crosshair-preview:hover, .crosshair-preview:focus-visible { border-color: var(--accent); }
+.crosshair-preview:hover .crosshair-name { color: var(--accent); }
+
+/* 10 放大媒体：视频完整播放；图片可按原尺寸滚动，也可适应窗口宽度。 */
+body.lightbox-open { overflow: hidden; }
+.lightbox { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: 68px 4vw 32px; background: #111315f2; }
+.lightbox-figure { min-width: 0; width: min(1200px, 92vw); margin: 0; }
+.lightbox-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 40px; padding: 0 0 12px; color: #f3f4f4; }
+.lightbox-caption { margin: 0; font-size: 12px; line-height: 1.5; text-align: left; }
+.lightbox-fit, .lightbox-close { display: inline-grid; place-items: center; flex-shrink: 0; min-height: 32px; padding: 5px 10px; border: 1px solid #a6afb2; border-radius: 0; background: transparent; color: #f3f4f4; font-size: 12px; cursor: pointer; }
+.lightbox-close { position: absolute; top: 18px; right: 4vw; width: 36px; height: 36px; padding: 0; font-size: 18px; }
+.lightbox-fit:hover, .lightbox-close:hover { border-color: var(--accent); }
+.lightbox-stage { max-height: calc(100dvh - 152px); overflow: auto; border: 1px solid #a6afb2; background: #111315; scrollbar-color: #a6afb2 #111315; --ink: #f3f4f4; --paper: #111315; }
+.lightbox-stage video { display: block; width: 100%; max-height: calc(100dvh - 156px); object-fit: contain; }
+.lightbox-stage img, .lightbox-stage .buy-diagram { display: block; width: var(--image-width, 100%); min-width: 0; max-width: none; height: auto; margin-inline: auto; }
+.lightbox-stage.is-fitted img, .lightbox-stage.is-fitted .buy-diagram { width: 100%; }
+.lightbox-stage:focus-visible { outline: 2px solid #f3f4f4; outline-offset: 4px; }
+
+/* 11 章节刻度与页脚沿用站点外壳的字体、色板和线条。 */
+.chapter-rail { position: fixed; top: 50%; right: var(--rail-right); z-index: 90; width: var(--rail-width); max-height: calc(100dvh - 48px); overflow-y: auto; transform: translateY(-50%); }
+.chapter-rail a { display: flex; align-items: center; justify-content: flex-end; gap: 12px; min-height: 44px; padding: 4px 2px; }
+.rail-label { min-width: 0; color: var(--muted-ink); font-size: 11px; line-height: 1.4; text-align: right; opacity: 0; transform: translateX(5px); transition: opacity 0.18s, transform 0.18s; }
+.rail-tick { flex-shrink: 0; width: 14px; height: 1px; background: var(--line); transition: width 0.18s, background-color 0.18s; }
+.chapter-rail a:nth-child(2n) .rail-tick { width: 22px; }
+.chapter-rail a.is-active .rail-tick { width: var(--rail-active-width); height: 2px; background: var(--accent); }
+.chapter-rail a.is-active .rail-label, .chapter-rail a:hover .rail-label, .chapter-rail a:focus-visible .rail-label { opacity: 1; transform: translateX(0); }
+.chapter-rail a.is-active .rail-label { color: var(--ink); font-weight: 500; }
+.site-footer { display: flex; align-items: center; flex-wrap: wrap; gap: 28px; min-height: 110px; margin-inline: 40px; border-top: 1px solid var(--line); text-align: left; }
+.site-footer p { color: var(--muted-ink); font-size: 10px; line-height: 1.8; letter-spacing: 0.12em; }
+.footer-line { flex: 1; height: 1px; background: var(--line-soft); }
+.site-footer a { display: flex; align-items: center; gap: 18px; color: var(--ink); font-size: 13px; }
+.site-footer a > span { color: var(--accent); font-size: 24px; }
+
+/* 12 响应式：媒体在各自窗口内滚动，正文不会横向溢出。 */
+@media (max-width: 1420px) {
+    .control-stage { grid-template-columns: minmax(0, 1fr); grid-template-areas: "shead" "kb" "mouse"; }
+}
+@media (max-width: 1190px) {
+    .control-guide { grid-template-columns: minmax(0, 1fr); grid-template-areas: "copy" "stage"; gap: 24px; }
+    .aiming-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .aiming-unit:first-child { grid-column: 1 / -1; }
+    .aiming-unit:first-child .lesson-content { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; }
+    .aiming-unit:first-child h3, .aiming-unit:first-child .lesson-content > p, .aiming-unit:first-child .lesson-detail { grid-column: 1; }
+    .aiming-unit:first-child .lesson-media { grid-column: 2; grid-row: 1 / 4; align-self: start; }
+}
+@media (max-width: 1120px) {
+    :root { --hero-gap: 42px; --hero-padding: 44px 28px; --title-size: 96px; }
+    .guide-content { padding-inline: 28px; }
+    .guide-index, .site-footer { margin-inline: 28px; }
+    .guide-index a { padding-inline: 12px; gap: 8px; }
+    #equipment { grid-template-columns: minmax(0, 1fr); grid-template-areas: "heading" "media" "copy"; gap: 20px; }
+    #equipment > .guide-heading { display: flex; flex-wrap: wrap; align-items: baseline; gap: 16px 24px; margin: 0; }
+    #equipment .chapter-intro { margin: 0; max-width: none; }
+    #equipment .guide-heading h2 { margin: 0; }
+}
+@media (max-width: 1000px) {
+    .guide-pair, .guide-pair--notes { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .media-window--settings { --window-height: 420px; }
+}
+@media (max-width: 760px) {
+    :root { --page-left: 16px; --rail-reserve: 72px; --rail-right: 6px; --rail-width: 60px; --rail-active-width: 15px; }
+    .page-shell { margin-left: var(--page-left); }
+    .guide-content { padding-inline: 16px; }
+    .guide-index, .site-footer { margin-inline: 16px; }
+    .guide-index { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .guide-index a { padding: 12px; border-right: 1px solid var(--line-soft); }
+    .guide-index a:nth-child(2n) { border-right: 0; }
+    .guide-index a:nth-child(n + 3) { border-top: 1px solid var(--line-soft); }
+    .index-name { font-size: 12px; }
+    .index-arrow { display: none; }
+    .guide-section, #aiming { padding-block: 28px; }
+    .guide-heading h2 { font-size: 32px; }
+    .aiming-header { grid-template-columns: minmax(0, 1fr); gap: 16px; margin-bottom: 24px; }
+    .aiming-header h2 { font-size: clamp(40px, 7vw, 52px); }
+    .aiming-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    .aiming-unit:first-child { grid-column: auto; }
+    .aiming-unit:first-child .lesson-content { display: flex; }
+    .lesson-content > p:not(.guide-note) { min-height: 0; }
+    .lesson-content > h3 { font-size: 23px; }
+    #equipment > .equipment-copy { grid-template-columns: minmax(0, 1fr); }
+    .equipment-copy .guide-note { grid-column: auto; }
+    .media-window-bar { align-items: flex-start; gap: 8px; padding: 10px; }
+    .media-window-bar > span { padding-top: 6px; }
+    .zoom-trigger { padding-inline: 7px; font-size: 10px; }
+    .sensitivity-reference { gap: 16px; }
+    .chapter-rail a { gap: 5px; min-height: 46px; }
+    .rail-label { flex: 1; font-size: 10px; overflow-wrap: anywhere; }
+    .rail-tick, .chapter-rail a:nth-child(2n) .rail-tick { width: 7px; }
+    .crosshair-gallery { gap: 12px; }
+    .crosshair-name { flex-wrap: wrap; gap: 5px; padding: 8px; }
+    .site-footer { gap: 16px; padding-block: 24px; }
+    .site-footer p { flex: 1; letter-spacing: 0.06em; }
+    .footer-line { display: none; }
+    .lightbox { padding: 64px 16px 24px; }
+    .lightbox-figure { width: calc(100vw - 32px); }
+    .lightbox-close { right: 16px; }
+}
+@media (max-width: 600px) {
+    :root { --hero-padding: 34px 16px; --copy-gap: 26px; --title-size: clamp(64px, 15vw, 86px); --title-tracking: 0.08em; }
+    .guide-body { font-size: 13px; }
+    .buy-caption { padding-inline: 10px; font-size: 10px; }
+    .key-list > div, .server-list > div { gap: 8px; }
+    .guide-pair--notes .guide-heading h2 { font-size: 30px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+    .axis-line { stroke-dashoffset: 0; }
+    .axis-label, .buy-figure.is-ready .buy-box, .buy-figure.is-ready .buy-leader, .buy-figure.is-ready .buy-label { opacity: 1; stroke-dashoffset: 0; }
+    .lesson-key.is-pressed, .control-key.is-down { transform: none; }
+}
+[hidden] { display: none !important; }

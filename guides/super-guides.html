@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<!-- 【修复】lang 原为 en 但正文是中文，会让屏幕阅读器用英文语音读中文；已改为 zh-CN。 -->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 【修复】title 原为 IDE 默认值 "Document"，会直接显示在标签页与搜索结果里。 -->
+    <title>进阶教学 - 反恐精英中文网</title>
+    <meta name="description" content="反恐精英中文网：进阶教学，游戏话术与回合经济决策讲解。">
+    <meta name="theme-color" content="#F3F4F4" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#111315" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="../assets/images/logo/dark-logo.svg" type="image/svg+xml">
+
+    <!-- 【路径】本页在 guides/ 内，用 ../ 退回站点根目录。 -->
+    <script src="../assets/js/theme-init.js"></script>
+    <!-- ↑全站公共：首帧前定主题。必须同步、必须在头部，不能加 defer。 -->
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <!-- ↑全站公共层：字体、主题变量、Reset、导航条、页脚。必须排在私有样式之前。 -->
+    <link rel="stylesheet" href="../assets/css/map-guides.css">
+    <!-- ↑本页暂无专有样式，先共用地图页的内容区排版（main 留白 / .map-section 分隔）。
+         等本页长出自己的组件后，再拆出 super-guides.css。 -->
+</head>
+<body>
+    <a class="skip-link" href="#main">跳转到主要内容</a>
+
+    <!-- ↓ 全站统一导航条（公共层 common.css） -->
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="site-logo" href="../index.html" aria-label="反恐精英中文网首页">
+                <img src="../assets/images/logo/dark-logo.svg" alt="">反恐精英中文网
+            </a>
+
+            <nav class="nav-home" aria-label="网站主导航">
+                <div class="nav-item">
+                    <button class="nav-trigger" type="button">攻略专区</button>
+                    <ul class="nav-dropdown">
+                        <li><a href="./rookie-guides.html">新手教学</a></li>
+                        <li><a href="./map-guides.html">服役地图</a></li>
+                        <li><a href="./super-guides.html">进阶教学</a></li>
+                    </ul>
+                </div>
+                <div class="nav-item">
+                    <button class="nav-trigger" type="button">CS赛事</button>
+                    <ul class="nav-dropdown">
+                        <li>
+                            <a href="https://www.hltv.org/" target="_blank" rel="noopener noreferrer">HLTV</a>
+                        </li>
+                        <li>职业信息</li>
+                    </ul>
+                </div>
+                <div class="nav-item">
+                    <button class="nav-trigger" type="button">玩家创作</button>
+                    <ul class="nav-dropdown">
+                        <li><a href="../media/hlae.html">HLAE</a></li>
+                        <li>影视美学</li>
+                    </ul>
+                </div>
+                <div class="nav-item">
+                    <button class="nav-trigger" type="button">交易市场</button>
+                    <ul class="nav-dropdown">
+                        <li>价格走势</li>
+                        <li>挂刀搬砖</li>
+                    </ul>
+                </div>
+                <div class="nav-item">
+                    <button class="nav-trigger" type="button">社区贡献</button>
+                    <ul class="nav-dropdown">
+                        <li>网站公告</li>
+                        <li>社区游戏</li>
+                        <li>特别致谢</li>
+                        <li>玩家合影</li>
+                    </ul>
+                </div>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="search-trigger" type="button" aria-label="打开网站搜索" aria-controls="site-search-overlay" aria-expanded="false"><img src="../assets/images/icons/search.svg" alt=""></button>
+
+                <button class="theme-button" id="theme-button" type="button" aria-label="深色主题" aria-pressed="false">
+                    <img class="icon icon-moon" src="../assets/images/icons/moon.svg" alt="">
+                    <img class="icon icon-sun" src="../assets/images/icons/sun.svg" alt="">
+                </button>
+
+                <audio id="theme-audio" src="../assets/audios/Valve Studio Orchestra - Game Time.flac" loop preload="none"></audio>
+                <button type="button" class="audio-button" id="audio-button" aria-label="播放背景音乐">
+                    <img id="audio-icon" src="../assets/images/icons/music-off.svg" alt="音乐默认关闭">
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="main">
+        <h1>进阶教学</h1>
+
+        <section class="map-section">
+            <h2>游戏话术讲解</h2>
+            <p>ECO局：</p>
+            <p>纯E局：这回合什么都不买</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>自由开放的非官方反恐精英网站<br>yushucrain@gmail.com</p>
+    </footer>
+
+    <script src="../assets/js/search-index.js" defer></script>
+
+
+    <script src="../assets/js/site.js" defer></script>
+
+    <!-- ↓ 全站搜索弹层。必须挂在 <body> 直接子级：
+         .site-header 带 transform（滚动显隐），会成为 position:fixed 后代的包含块，
+         弹层若留在导航里，inset:0 只会解析出导航条那点高度，撑不满视口。 -->
+    <div class="search-overlay" id="site-search-overlay" role="dialog" aria-modal="true"
+         aria-label="网站搜索" hidden>
+        <form class="search-overlay-form" action="#" method="get" role="search">
+            <input class="search-overlay-input" type="search" name="q"
+                   placeholder="输入关键词搜索内容" aria-label="网站内容搜索"
+                   autocomplete="off" required>
+            <button class="search-overlay-submit" type="submit" aria-label="提交搜索">
+                <img src="../assets/images/icons/search.svg" alt="">
+            </button>
+        </form>
+        <p class="search-overlay-hint">按 ESC 或点击空白处关闭</p>
+        <button class="search-overlay-close" type="button" aria-label="关闭搜索"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M5 5 19 19"/><path d="M19 5 5 19"/></svg></button>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,413 @@
+/*
+  首页私有样式表 · assets/css/index.css
+  ────────────────────────────────────────────────────────────────
+  【职责边界】本文件只服务于「首页 index.html」。
+          全站公共层（字体、主题变量、Reset、导航、页脚）已经抽到
+          assets/css/common.css，本文件不再重复定义，也不再 @import。
+
+  【引入顺序】index.html 的 <head> 里必须写成：
+          <link rel="stylesheet" href="./assets/css/common.css">
+          <link rel="stylesheet" href="./assets/css/index.css">
+          公共层在前、页面层在后，本文件才能安全覆盖公共规则。
+
+  【分区索引】
+          01  首页骨架（粘底页脚所需的 flex 容器）
+          02  首屏视频与渐变遮罩
+          03  首屏打字效果
+          04  档案章节（视频章节与最新消息之间）
+          05  减少动态效果（首屏与打字部分）
+
+  【注意】CSS 里的 url() 相对「本文件所在目录」解析，不是相对 HTML。
+          本文件在 assets/css/ 下，引用资源必须用 ../ 前缀。
+  ────────────────────────────────────────────────────────────────
+*/
+
+/* ==================== 01 首页骨架 ==================== */
+
+/* 公共层已经给了 body 的字体、底色、文字色与 min-height。
+   这里只补「粘底页脚」需要的 flex 容器：正文和页脚纵向排列，
+   页脚的 margin-top: auto 才有可以吸收的剩余空间。 */
+body {
+    display: flex; /* 启用 Flex 布局 */
+    flex-direction: column; /* 让首屏、正文和页脚纵向排列 */
+}
+
+/* 首页正文整体居中——这是首页的排版选择，没有写进公共层，
+   因为新手教学页等左对齐的页面会被这条规则整体破坏。 */
+main {
+    text-align: center;
+    flex-shrink: 0; /* 防止正文高度被 Flex 布局压缩 */
+}
+
+/* ==================== 02 首屏视频与渐变遮罩 ==================== */
+
+.hero {
+    position: relative;
+    height: 100vh;
+    height: 100dvh;
+    flex-shrink: 0; /* body 是 flex 容器，防止首屏高度被后面的内容挤掉 */
+    overflow: hidden;
+}
+
+.hero > video {
+    position: absolute;
+    inset: 0;              /* = top/right/bottom/left 全 0 */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* ↑ 让视频保持原始宽高比去填满容器，多出来的部分被裁掉，绝不拉伸变形 */
+    object-position: center center;   /* 默认轴心，先保住画面正中 */
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* 视频上压一层渐变，保证文字在亮画面上也能看清。
+   用伪元素而不是新增 div，HTML 不用动。不想要压暗效果就删掉这一段。 */
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1; /* 高于 video(0)，低于文字(2) */
+    background: linear-gradient(
+        to bottom,
+        rgb(0 0 0 / 40%) 0%,
+        rgb(0 0 0 / 15%) 45%,
+        rgb(0 0 0 / 45%) 100%
+    );
+    pointer-events: none;
+}
+
+/* ↓ 竖屏 / 窄屏时，把锚点提到偏上，避免主体被裁 */
+@media (max-aspect-ratio: 1/1) {
+    .hero > video { object-position: center 30%; }
+}
+
+/* ==================== 03 首屏打字效果 ==================== */
+
+.typing-group {
+    position: relative;
+    z-index: 2; /* 高于视频遮罩(1)，确保文字在最上层 */
+    /* 配合 flex 居中 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 0 24px; /* 窄屏时文字不会贴到屏幕边缘 */
+}
+.typing-group .typing-text {
+    position: relative;
+
+    /* 按完整文案确定宽度，再将整个段落水平居中 */
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto 6px;
+
+    /* 动画从已确定的左边缘开始，不随文字增加而重新居中 */
+    text-align: left;
+
+    line-height: 1.5;
+    letter-spacing: -0.02em;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+.typing-source { /* 完整文字占位层 */
+    display: block; /* 按完整文字计算段落高度 */
+} /* 占位层样式结束 */
+.typing-text.is-typing .typing-source { /* 动画运行时 */
+    opacity: 0; /* 隐藏占位文字外观，但保留高度和可访问性 */
+} /* 隐藏规则结束 */
+.typing-overlay { /* 逐字显示的动画层 */
+    position: absolute; /* 不参与段落高度计算 */
+    inset: 0; /* 覆盖完整文字所在的区域 */
+    pointer-events: none; /* 不拦截鼠标操作 */
+    text-align: left;
+} /* 动画层样式结束 */
+.typing-overlay::after { /* 光标放在动画层的文字之后 */
+    content: ""; /* 生成光标 */
+    display: inline-block; /* 光标与文字排列在同一行 */
+    width: 0; /* 不占水平空间，避免将光标挤到下一行 */
+    height: 1em; /* 光标高度跟随字号 */
+    vertical-align: -0.12em; /* 调整光标垂直位置 */
+    box-shadow: 2px 0 0 1px currentColor; /* 用不占布局空间的阴影绘制光标 */
+    animation: typing-blink 0.8s step-end infinite; /* 循环闪烁 */
+} /* 光标样式结束 */
+@keyframes typing-blink { /* 光标闪烁动画 */
+    0%, 100% { opacity: 1; } /* 显示 */
+    50% { opacity: 0; } /* 隐藏 */
+} /* 动画定义结束 */
+.typing-group .typing-large { /* 最后一段标题 */
+    /* 不再写死 64px：手机上会撑破屏幕。clamp 让字号随视口在 32～64px 之间平滑变化 */
+    font-size: clamp(32px, 6vw, 64px);
+    font-weight: 700; /* 保留粗体 */
+    margin-bottom: 0; /* 去掉最后一段下方间距 */
+} /* 标题样式结束 */
+
+/* ==================== 04 档案章节 ==================== */
+
+/* 复刻 VANTA/9 档案站的编辑式排版：
+   大标题被四枚红色角标框住，两位人物从视口左右边缘探入，
+   下方是等宽字体的正文与右移的元信息，一条十字轴线从中间穿过。
+   章节独立成屏的感觉靠大留白撑起来，不靠卡片和边框。 */
+.archive-section {
+    position: relative;
+    overflow: hidden; /* 人物图故意探出视口边缘，裁掉超出部分避免横向滚动 */
+    padding: clamp(96px, 14vh, 176px) 24px;
+}
+
+/* ---- 两侧人物 ----
+   绝对定位贴边 + 负偏移让画面被视口裁掉一截（参考图里头盔就是被切开的）。
+   灰度滤镜统一影调；pointer-events none 保证它们永不挡点击。 */
+.archive-figure {
+    position: absolute;
+    top: 50%;
+    z-index: 0;
+    width: clamp(240px, 24vw, 440px);
+    height: auto;
+    transform: translateY(-50%);
+    filter: grayscale(1) contrast(1.04);
+    pointer-events: none;
+    user-select: none;
+}
+
+.archive-figure-left {
+    left: calc(-1 * clamp(48px, 7vw, 150px));
+}
+
+.archive-figure-right {
+    right: calc(-1 * clamp(48px, 7vw, 150px));
+}
+
+/* ---- 标题与红色角标 ----
+   角标是四个空的 <i>，各画两条 2px 的红边；
+   挂在 .archive-frame 的四个角上，框的大小随标题自动伸缩。 */
+.archive-frame {
+    position: relative;
+    z-index: 1; /* 压在人物图(0)之上 */
+    max-width: 980px;
+    margin: 0 auto;
+    padding: clamp(28px, 5vw, 56px) clamp(16px, 4vw, 48px);
+}
+
+.archive-corner {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border: 0 solid #e2483d; /* 参考图的信号红，两个主题下都固定用这一支 */
+}
+
+.archive-corner-tl {
+    top: 0;
+    left: 0;
+    border-top-width: 2px;
+    border-left-width: 2px;
+}
+
+.archive-corner-tr {
+    top: 0;
+    right: 0;
+    border-top-width: 2px;
+    border-right-width: 2px;
+}
+
+.archive-corner-bl {
+    bottom: 0;
+    left: 0;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+}
+
+.archive-corner-br {
+    bottom: 0;
+    right: 0;
+    border-bottom-width: 2px;
+    border-right-width: 2px;
+}
+
+.archive-title {
+    margin: 0;
+    font-size: clamp(32px, 6.4vw, 88px);
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: 0.01em;
+    text-align: center;
+    color: var(--text);
+}
+
+.archive-title span {
+    display: block; /* 两行标题各占一行，断行位置由 HTML 控制 */
+}
+
+/* ---- 正文与元信息 ----
+   双栏网格：左栏等宽字体正文（两端对齐，参考图同款），
+   右栏元信息整体下移，让「年份」一行落在轴线之下。 */
+.archive-body {
+    position: relative;
+    z-index: 1;
+    max-width: 1040px;
+    margin: clamp(56px, 9vh, 110px) auto 0;
+    display: grid;
+    grid-template-columns: minmax(0, 10fr) minmax(0, 11fr);
+    column-gap: clamp(48px, 8vw, 110px);
+    text-align: left; /* 覆盖 main 的居中：这一章是编辑式左对齐排版 */
+}
+
+.archive-lede,
+.archive-meta {
+    margin: 0;
+    font-family: "Cascadia Mono", Consolas, "Courier New", monospace;
+    font-size: 15px;
+    line-height: 1.95;
+}
+
+.archive-lede {
+    color: var(--text);
+    text-align: justify; /* 参考图的正文是两端对齐，边缘切齐才有档案感 */
+}
+
+.archive-lede strong {
+    font-weight: 700;
+}
+
+.archive-meta {
+    padding-top: clamp(40px, 7vh, 96px); /* 右栏整体下移，错开左栏 */
+    color: var(--muted);
+}
+
+.archive-meta p {
+    margin: 0;
+}
+
+/* 「年份」上方让出一段垂直空间，十字轴线的横线正好从中间穿过去 */
+.archive-meta .archive-meta-year {
+    margin-top: clamp(72px, 12vh, 128px);
+}
+
+/* ---- 十字轴线 ----
+   .archive-axis 本体是 0 高的一条横线（border-top），
+   ::before 画竖线、.archive-axis-ring 画圆环。
+   圆环用页面底色填充，把穿过的线条「遮断」——参考图里线条在圆环处是断开的。
+   颜色先写死一档兜底，支持 color-mix 的浏览器再用主题色派生半透明。 */
+.archive-axis {
+    position: absolute;
+    left: 0;
+    right: 6%;
+    bottom: 92px; /* 与 .archive-meta-year 的 margin-top 联动：落在那道空隙的正中 */
+    height: 0;
+    border-top: 1px solid rgb(128 128 128 / 35%);
+    border-top: 1px solid color-mix(in srgb, var(--border) 45%, transparent);
+    pointer-events: none;
+}
+
+.archive-axis::before {
+    content: "";
+    position: absolute;
+    left: 45%;
+    top: -76px;
+    width: 1px;
+    height: 152px;
+    background: rgb(128 128 128 / 35%);
+    background: color-mix(in srgb, var(--border) 45%, transparent);
+}
+
+.archive-axis-ring {
+    position: absolute;
+    left: 45%;
+    top: 0;
+    width: 64px;
+    height: 64px;
+    transform: translate(-50%, -50%);
+    border: 1px solid rgb(128 128 128 / 50%);
+    border: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
+    border-radius: 50%;
+    background: var(--page-bg); /* 遮断穿过的线 */
+}
+
+.archive-axis-ring::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: var(--muted);
+}
+
+/* ---- 响应式 ----
+   中窄屏：人物缩小并加大裁切量，正文区按同样比例让位，
+   保证文字永远不会压到人物身上。 */
+@media (max-width: 1280px) {
+    .archive-figure {
+        width: clamp(150px, 20vw, 300px);
+    }
+
+    .archive-figure-left {
+        left: -8vw;
+    }
+
+    .archive-figure-right {
+        right: -8vw;
+    }
+
+    .archive-frame,
+    .archive-body {
+        max-width: calc(100% - clamp(120px, 24vw, 340px));
+    }
+}
+
+@media (max-width: 900px) {
+    /* 单栏：元信息退到正文下方，轴线的几何跟着重算 */
+    .archive-body {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 40px;
+    }
+
+    .archive-meta {
+        padding-top: 0;
+    }
+
+    .archive-meta .archive-meta-year {
+        margin-top: 96px;
+    }
+
+    .archive-axis {
+        bottom: 76px; /* 29px 行高 + 96px 空隙的一半 ≈ 77，取 76 */
+        right: 0;
+    }
+
+    /* 竖线在窄屏会和文字打架，只留横线与圆环 */
+    .archive-axis::before {
+        display: none;
+    }
+}
+
+@media (max-width: 640px) {
+    /* 手机上人物会盖住正文，整体撤掉，只留排版本身 */
+    .archive-figure {
+        display: none;
+    }
+
+    .archive-frame,
+    .archive-body {
+        max-width: 100%;
+    }
+}
+
+/* ==================== 05 减少动态效果 ==================== */
+
+/* 公共层关掉了平滑滚动与下拉过渡；首屏视频与打字效果的降级放在这里。 */
+@media (prefers-reduced-motion: reduce) {
+    /* 首屏不放视频，改用随主题变化的渐变背景 */
+    .hero > video { display: none; }
+    .hero::before { display: none; }
+    /* ↑原来这里引用了 ./assets/images/hero-poster.jpg，但该文件并不存在，
+       去掉后会请求失败。改用 CSS 渐变，不依赖任何图片资源。 */
+    .hero { background: linear-gradient(160deg, var(--surface), var(--page-bg)); }
+
+    /* 打字效果：直接显示完整原文 */
+    .typing-text.is-typing .typing-source { opacity: 1; }
+    .typing-overlay { display: none; }
+    .typing-overlay::after { animation: none; } /* 光标停止闪烁 */
+}

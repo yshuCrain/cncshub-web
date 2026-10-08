@@ -1,0 +1,104 @@
+/*
+  服役地图页私有样式表 · assets/css/map-guides.css
+  ────────────────────────────────────────────────────────────────
+  【职责边界】服务于「服役地图总览 guides/map-guides.html」与
+          「单张地图页 guides/servicemaps/*.html」。
+          全站公共层（字体、主题变量、Reset、导航条、页脚）在
+          assets/css/common.css，本文件不再重复。
+
+  【引入顺序】
+          <link rel="stylesheet" href="../assets/css/common.css">
+          <link rel="stylesheet" href="../assets/css/map-guides.css">
+          （servicemaps/ 下的页面用 ../../ 退回根目录）
+
+  【配色约定】本文件不写死色值，一律走公共层变量，深色模式自动跟随。
+  ────────────────────────────────────────────────────────────────
+*/
+
+/* ==================== 01 页面骨架 ==================== */
+
+main ul {
+    list-style: none;
+}
+
+/* 内容区留白：公共层的 main 只负责居中与最大宽度，内边距交给页面决定。 */
+main {
+    padding: 24px clamp(16px, 3vw, 40px) 48px;
+    text-align: left;
+}
+
+/* 章节之间的分隔，与导航条保持同一条线的语义 */
+.map-section {
+    padding: 20px 0;
+    border-top: 1px solid var(--border);
+}
+
+.map-section :is(h2, h3) {
+    margin: 0 0 8px;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.map-section p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+/* ==================== 02 地图导航条（横向滑动） ==================== */
+
+.maps-nav {
+    display: flex;
+    justify-content: flex-start;
+    gap: 60px;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    /* ↑横向滑动 */
+    list-style: none;
+    padding: 12px;
+    margin: 0;
+    scroll-snap-type: x proximity;
+}
+
+.maps-nav li {
+    flex: 0 0 auto;
+    /* ↑flex-grow:   0          多余空间不要强制长大
+        flex-shrink: 0          空间不足不要缩小
+        flex-basis:  auto       基础尺寸根据自己内容决定 */
+    scroll-snap-align: start;
+}
+
+/* 地图入口使用原生链接，支持键盘、在新标签页打开和无脚本访问。 */
+.map-item {
+    display: block;
+    padding: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    min-width: 60px;
+    /* ↑最小尺寸 */
+    transition:
+        border-color 0.18s ease,
+        color 0.18s ease;
+}
+
+.map-item:hover,
+.map-item:focus-visible {
+    border-color: var(--hover);
+    color: var(--hover);
+}
+
+/* ↓调整图标大小 */
+.map-item img {
+    display: block;
+    width: 64px;
+    height: auto;
+}
+
+@media (min-width: 900px) {
+    .map-item img {
+        width: 120px;
+    }
+}
