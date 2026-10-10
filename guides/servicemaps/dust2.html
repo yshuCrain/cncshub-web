@@ -12,12 +12,13 @@
     <!-- 【路径】本页在 guides/servicemaps/ 内，用 ../../ 退回站点根目录。 -->
     <script src="../../assets/js/theme-init.js"></script>
     <!-- ↑全站公共：首帧前定主题。必须同步、必须在头部，不能加 defer。 -->
+    <!-- 公共样式和页面样式通过显式 CSS layer 保持覆盖关系。 -->
     <link rel="stylesheet" href="../../assets/css/common.css">
-    <!-- ↑全站公共层：字体、主题变量、Reset、导航条、页脚。必须排在私有样式之前。 -->
     <link rel="stylesheet" href="../../assets/css/map-guides.css">
     <!-- ↑地图页私有样式：内容区留白与章节分隔。 -->
+    <link rel="stylesheet" href="../../assets/css/dust2.css">
 </head>
-<body>
+<body class="dust-page">
     <a class="skip-link" href="#main">跳转到主要内容</a>
 
     <!-- ↓ 全站统一导航条（公共层 common.css） -->
@@ -31,17 +32,17 @@
                 <div class="nav-item">
                     <button class="nav-trigger" type="button">攻略专区</button>
                     <ul class="nav-dropdown">
-                        <li><a href="../rookie-guides.html">新手教学</a></li>
-                        <li><a href="../map-guides.html">服役地图</a></li>
-                        <li><a href="../super-guides.html">进阶教学</a></li>
+                        <li><a href="../../guides/rookie-guides.html">新手教学</a></li>
+                        <li><a href="../../guides/map-guides.html">服役地图</a></li>
+                        <li><a href="../../guides/super-guides.html">进阶教学</a></li>
                     </ul>
                 </div>
                 <div class="nav-item">
                     <button class="nav-trigger" type="button">CS赛事</button>
                     <ul class="nav-dropdown">
-                        <li>
-                            <a href="https://www.hltv.org/" target="_blank" rel="noopener noreferrer">HLTV</a>
-                        </li>
+                        <li><a href="https://www.hltv.org/" target="_blank" rel="noopener noreferrer">HLTV</a></li>
+                        <!-- ↑rel="noopener" 必须加：新标签页拿到 window.opener 后可以篡改原页面地址，
+                             这是 target="_blank" 的一个已知安全风险。 -->
                         <li>职业信息</li>
                     </ul>
                 </div>
@@ -73,60 +74,135 @@
             <div class="nav-actions">
                 <button class="search-trigger" type="button" aria-label="打开网站搜索" aria-controls="site-search-overlay" aria-expanded="false"><img src="../../assets/images/icons/search.svg" alt=""></button>
 
-                <button class="theme-button" id="theme-button" type="button" aria-label="深色主题" aria-pressed="false">
-                    <img class="icon icon-moon" src="../../assets/images/icons/moon.svg" alt="">
-                    <img class="icon icon-sun" src="../../assets/images/icons/sun.svg" alt="">
-                </button>
+                <span class="site-tool-slot" id="site-theme-control"></span>
 
-                <audio id="theme-audio" src="../../assets/audios/Valve Studio Orchestra - Game Time.flac" loop preload="none"></audio>
-                <button type="button" class="audio-button" id="audio-button" aria-label="播放背景音乐">
-                    <img id="audio-icon" src="../../assets/images/icons/music-off.svg" alt="音乐默认关闭">
-                </button>
+                <!-- 用户登录入口先移除：login.html 还不存在，留着注释会指向一个死链接。
+                     页面做好之后按下面这段加回来即可（CSS 里的 .login-button 样式一直保留着）：
+                     <a class="login-button" href="../../login.html">
+                         <img src="../../assets/images/icons/avatar.svg" alt="用户登录">
+                     </a> -->
+
+                <span class="site-tool-slot" id="site-audio-control"></span>
             </div>
         </div>
     </header>
 
-    <main id="main">
-        <h1>
-            <img src="../../assets/images/servicemaps/icons/map_icon_de_dust2.svg" alt="">
-            炽热沙城二 DustⅡ
-        </h1>
-
-        <nav aria-label="返回地图总览">
-            <a href="../map-guides.html">← 返回服役地图总览</a>
-        </nav>
-
-        <section class="map-section">
-            <h2>攻防站位</h2>
-            <p>这里介绍 DustⅡ 的常规站位与轮转路线。</p>
-        </section>
-    </main>
+    <main id="main" class="dust-workspace" aria-label="Dust2 地图攻略文件夹">
+    <div class="dust-scene" data-mode="overview">
+        <div class="dust-grid" aria-hidden="true"></div>
+        <div class="dust-masthead"><a href="../map-guides.html">← 地图攻略</a><span>战术档案 / 06 CHAPTERS</span></div>
+        <div class="dust-identity"><span class="dust-emblem" aria-hidden="true"></span><h1>DUSTⅡ<span>炽热沙城 2</span></h1></div>
+        <p class="dust-intro">从一个点位，<br>到整张地图。</p>
+        <div class="dust-folders"><section class="dust-folder" id="callouts" data-folder="0" aria-labelledby="callouts-title">
+    <div class="folder-tab"><button class="folder-close" type="button" aria-label="关闭点位名称，返回文件夹总览">×</button><button class="folder-open" type="button" aria-expanded="false" aria-controls="callouts-reader"><span>01</span> 点位名称</button><span class="folder-tab-tail" aria-hidden="true"></span></div>
+    <div class="folder-paper"><div class="folder-cover" aria-hidden="true"><span class="cover-code">DUSTⅡ / CALLOUTS</span><span class="cover-number">01</span><p>先认识每一个位置。</p><span class="cover-bottom">FIELD NOTES <span>↗</span></span></div>
+    <div class="folder-reader" id="callouts-reader" role="region" aria-label="点位名称正文，可在窗口内滚动" tabindex="0"><div class="reader-heading"><span>DUSTⅡ / 01 — 06</span><h2 id="callouts-title">点位名称</h2></div>
+    <div class="reader-layout"><div class="reader-prose"><figure class="dust-map media-frame"><img src="../../assets/images/servicemaps/dust2/callouts.webp" width="4267" height="4267" alt="Dust2 全图点位名称：A 大、A 小、中路、B1、B2 与两个包点" loading="lazy"><figcaption>DustⅡ · 点位名称 <button class="zoom-trigger" type="button" data-type="image" data-caption="Dust2 点位名称">放大查看 ↗</button></figcaption></figure><p class="chapter-end">01 / 06 · 本章结束 <span>将鼠标移到窗口外，滚动翻章</span></p></div></div></div></div></section>
+<section class="dust-folder" id="map-logic" data-folder="1" aria-labelledby="map-logic-title">
+    <div class="folder-tab"><button class="folder-close" type="button" aria-label="关闭地图核心运营逻辑，返回文件夹总览">×</button><button class="folder-open" type="button" aria-expanded="false" aria-controls="map-logic-reader"><span>02</span> 地图核心运营逻辑</button><span class="folder-tab-tail" aria-hidden="true"></span></div>
+    <div class="folder-paper"><div class="folder-cover" aria-hidden="true"><span class="cover-code">DUSTⅡ / MAP LOGIC</span><span class="cover-number">02</span><p>读懂地图，再选择行动。</p><span class="cover-bottom">FIELD NOTES <span>↗</span></span></div>
+    <div class="folder-reader" id="map-logic-reader" role="region" aria-label="地图核心运营逻辑正文，可在窗口内滚动" tabindex="0"><div class="reader-heading"><span>DUSTⅡ / 02 — 06</span><h2 id="map-logic-title">地图核心运营逻辑</h2></div>
+    <div class="reader-layout"><nav class="reader-toc" aria-label="地图核心运营逻辑章内导航"><a href="#map-logic-part-1">引言</a><a href="#map-logic-part-2">一、核心思路：</a></nav><div class="reader-prose"><h3 id="map-logic-part-1">引言</h3>
+<p>Dust2作为爆破地图的经典代表，其“田字格”的地图结构影响了无数后续地图的设计思路。</p>
+<h3 id="map-logic-part-2">一、核心思路：</h3>
+<p>T优先控制中路，选择“夹 A”或“夹 B”（中路上 A 小配合 A 大、或中路出 B1/B2 配合 B 洞，形成两线夹击）。</p>
+<figure class="dust-routes" data-route="a"><figcaption>中路控制 → 两线夹击 <span>路线示意</span></figcaption><div class="route-controls" role="group" aria-label="选择地图进攻路线"><button type="button" data-route-choice="a" aria-pressed="true">夹 A</button><button type="button" data-route-choice="b" aria-pressed="false">夹 B</button><button type="button" data-route-pause aria-pressed="false">暂停动画</button></div><div class="route-map"><img src="../../assets/images/servicemaps/dust2/callouts.webp" alt="Dust2 地图上的夹 A 与夹 B 路线示意" width="4267" height="4267" loading="lazy"><svg viewBox="0 0 1000 1000" role="img" aria-label="切换按钮查看从中路和侧翼形成的两条夹击路线"><defs><marker id="dust-route-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="currentColor"/></marker></defs><g class="route-a"><path d="M465 630 L465 447 L567 447 L591 363 L610 258 L684 231"/><path d="M465 725 L680 725 L701 565 L800 561 L848 497 L852 331 L758 276"/></g><g class="route-b"><path d="M466 628 L462 488 L375 417 L310 417 L299 469 L214 469 L172 375 L161 259"/><path d="M444 833 L299 833 L189 840 L171 620 L183 474 L166 380 L168 260"/></g></svg></div></figure>
+<h4 id="map-logic-part-3">二、双方最快见面地点</h4>
+<ol><li value="1">A大：CT 永远比 T 快（但也只快一点点）。</li><li value="2">中路：暗道T 快过 中门前压CT 快过 中远T 快过 A小CT</li><li value="3">B通：无论 T 哪个身位都不可能比 CT 快。</li><li value="4">旋梯：一二身位CT 快过 T（T一定能更快占领B2,架住旋梯）</li></ol>
+<h4 id="map-logic-part-4">三、默认阵型：</h4>
+<p>Q：什么是“默认”？<br>A：基于第二点中的双方地形优势，通过控制地图来限制对方的活动范围，让对方无法轻易活动，进而限制对方获取信息的过程。</p>
+<p>CT默认阵型：3A2B<br>A区：</p>
+<ol><li value="1">如果T开局没有抢A大：</li></ol>
+<p>CT留1个人在A大，剩下2个人可以选择：（激进）顶 A 小打前点；<br>（保守）在斜坡和警家架枪，把对面放进包点再打。<br>B区：</p>
+<ol><li value="1">B区 1 个+沙地 1 个</li><li value="2">B区大箱 1 个 + 白车 1 个</li></ol><p class="chapter-end">02 / 06 · 本章结束 <span>将鼠标移到窗口外，滚动翻章</span></p></div></div></div></div></section>
+<section class="dust-folder" id="ct-default" data-folder="2" aria-labelledby="ct-default-title">
+    <div class="folder-tab"><button class="folder-close" type="button" aria-label="关闭CT默认防守，返回文件夹总览">×</button><button class="folder-open" type="button" aria-expanded="false" aria-controls="ct-default-reader"><span>03</span> CT默认防守</button><span class="folder-tab-tail" aria-hidden="true"></span></div>
+    <div class="folder-paper"><div class="folder-cover" aria-hidden="true"><span class="cover-code">DUSTⅡ / CT / DEFAULT</span><span class="cover-number">03</span><p>开局争夺与常规落位。</p><span class="cover-bottom">FIELD NOTES <span>↗</span></span></div>
+    <div class="folder-reader" id="ct-default-reader" role="region" aria-label="CT默认防守正文，可在窗口内滚动" tabindex="0"><div class="reader-heading"><span>DUSTⅡ / 03 — 06</span><h2 id="ct-default-title">CT默认防守</h2></div>
+    <div class="reader-layout"><nav class="reader-toc" aria-label="CT默认防守章内导航"><a href="#ct-default-part-1">CT常规抢A大</a><a href="#ct-default-part-7">CT B区防守</a></nav><div class="reader-prose"><h3 id="ct-default-part-1">CT常规抢A大</h3>
+<h4 id="ct-default-part-2">打法一：</h4>
+<p>一号位（只抢A大）：</p>
+<ol><li value="1">最快速度，低头走路（防止对面有“神人”开局就丢闪），</li><li value="2">丢漂移A门火（不用丢进A门，用来烧出A门的T，后续也会有A门烟覆盖），</li><li value="3">借助队友闪光下大坑。</li></ol>
+<p>二号位：</p>
+<ol><li value="1">丢蓝箱火（让T无处可躲），</li><li value="2">捏反清闪（抢枪位，与大坑队友形成交叉枪线）</li></ol>
+<p>三号位：</p>
+<ol><li value="1">丢A门烟，</li><li value="2">接着丢A大反清闪（记得要报，如果对面没抢，不要连续丢，防止浪费）</li></ol>
+<h4 id="ct-default-part-3">打法二</h4>
+<p>①丢A门雷（有队友给蓝箱火，没有自己给蓝箱火），丢自助反清闪<br>②给蓝箱火，架住rush的T<br>③连续给反清闪</p>
+<h4 id="ct-default-part-4">T破解A门烟（超纲）</h4>
+<p>提前给一个A大房顶火</p>
+<h4 id="ct-default-part-5">控下A大后，该干什么？</h4>
+<p>①<br>单挂A大时，不要让对面知道你的站位，知道你在A门近点，对面可以丢反清闪。<br>扫射烟雾，不要打空整个弹夹，对方完全可以抓你换弹timing。（由于目前有无声换弹，自行斟酌）<br>②<br>阅读队友的防守站位。并且根据场上形势，灵活多变。<br>例如：<br>如果队友喜欢顶 A 小近点，辅助他，要么保他活，要么让他一换多。（一换一都是亏的）<br>如果A小压力不大，改为静音回中路，去帮中路的队友。<br>A大感觉到有压力，再回去帮 A 大的队友，两人交叉站位。</p>
+<h4 id="ct-default-part-6">A 大没抢下来？第一反应：跑！保活！</h4>
+<ol><li value="1">回到警斜丢A大隔断烟，然后判断T的进攻思路：</li></ol>
+<p>（1）如果对面看见你丢烟、第一时间不往 A 大打，说明对面打法比较<br>猥琐、不敢钻烟——你可以安心在包点架枪；这种烟可以每把都丢，<br>直到他们敢钻烟为止；<br>（2）一旦他们敢钻烟、烟对他们失效，就要换方式。</p>
+<ol><li value="2">听T的动静进行反清，做到一换多。</li><li value="3">与A区其余队友汇合，进行A小推进（保一边，增加回防空间）</li><li value="4">蹲二箱后、蹲忍者位、沙袋头皮位。（分段越高越不推荐）</li></ol>
+<h3 id="ct-default-part-7">CT B区防守</h3>
+<h4 id="ct-default-part-8">一、去 B 的路上：不要直跳中门</h4>
+<ol><li value="1">分段越高，T大狙越会”收过路费“（一分五十二秒，跳就死，不跳yes）</li><li value="2">正确走法：前点贴过去/从后点跳着过。</li><li value="3">对面是zywoo，怎么过？（超纲）</li></ol>
+<p>丢过点雷，利用炸起的灰尘过（相比烟雾，代价小，用时短）</p>
+<h4 id="ct-default-part-9">二、开局丢什么道具</h4>
+<p>只丢B通火，踩B通近点，捏雷听脚步（趁着有火隔断），peek拿信息</p>
+<p>只丢火，不立即丢烟的原因：<br>在没有得到任何信息的情况下，盲目交烟，不仅阻碍了自己后续主动获取信息的能力。还让你在对面第二时间进攻时没有道具阻断，而且回防 A 区时没道具。</p>
+<p>目前只有三种情况开局丢烟：</p>
+<ol><li value="1">预判对面经济，短枪rushb，可以给烟火套餐。</li><li value="2">预判T有大狙来B通，逮捕想要多拿信息的你。（越到高分段，当比分焦灼，你明知T有狙，但暗道没见，这种预感就越发强烈，甚至还有T双狙的可能）</li><li value="3">你想营造保守感，玩karrigan play（小心烟雾里有食人猪）。</li></ol>
+<p>后续的捏烟防守，你可以站B通近点peek、站大箱后peek、站假门看缝。（灵活多变，防止T抓习惯）<br>单B情况，少混烟开枪，T数你子弹，缓慢混在烟里，瞬间开爆。T知道你在哪，你没有伤害道具，你也来不及丢，根本无法招架。</p><p class="chapter-end">03 / 06 · 本章结束 <span>将鼠标移到窗口外，滚动翻章</span></p></div></div></div></div></section>
+<section class="dust-folder" id="ct-variation" data-folder="3" aria-labelledby="ct-variation-title">
+    <div class="folder-tab"><button class="folder-close" type="button" aria-label="关闭CT变奏打法，返回文件夹总览">×</button><button class="folder-open" type="button" aria-expanded="false" aria-controls="ct-variation-reader"><span>04</span> CT变奏打法</button><span class="folder-tab-tail" aria-hidden="true"></span></div>
+    <div class="folder-paper"><div class="folder-cover" aria-hidden="true"><span class="cover-code">DUSTⅡ / CT / VARIATIONS</span><span class="cover-number">04</span><p>主动获取信息，改变节奏。</p><span class="cover-bottom">FIELD NOTES <span>↗</span></span></div>
+    <div class="folder-reader" id="ct-variation-reader" role="region" aria-label="CT变奏打法正文，可在窗口内滚动" tabindex="0"><div class="reader-heading"><span>DUSTⅡ / 04 — 06</span><h2 id="ct-variation-title">CT变奏打法</h2></div>
+    <div class="reader-layout"><nav class="reader-toc" aria-label="CT变奏打法章内导航"><a href="#ct-variation-part-1">CT利用大狙A小前压</a><a href="#ct-variation-part-2">CT前顶B1</a><a href="#ct-variation-part-5">CT中路前顶</a></nav><div class="reader-prose"><h3 id="ct-variation-part-1">CT利用大狙A小前压</h3>
+<p>用大狙枪械优势制造首杀（视角不要超过油桶，防止近大远小）<br>T反制手段：暗道给A小火</p>
+<h3 id="ct-variation-part-2">CT前顶B1</h3>
+<p>当暗道没有T跳跃侦查中路，是看不到CT前压的</p>
+<h4 id="ct-variation-part-3">打法一：夹击B2（类似于nuke ABgo）</h4>
+<p>①②分别走B1和B通<br>走B通CT丢白车死点火，掩盖脚步。<br>走B1 CT给旋梯闪光。<br>通过B1CT 勾引，B通CT完成补枪收割。</p>
+<h4 id="ct-variation-part-4">打法二：前压单挂B1：</h4>
+<p>点位推荐：</p>
+<figure class="b1-explorer"><figcaption>单挂 B1 · 选位视角 <span>悬停或点击圆圈，查看实机画面</span></figcaption><div class="b1-map"><img src="../../assets/images/servicemaps/dust2/b1-map.png" width="1000" height="500" alt="B1 俯视图，五个推荐站位可查看对应实机截图" loading="lazy"><button class="b1-spot" type="button" style="--spot-x:35.1%;--spot-y:31.5%" data-spot="0" aria-label="查看 B1 站位 1 的实机画面" aria-controls="b1-preview-1" aria-expanded="false">1</button><button class="b1-spot" type="button" style="--spot-x:37.3%;--spot-y:31.5%" data-spot="1" aria-label="查看 B1 站位 2 的实机画面" aria-controls="b1-preview-2" aria-expanded="false">2</button><button class="b1-spot" type="button" style="--spot-x:76.7%;--spot-y:31.5%" data-spot="2" aria-label="查看 B1 站位 3 的实机画面" aria-controls="b1-preview-3" aria-expanded="false">3</button><button class="b1-spot" type="button" style="--spot-x:60.5%;--spot-y:61.5%" data-spot="3" aria-label="查看 B1 站位 4 的实机画面" aria-controls="b1-preview-4" aria-expanded="false">4</button><button class="b1-spot" type="button" style="--spot-x:76.7%;--spot-y:61.5%" data-spot="4" aria-label="查看 B1 站位 5 的实机画面" aria-controls="b1-preview-5" aria-expanded="false">5</button></div><div class="b1-previews"><div class="b1-preview media-frame" id="b1-preview-1" hidden><img src="../../assets/images/servicemaps/dust2/b1-view-1.png" width="1920" height="1080" loading="lazy" alt="B1 站位 1 实机视角"><div><span>站位 1 / 05</span><button type="button" class="zoom-trigger" data-type="image" data-caption="B1 站位 1 实机视角">放大查看 ↗</button><button class="b1-dismiss" type="button" aria-label="收起 B1 实机画面">×</button></div></div><div class="b1-preview media-frame" id="b1-preview-2" hidden><img src="../../assets/images/servicemaps/dust2/b1-view-2.png" width="1920" height="1080" loading="lazy" alt="B1 站位 2 实机视角"><div><span>站位 2 / 05</span><button type="button" class="zoom-trigger" data-type="image" data-caption="B1 站位 2 实机视角">放大查看 ↗</button><button class="b1-dismiss" type="button" aria-label="收起 B1 实机画面">×</button></div></div><div class="b1-preview media-frame" id="b1-preview-3" hidden><img src="../../assets/images/servicemaps/dust2/b1-view-3.png" width="1920" height="1080" loading="lazy" alt="B1 站位 3 实机视角"><div><span>站位 3 / 05</span><button type="button" class="zoom-trigger" data-type="image" data-caption="B1 站位 3 实机视角">放大查看 ↗</button><button class="b1-dismiss" type="button" aria-label="收起 B1 实机画面">×</button></div></div><div class="b1-preview media-frame" id="b1-preview-4" hidden><img src="../../assets/images/servicemaps/dust2/b1-view-4.png" width="1920" height="1080" loading="lazy" alt="B1 站位 4 实机视角"><div><span>站位 4 / 05</span><button type="button" class="zoom-trigger" data-type="image" data-caption="B1 站位 4 实机视角">放大查看 ↗</button><button class="b1-dismiss" type="button" aria-label="收起 B1 实机画面">×</button></div></div><div class="b1-preview media-frame" id="b1-preview-5" hidden><img src="../../assets/images/servicemaps/dust2/b1-view-5.png" width="1920" height="1080" loading="lazy" alt="B1 站位 5 实机视角"><div><span>站位 5 / 05</span><button type="button" class="zoom-trigger" data-type="image" data-caption="B1 站位 5 实机视角">放大查看 ↗</button><button class="b1-dismiss" type="button" aria-label="收起 B1 实机画面">×</button></div></div></div></figure>
+<h3 id="ct-variation-part-5">CT中路前顶</h3>
+<p>主要是抓住T方爱打两边的习惯，对于中路的疏忽，制造减员，从而打断T方进攻。<br>CT可以丢暗道烟、丢中路右侧高闪</p><p class="chapter-end">04 / 06 · 本章结束 <span>将鼠标移到窗口外，滚动翻章</span></p></div></div></div></div></section>
+<section class="dust-folder" id="ct-midround" data-folder="4" aria-labelledby="ct-midround-title">
+    <div class="folder-tab"><button class="folder-close" type="button" aria-label="关闭CT中期思路，返回文件夹总览">×</button><button class="folder-open" type="button" aria-expanded="false" aria-controls="ct-midround-reader"><span>05</span> CT中期思路</button><span class="folder-tab-tail" aria-hidden="true"></span></div>
+    <div class="folder-paper"><div class="folder-cover" aria-hidden="true"><span class="cover-code">DUSTⅡ / CT / MID-ROUND</span><span class="cover-number">05</span><p>根据局势，调整防守。</p><span class="cover-bottom">FIELD NOTES <span>↗</span></span></div>
+    <div class="folder-reader" id="ct-midround-reader" role="region" aria-label="CT中期思路正文，可在窗口内滚动" tabindex="0"><div class="reader-heading"><span>DUSTⅡ / 05 — 06</span><h2 id="ct-midround-title">CT中期思路</h2></div>
+    <div class="reader-layout"><nav class="reader-toc" aria-label="CT中期思路章内导航"><a href="#ct-midround-part-1">CT中路防守</a><a href="#ct-midround-part-2">CT A小防守</a></nav><div class="reader-prose"><h3 id="ct-midround-part-1">CT中路防守</h3>
+<p>一、中路防守只有一个核心任务：帮 A 大收集信息</p>
+<ol><li value="1">中路要汇报：A 小上没上人、提速快不快、上了几个。</li><li value="2">如果 A 小对面提速很快，丢A小火和雷，拖延T上A小的速度。</li><li value="3">感觉压力大时就“反一颗烟”（把烟封在 A 小方向）。不要想着在中路</li></ol>
+<p>正面帮 A 小接人——对面高打低，你是劣势枪位，硬接必死；先保证<br>自己活下来，给烟并向队友报“A 小上了”，再根据脚步多少静音回防。</p>
+<p>二、什么时候回B（组成双 B）<br>如果A小给了烟，而T第一时间没有上平台，不要傻傻在中门架着（分段越高，T大狙越会惩罚每个贪得无厌的中路CT）<br>中路有压力就反烟，往沙地靠。<br>中路被抢，乖乖回B区和队友“双 B”，放掉沙地。（你死在沙地，单B的队友同时受到B通、狗洞、B门，三条枪线。）<br>反向当做一个CT占领B包，T的回防局。（众所周知，沙二的B包难回防）</p>
+<p>炸中门烟：<br>利用双键投掷，在雷爆炸前，减少声响。</p>
+<p>CT站中门近点：<br>T上xbox会有影子，优先架住中门近点和A小。</p>
+<h3 id="ct-midround-part-2">CT A小防守</h3>
+<p>不要单人站A小前点（T真想上A小，基本是多人，而且可能同时吃B1和中远的两条枪线。）<br>A区主防者的任务：</p>
+<ol><li value="1">拖延T进攻A小：</li></ol>
+<p>用“晃身”架枪（反复小身位探），发现 A 小出人，丢A小烟。</p>
+<ol><li value="2">让T的A小爆弹卡壳：</li></ol>
+<p>当对面开始爆弹，你可以立即给火，做到二次阻断进攻。（最好有CT有平台大狙直架A小，他开枪）</p>
+<ol><li value="3">根据T的A小脚步，请T吃雷。</li></ol><p class="chapter-end">05 / 06 · 本章结束 <span>将鼠标移到窗口外，滚动翻章</span></p></div></div></div></div></section>
+<section class="dust-folder" id="t-default" data-folder="5" aria-labelledby="t-default-title">
+    <div class="folder-tab"><button class="folder-close" type="button" aria-label="关闭T默认进攻，返回文件夹总览">×</button><button class="folder-open" type="button" aria-expanded="false" aria-controls="t-default-reader"><span>06</span> T默认进攻</button><span class="folder-tab-tail" aria-hidden="true"></span></div>
+    <div class="folder-paper"><div class="folder-cover" aria-hidden="true"><span class="cover-code">DUSTⅡ / T / DEFAULT</span><span class="cover-number">06</span><p>抢占空间，协同推进。</p><span class="cover-bottom">FIELD NOTES <span>↗</span></span></div>
+    <div class="folder-reader" id="t-default-reader" role="region" aria-label="T默认进攻正文，可在窗口内滚动" tabindex="0"><div class="reader-heading"><span>DUSTⅡ / 06 — 06</span><h2 id="t-default-title">T默认进攻</h2></div>
+    <div class="reader-layout"><nav class="reader-toc" aria-label="T默认进攻章内导航"><a href="#t-default-part-1">T常规抢A大（刚需A大第一身位！）</a><a href="#t-default-part-2">T RUSH B</a></nav><div class="reader-prose"><h3 id="t-default-part-1">T常规抢A大（刚需A大第一身位！）</h3>
+<p>一号位的核心目标：站住蓝箱，（让队友可以流畅走出A门，能够架住大坑的CT，与出A门的后续队友形成交叉枪线）<br>二号位的核心目标：辅助一号位进行补枪<br>三四五号的核心目标：1.丢A大闪（辅助队友，制造对枪优势）2.架住中远，防止CT前压</p>
+<h3 id="t-default-part-2">T RUSH B</h3>
+<p>一二号位进行rush<br>三四五号位，分别看旋转楼梯、丢高闪和假门闪光、丢B门烟、跟进补枪</p><p class="chapter-end">06 / 06 · 本章结束 <span>将鼠标移到窗口外，滚动翻章</span></p></div></div></div></div></section></div>
+        <div class="dust-scene-footer"><p class="dust-instruction" id="dust-instruction">靠近文件夹滚动浏览 · 点击标签展开</p><div class="dust-step-controls" role="group" aria-label="文件夹浏览"><button type="button" data-dust-prev aria-label="浏览前一个文件夹">↖</button><span class="dust-progress" aria-live="polite">01 / 06</span><button type="button" data-dust-next aria-label="浏览后一个文件夹">↘</button></div></div>
+        <p class="sr-only" role="status" data-dust-status></p>
+    </div>
+</main>
 
     <footer>
         <p>自由开放的非官方反恐精英网站<br>yushucrain@gmail.com</p>
     </footer>
 
-    <script src="../../assets/js/search-index.js" defer></script>
-
-
     <script src="../../assets/js/site.js" defer></script>
+    <script src="../../assets/js/dust2.js" defer></script>
 
-    <!-- ↓ 全站搜索弹层。必须挂在 <body> 直接子级：
-         .site-header 带 transform（滚动显隐），会成为 position:fixed 后代的包含块，
-         弹层若留在导航里，inset:0 只会解析出导航条那点高度，撑不满视口。 -->
-    <div class="search-overlay" id="site-search-overlay" role="dialog" aria-modal="true"
-         aria-label="网站搜索" hidden>
-        <form class="search-overlay-form" action="#" method="get" role="search">
-            <input class="search-overlay-input" type="search" name="q"
-                   placeholder="输入关键词搜索内容" aria-label="网站内容搜索"
-                   autocomplete="off" required>
-            <button class="search-overlay-submit" type="submit" aria-label="提交搜索">
-                <img src="../../assets/images/icons/search.svg" alt="">
-            </button>
-        </form>
-        <p class="search-overlay-hint">按 ESC 或点击空白处关闭</p>
-        <button class="search-overlay-close" type="button" aria-label="关闭搜索"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M5 5 19 19"/><path d="M19 5 5 19"/></svg></button>
-    </div>
+    <!-- React 岛屿负责公共交互控件和媒体弹层；需使用开发服务器或构建预览。 -->
+    <div id="app-root"></div>
+    <script type="module" src="/src/main.jsx"></script>
 
 </body>
 </html>

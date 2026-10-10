@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="320 530 980 570">
+<title>坡道与平台上的五个人物线稿</title>
+<desc>依据预瞄实机图片简化的透视地形：左侧栏杆、后方拱门与箱体、中央阶梯坡道，以及位于不同地面高度的五个人物。</desc>
+<g id="scene" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="square" stroke-linejoin="miter">
+<!-- 保留地形轮廓与透视关系，省略纹理、天空和第一人称武器。 -->
+<g opacity=".48">
+<path d="M0 60 206 193 206 635 M206 193 445 243 445 758 M0 314 439 479 M208 435 447 516 M206 625 445 656"/>
+<path d="M447 518H1156V747H488 M488 747H1156 M476 507H1166 M518 524V506H562 M672 506H718 M896 506H942 M1097 506H1146"/>
+<path d="M701 747V589H811V746 M701 628 717 599 755 576 794 599 811 628 M726 747V646H788V747"/>
+<path d="M768 665H1030V750H768Z M768 691H1030 M768 721H1030 M812 665V747 M853 665V747 M957 665V747 M991 665V747 M875 750V695H937V750"/>
+<path d="M1177 112 1241 45 1450 0 M1177 112V608L1814 431 M1230 282V604 M1369 223V536 M1169 598 1225 579 1819 465 M1245 1100V615L1812 504"/>
+<path d="M1400 1008V777L1440 685 1474 635 1518 607 1564 642 1604 714V1117 M1417 1029V786L1456 702 1518 634 1578 711V1110"/>
+<path d="M240 450V949 M330 475V884 M486 509V824 M140 427 490 545 M140 704 490 699 M143 835 490 757"/>
+</g>
+<!-- 台阶和两侧平台是判断人物脚下地面的主要参考。 -->
+<g stroke-width="5">
+<path d="M142 916 703 748H802 M142 935 714 765 662 1030 465 1368 M703 748 714 765 M662 1030 686 1047"/>
+<path d="M803 758 735 1100 M1039 758 1197 1030 M803 758H1039 M1091 749 1245 793V1028L1197 1030 M1091 749H1198 M1091 771 1245 812"/>
+<path d="M794 799H1063 M784 844H1086 M771 900H1117 M755 969H1156 M735 1050H1209"/>
+<path d="M735 1100 586 1368 M1197 1030 1382 1368 M686 1047 588 1368 M703 748 662 1030"/>
+<path d="M0 943 142 916 M0 968 142 935 M1091 749 1114 706"/>
+</g>
+<g transform="translate(435 629) scale(0.85 0.79)" fill="var(--paper, #f3f4f4)" stroke="currentColor" stroke-width="6" stroke-linejoin="miter"><path d="M40 0H58L65 10V26L57 34H39L32 26V11Z M34 14H63 M43 22H55"/>
+<path d="M30 38 63 36 76 52 67 91 70 119 31 122 23 90 19 59Z M33 50H61V92H33Z"/>
+<path d="M22 59 8 74 15 87 38 72 M67 52 81 65 69 82 48 71 M12 74 78 64 96 49 M76 64 82 77"/>
+<path d="M31 119 27 160 15 192H4V200H29L46 164 50 130 M50 130 56 159 67 192H64V200H91L77 157 70 119"/></g>
+<text x="477.5" y="615" fill="currentColor" stroke="none" text-anchor="middle" font-family="Consolas, monospace" font-size="24">04</text>
+<g transform="translate(701 641) scale(0.58 0.535)" fill="var(--paper, #f3f4f4)" stroke="currentColor" stroke-width="6" stroke-linejoin="miter"><path d="M40 0H58L65 10V26L57 34H39L32 26V11Z M34 14H63 M43 22H55"/>
+<path d="M30 38 63 36 76 52 67 91 70 119 31 122 23 90 19 59Z M33 50H61V92H33Z"/>
+<path d="M22 59 8 74 15 87 38 72 M67 52 81 65 69 82 48 71 M12 74 78 64 96 49 M76 64 82 77"/>
+<path d="M31 119 27 160 15 192H4V200H29L46 164 50 130 M50 130 56 159 67 192H64V200H91L77 157 70 119"/></g>
+<text x="730" y="627" fill="currentColor" stroke="none" text-anchor="middle" font-family="Consolas, monospace" font-size="24">05</text>
+<g transform="translate(910 706) scale(0.78 0.74)" fill="var(--paper, #f3f4f4)" stroke="currentColor" stroke-width="6" stroke-linejoin="miter"><path d="M40 0H58L65 10V26L57 34H39L32 26V11Z M34 14H63 M43 22H55"/>
+<path d="M30 38 63 36 76 52 67 91 70 119 31 122 23 90 19 59Z M33 50H61V92H33Z"/>
+<path d="M22 59 8 74 15 87 38 72 M67 52 81 65 69 82 48 71 M12 74 78 64 96 49 M76 64 82 77"/>
+<path d="M31 119 27 160 15 192H4V200H29L46 164 50 130 M50 130 56 159 67 192H64V200H91L77 157 70 119"/></g>
+<text x="949" y="692" fill="currentColor" stroke="none" text-anchor="middle" font-family="Consolas, monospace" font-size="24">03</text>
+<g transform="translate(1155 639) scale(0.59 0.55)" fill="var(--paper, #f3f4f4)" stroke="currentColor" stroke-width="6" stroke-linejoin="miter"><path d="M40 0H58L65 10V26L57 34H39L32 26V11Z M34 14H63 M43 22H55"/>
+<path d="M30 38 63 36 76 52 67 91 70 119 31 122 23 90 19 59Z M33 50H61V92H33Z"/>
+<path d="M22 59 8 74 15 87 38 72 M67 52 81 65 69 82 48 71 M12 74 78 64 96 49 M76 64 82 77"/>
+<path d="M31 119 27 160 15 192H4V200H29L46 164 50 130 M50 130 56 159 67 192H64V200H91L77 157 70 119"/></g>
+<text x="1184.5" y="625" fill="currentColor" stroke="none" text-anchor="middle" font-family="Consolas, monospace" font-size="24">02</text>
+<g transform="translate(662 814) scale(1.15 1.08)" fill="var(--paper, #f3f4f4)" stroke="currentColor" stroke-width="6" stroke-linejoin="miter"><path d="M40 0H58L65 10V26L57 34H39L32 26V11Z M34 14H63 M43 22H55"/>
+<path d="M30 38 63 36 76 52 67 91 70 119 31 122 23 90 19 59Z M33 50H61V92H33Z"/>
+<path d="M22 59 8 74 15 87 38 72 M67 52 81 65 69 82 48 71 M12 74 78 64 96 49 M76 64 82 77"/>
+<path d="M31 119 27 160 15 192H4V200H29L46 164 50 130 M50 130 56 159 67 192H64V200H91L77 157 70 119"/></g>
+<text x="719.5" y="800" fill="currentColor" stroke="none" text-anchor="middle" font-family="Consolas, monospace" font-size="24">01</text>
+</g>
+</svg>

@@ -1,3 +1,5 @@
+@layer foundation, pages;
+@layer pages {
 /*
   服役地图页私有样式表 · assets/css/map-guides.css
   ────────────────────────────────────────────────────────────────
@@ -6,10 +8,9 @@
           全站公共层（字体、主题变量、Reset、导航条、页脚）在
           assets/css/common.css，本文件不再重复。
 
-  【引入顺序】
-          <link rel="stylesheet" href="../assets/css/common.css">
-          <link rel="stylesheet" href="../assets/css/map-guides.css">
-          （servicemaps/ 下的页面用 ../../ 退回根目录）
+  【引入方式】HTML 同时链接 common.css 与本文件，保证首帧样式就绪。
+          foundation / pages 层明确覆盖关系，构建后公共样式共享一份。
+          地图总览的链接使用 ../，servicemaps/ 下的页面使用 ../../。
 
   【配色约定】本文件不写死色值，一律走公共层变量，深色模式自动跟随。
   ────────────────────────────────────────────────────────────────
@@ -45,60 +46,242 @@ main {
     line-height: 1.7;
 }
 
-/* ==================== 02 地图导航条（横向滑动） ==================== */
+/* ==================== 02 几何地图目录 ==================== */
+.map-directory {
+    max-width: 1660px;
+    padding: 44px clamp(16px, 4vw, 72px) 48px;
+}
 
-.maps-nav {
+.map-directory-header {
     display: flex;
-    justify-content: flex-start;
-    gap: 60px;
-    align-items: flex-start;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    /* ↑横向滑动 */
-    list-style: none;
-    padding: 12px;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 24px 40px;
+    margin-bottom: 32px;
+}
+
+.map-eyebrow {
     margin: 0;
-    scroll-snap-type: x proximity;
+    color: var(--muted);
+    font: 10px/1.6 Consolas, monospace;
+    letter-spacing: 0.12em;
 }
 
-.maps-nav li {
-    flex: 0 0 auto;
-    /* ↑flex-grow:   0          多余空间不要强制长大
-        flex-shrink: 0          空间不足不要缩小
-        flex-basis:  auto       基础尺寸根据自己内容决定 */
-    scroll-snap-align: start;
+.map-directory-header h1 {
+    margin: 12px 0 0;
+    font-size: clamp(32px, 4vw, 64px);
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.04em;
 }
 
-/* 地图入口使用原生链接，支持键盘、在新标签页打开和无脚本访问。 */
-.map-item {
-    display: block;
-    padding: 12px;
-    border: 1px solid var(--border);
-    background: var(--surface);
+.map-directory-intro > p:last-child {
+    margin: 10px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.map-catalog {
+    --map-grid-height: clamp(420px, calc(100svh - 300px), 840px);
+    --map-line: color-mix(in srgb, var(--border) 60%, transparent);
+    position: relative;
+}
+
+/* 行列比例由 map-guides.js 同时更新；装饰交点沿用同一个网格。 */
+.map-grid,
+.map-grid-joints {
+    display: grid;
+    grid-template-columns: var(--map-col-1, 1fr) var(--map-col-2, 1fr) var(--map-col-3, 1fr);
+    grid-template-rows: var(--map-row-1, 1fr) var(--map-row-2, 1fr) var(--map-row-3, 1fr);
+    height: var(--map-grid-height);
+    transition: grid-template-columns 0.38s ease, grid-template-rows 0.38s ease;
+}
+
+.map-grid {
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--map-line);
+    border-left: 1px solid var(--map-line);
+    list-style: none;
+}
+
+.map-grid-cell {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    border-right: 1px solid var(--map-line);
+    border-bottom: 1px solid var(--map-line);
+    overflow: clip;
+}
+
+.map-entry {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 28px 16px;
     color: var(--text);
-    cursor: pointer;
-    min-width: 60px;
-    /* ↑最小尺寸 */
-    transition:
-        border-color 0.18s ease,
-        color 0.18s ease;
 }
 
-.map-item:hover,
-.map-item:focus-visible {
-    border-color: var(--hover);
-    color: var(--hover);
+.map-entry:focus-visible {
+    outline: 2px solid var(--hover);
+    outline-offset: -5px;
 }
 
-/* ↓调整图标大小 */
-.map-item img {
+.map-entry-code,
+.map-entry-arrow {
+    position: absolute;
+    top: 16px;
+    color: var(--muted);
+}
+
+.map-entry-code {
+    left: 18px;
+    font: 9px/1.4 Consolas, monospace;
+    letter-spacing: 0.08em;
+}
+
+.map-entry-arrow {
+    right: 18px;
+    font-size: 18px;
+    line-height: 1;
+    opacity: 0;
+    transition: opacity 0.2s, color 0.2s;
+}
+
+.map-signature {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: max-content;
+    max-width: 100%;
+    transform-origin: center;
+    transition: transform 0.38s ease, opacity 0.3s, color 0.25s;
+}
+
+.map-signature--horizontal {
+    flex-direction: row;
+    gap: 20px;
+}
+
+.map-wordmark {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+}
+
+.map-signature--horizontal .map-wordmark {
+    align-items: flex-start;
+}
+
+.map-name {
+    font-size: clamp(12px, 2.2vw, 36px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.045em;
+    white-space: nowrap;
+}
+
+.map-local-name {
+    color: var(--muted);
+    font-size: clamp(9px, 0.85vw, 12px);
+    line-height: 1.4;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+}
+
+/* 单色 SVG 使用透明负形；蒙版使图案直接继承全站主题与交互色。 */
+.map-mark {
     display: block;
-    width: 64px;
-    height: auto;
+    flex-shrink: 0;
+    width: clamp(56px, 8vw, 136px);
+    aspect-ratio: 160 / 144;
+    background: currentColor;
+    mask: var(--map-symbol) center / contain no-repeat;
 }
 
-@media (min-width: 900px) {
-    .map-item img {
-        width: 120px;
-    }
+.map-mark--mirage { --map-symbol: url('../images/servicemaps/marks/mirage.svg'); }
+.map-mark--dust2 { --map-symbol: url('../images/servicemaps/marks/dust2.svg'); }
+.map-mark--inferno { --map-symbol: url('../images/servicemaps/marks/inferno.svg'); }
+.map-mark--nuke { --map-symbol: url('../images/servicemaps/marks/nuke.svg'); }
+.map-mark--ancient { --map-symbol: url('../images/servicemaps/marks/ancient.svg'); }
+.map-mark--anubis { --map-symbol: url('../images/servicemaps/marks/anubis.svg'); }
+.map-mark--cache { --map-symbol: url('../images/servicemaps/marks/cache.svg'); }
+.map-mark--train { --map-symbol: url('../images/servicemaps/marks/train.svg'); }
+.map-mark--overpass { --map-symbol: url('../images/servicemaps/marks/overpass.svg'); }
+
+.map-entry:is(:hover, :focus-visible) .map-signature {
+    color: var(--hover);
+    transform: scale(1.08);
+}
+
+.map-catalog.is-engaged .map-signature {
+    transform: scale(0.82);
+    opacity: 0.6;
+}
+
+.map-catalog.is-engaged .map-entry.is-emphasized .map-signature {
+    color: var(--hover);
+    transform: scale(1.12);
+    opacity: 1;
+}
+
+.map-entry:is(:hover, :focus-visible, .is-emphasized) .map-entry-arrow {
+    color: var(--hover);
+    opacity: 1;
+}
+
+.map-grid-joints {
+    position: absolute;
+    inset: 1px 0 0 1px;
+    height: auto;
+    pointer-events: none;
+}
+
+.map-grid-joints > span {
+    justify-self: start;
+    align-self: start;
+    width: 8px;
+    height: 8px;
+    background: var(--border);
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+/* 新增专栏共用目录的几何标志，后续攻略可直接填入 map-section。 */
+.map-detail-page { padding-top: 44px; min-height: calc(100svh - 160px); }
+.map-back-link { display: inline-block; margin-bottom: 32px; color: var(--muted); font-size: 13px; }
+.map-back-link:hover { color: var(--hover); }
+.map-detail-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 28px; margin-bottom: 40px; }
+.map-detail-heading h1 { margin: 10px 0 0; font-size: clamp(28px, 3.6vw, 52px); line-height: 1.25; }
+.map-detail-heading h1 > span { display: block; color: var(--muted); font-size: 0.5em; letter-spacing: 0.04em; }
+
+@media (max-width: 900px) {
+    .map-signature--horizontal { flex-direction: column; gap: 12px; }
+    .map-signature--horizontal .map-wordmark { align-items: center; }
+}
+
+@media (max-width: 600px) {
+    .map-directory { padding: 26px 12px 32px; }
+    .map-catalog { --map-grid-height: clamp(390px, 110vw, 480px); }
+    .map-directory-header { gap: 16px; margin-bottom: 24px; }
+    .map-directory-intro { width: 100%; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+    .map-directory-intro > p:last-child { margin: 0; font-size: 11px; }
+    .map-entry { padding: 24px 7px 16px; }
+    .map-entry-code { top: 10px; left: 8px; font-size: 7px; letter-spacing: 0; }
+    .map-entry-arrow { top: 10px; right: 8px; font-size: 12px; }
+    .map-signature { gap: 8px; }
+    .map-wordmark { gap: 5px; }
+    .map-grid-joints > span { width: 5px; height: 5px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .map-grid, .map-grid-joints, .map-signature, .map-entry-arrow { transition: none; }
+}
+
 }

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>搜索弹层探针</title>
+<!-- 使用说明：
+     1. npm run dev 启动开发服务器；
+     2. 浏览器打开 http://localhost:5173/scripts/search-island-probe.html，
+        或用无头模式抓取输出：
+        msedge --headless=new --dump-dom http://localhost:5173/scripts/search-island-probe.html
+     3. 结果写在页面 <pre id="out"> 里：PASS N / FAIL M。
+     探针通过 iframe 加载 rookie-guides.html，程序化点击放大镜、输入关键词、
+     按 Escape，逐条验证 React 搜索岛屿的行为；也顺带确认传统脚本仍然健在。 -->
+    <style>
+        html, body { margin: 0; }
+        iframe { width: 100vw; height: 100vh; border: 0; }
+    </style>
+</head>
+<body>
+<pre id="out">running...</pre>
+<script>
+const PASS = [];
+const FAIL = [];
+function check(name, ok, detail) {
+    (ok ? PASS : FAIL).push(name + (detail ? " | " + detail : ""));
+}
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+const TARGET = "/guides/rookie-guides.html";
+
+const frame = document.createElement("iframe");
+frame.src = TARGET;
+frame.style.width = "100vw";
+frame.style.height = "100vh";
+document.body.appendChild(frame);
+
+async function main() {
+    // 等目标页真的解析完成（缓存命中时 load 可能早于赋值，这里双保险）
+    await new Promise(resolve => {
+        if (frame.contentDocument && frame.contentDocument.readyState === "complete") return resolve();
+        frame.onload = () => resolve();
+    });
+    await wait(4000);
+
+    const win = frame.contentWindow;
+    const doc = frame.contentDocument;
+
+    // 1) React 岛屿是否挂载成功
+    const root = doc.getElementById("app-root");
+
+    // 动态 import 一次入口：若模块注入时抛错，这里会把错误原样抛出来。
+    // 入口地址从页面里实际的 module 脚本推导 —— dev 下是 /src/main.jsx，
+    // 构建产物里是带哈希的 /assets/main-xxxx.js，两种模式都适用。
+    let moduleError = "无";
+    const entrySrc = doc.querySelector("script[type=module]")?.src;
+    try { if (entrySrc) await win.eval("import(" + JSON.stringify(entrySrc) + ")"); }
+    catch (error) { moduleError = String(error && error.message || error); }
+    check("模块注入无异常", moduleError === "无", moduleError);
+    check("挂载点存在", !!root);
+    check("岛屿已渲染出弹层", !!doc.getElementById("site-search-overlay"));
+    check("旧静态弹层已清零（每页仅 1 个 #site-search-overlay）",
+        doc.querySelectorAll("#site-search-overlay").length === 1);
+
+    const overlay = doc.getElementById("site-search-overlay");
+    const trigger = doc.querySelector(".search-trigger");
+    check("放大镜按钮存在", !!trigger);
+    check("初始态：弹层 hidden", overlay.hasAttribute("hidden"));
+    check("初始态：无 is-open", !overlay.classList.contains("is-open"));
+
+    // 2) 点击放大镜 → 弹层打开。真实点击会先把焦点带到按钮上，这里显式补上，
+    //    以便验证「关闭后焦点回到放大镜」这条恢复逻辑。
+    trigger.focus();
+    trigger.click();
+    await wait(600);
+    check("点击后：不再是 hidden", !overlay.hasAttribute("hidden"));
+    check("点击后：带上 is-open", overlay.classList.contains("is-open"));
+    check("点击后：body.search-open", win.document.body.classList.contains("search-open"));
+    check("点击后：aria-expanded=true", trigger.getAttribute("aria-expanded") === "true");
+    check("点击后：背景元素被 inert", doc.getElementById("app-root").inert === true
+        && (doc.querySelector("footer") ? doc.querySelector("footer").closest("[inert]") !== null : true));
+    check("点击后：弹层是 body 直接子级", overlay.parentElement === doc.body, overlay.parentElement?.id || overlay.parentElement?.tagName);
+    check("点击后：焦点落在输入框", doc.activeElement === overlay.querySelector(".search-overlay-input"));
+    const statusEl = overlay.querySelector(".search-status");
+    check("初始提示文案", /搜索教学/.test(statusEl.textContent), statusEl.textContent);
+
+    // 3) 输入关键词 → 出结果
+    const input = overlay.querySelector(".search-overlay-input");
+    const nativeSetter = Object.getOwnPropertyDescriptor(win.HTMLInputElement.prototype, "value").set;
+    nativeSetter.call(input, "mirage");
+    input.dispatchEvent(new win.Event("input", { bubbles: true }));
+    await wait(300);
+    const items = overlay.querySelectorAll(".search-results li");
+    check("搜索出结果", items.length > 0, items.length + " 条");
+    check("结果含关联条目", /mirage|迷城|沙二|Mirage/i.test(overlay.textContent));
+    check("状态栏显示条数", /找到 \d+ 条结果/.test(statusEl.textContent), statusEl.textContent);
+    const firstLink = overlay.querySelector(".search-results a");
+    check("结果链接指向绝对路径", !!firstLink && /^https?:\/\//.test(firstLink.href),
+        firstLink ? firstLink.getAttribute("href") : "无结果链接");
+
+    // 4) 多词 AND 语义
+    nativeSetter.call(input, "ct 中路");
+    input.dispatchEvent(new win.Event("input", { bubbles: true }));
+    await wait(300);
+    check("空格分词后仍有结果", overlay.querySelectorAll(".search-results li").length > 0);
+
+    // 5) 零命中文案
+    nativeSetter.call(input, "zzz不存在的关键词zzz");
+    input.dispatchEvent(new win.Event("input", { bubbles: true }));
+    await wait(300);
+    check("零命中提示", /没有找到相关内容/.test(statusEl.textContent), statusEl.textContent);
+
+    // 6) Escape 关闭
+    input.dispatchEvent(new win.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    await wait(600);
+    check("Escape 后：移除 is-open", !overlay.classList.contains("is-open"));
+    check("Escape 后：body 解锁", !win.document.body.classList.contains("search-open"));
+    check("Escape 后：inert 已恢复", doc.getElementById("app-root").inert === false);
+    check("Escape 后： Eventually hidden", overlay.hasAttribute("hidden"));
+    check("Escape 后：焦点回到放大镜", doc.activeElement === trigger, doc.activeElement?.className);
+
+    // 7) 再次打开 + 点击空白处关闭
+    trigger.click();
+    await wait(500);
+    check("二次打开正常", overlay.classList.contains("is-open"));
+    overlay.dispatchEvent(new win.PointerEvent("pointerdown", { bubbles: true }));
+    await wait(600);
+    check("点击空白处关闭", !overlay.classList.contains("is-open"));
+
+    // 8) 传统脚本仍然健在（主题 / 导航）
+    check("传统脚本 theme-init 生效", doc.documentElement.hasAttribute("data-theme"));
+    check("传统脚本 site.js 导航仍在", !!doc.querySelector(".nav-item.is-hoverable, .nav-item[data-nav-ready]"));
+    check("传统脚本 rookie-guides.js 键盘已渲染", doc.querySelectorAll(".control-key").length > 10,
+        doc.querySelectorAll(".control-key").length + " 个键帽");
+
+    document.getElementById("out").textContent =
+        "PASS " + PASS.length + " / FAIL " + FAIL.length + "\n\n" +
+        PASS.map(line => "  [OK]   " + line).join("\n") +
+        (FAIL.length ? "\n\n" + FAIL.map(line => "  [FAIL] " + line).join("\n") : "");
+}
+
+main().catch(error => {
+    document.getElementById("out").textContent = "ERROR: " + error.message + "\n" + error.stack;
+});
+</script>
+</body>
+</html>

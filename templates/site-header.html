@@ -1,0 +1,93 @@
+<!-- ==========================================================================
+     全站顶部导航条 · 唯一来源（模板片段）
+     --------------------------------------------------------------------------
+     【这个文件的性质】
+     它不是页面，不参与构建、不进搜索索引，也永远不要直接被浏览器打开。
+     它只是「顶部导航条」这一段的母版，
+     由 scripts/build-header.cjs 注入到全部 12 个页面里。
+     【注意】注释里不要出现 <header 这样的字面量：
+     生成器靠「行首是 header 标签」来切出要注入的片段，注释里的同名文本会把它带偏。
+
+     【改导航的正确姿势】
+     1. 只改这个文件；
+     2. 执行 npm run header（把改动同步到 12 个页面）；
+     3. 执行 npm run check（校验没有页面漏同步）。
+     不要直接去改某个页面里的导航条 —— 那样会被下一次同步覆盖掉。
+
+     【占位符】
+     {{BASE}}     站点根目录的相对前缀：./ （根目录页）、../ （一层深）、
+                  ../../ （两层深）。每个页面深度不同，前缀必须不同。
+     {{OVERLAY}}  首页专用：透明悬浮在首屏视频之上；其余页面为空。
+                  写成 {{OVERLAY}} 而不是 {{OVERLAY}}class，是为了让「缺省为空」
+                  这件事在模板里一眼可见。
+
+     【规范化取舍】全站 12 页原本有三处不一致，现已统一为「11 页的写法」：
+       · logo 的 alt 留空（链接已有 aria-label，图片属装饰性内容，避免重复朗读）；
+       · 「职业信息」是纯文本项，不再写 href="#" 的死链接；
+       · 站内链接一律以 {{BASE}} 开头，不再用 ./rookie-guides.html 这类
+         依赖当前目录深度的写法 —— 层次统一后，挪动页面也不会断链。
+     ========================================================================== -->
+<header class="site-header{{OVERLAY}}">
+    <div class="header-inner">
+        <a class="site-logo" href="{{BASE}}index.html" aria-label="反恐精英中文网首页">
+            <img src="{{BASE}}assets/images/logo/dark-logo.svg" alt="">反恐精英中文网
+        </a>
+
+        <nav class="nav-home" aria-label="网站主导航">
+            <div class="nav-item">
+                <button class="nav-trigger" type="button">攻略专区</button>
+                <ul class="nav-dropdown">
+                    <li><a href="{{BASE}}guides/rookie-guides.html">新手教学</a></li>
+                    <li><a href="{{BASE}}guides/map-guides.html">服役地图</a></li>
+                    <li><a href="{{BASE}}guides/super-guides.html">进阶教学</a></li>
+                </ul>
+            </div>
+            <div class="nav-item">
+                <button class="nav-trigger" type="button">CS赛事</button>
+                <ul class="nav-dropdown">
+                    <li><a href="https://www.hltv.org/" target="_blank" rel="noopener noreferrer">HLTV</a></li>
+                    <!-- ↑rel="noopener" 必须加：新标签页拿到 window.opener 后可以篡改原页面地址，
+                         这是 target="_blank" 的一个已知安全风险。 -->
+                    <li>职业信息</li>
+                </ul>
+            </div>
+            <div class="nav-item">
+                <button class="nav-trigger" type="button">玩家创作</button>
+                <ul class="nav-dropdown">
+                    <li><a href="{{BASE}}media/hlae.html">HLAE</a></li>
+                    <li>影视美学</li>
+                </ul>
+            </div>
+            <div class="nav-item">
+                <button class="nav-trigger" type="button">交易市场</button>
+                <ul class="nav-dropdown">
+                    <li>价格走势</li>
+                    <li>挂刀搬砖</li>
+                </ul>
+            </div>
+            <div class="nav-item">
+                <button class="nav-trigger" type="button">社区贡献</button>
+                <ul class="nav-dropdown">
+                    <li>网站公告</li>
+                    <li>社区游戏</li>
+                    <li>特别致谢</li>
+                    <li>玩家合影</li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="nav-actions">
+            <button class="search-trigger" type="button" aria-label="打开网站搜索" aria-controls="site-search-overlay" aria-expanded="false"><img src="{{BASE}}assets/images/icons/search.svg" alt=""></button>
+
+            <span class="site-tool-slot" id="site-theme-control"></span>
+
+            <!-- 用户登录入口先移除：login.html 还不存在，留着注释会指向一个死链接。
+                 页面做好之后按下面这段加回来即可（CSS 里的 .login-button 样式一直保留着）：
+                 <a class="login-button" href="{{BASE}}login.html">
+                     <img src="{{BASE}}assets/images/icons/avatar.svg" alt="用户登录">
+                 </a> -->
+
+            <span class="site-tool-slot" id="site-audio-control"></span>
+        </div>
+    </div>
+</header>

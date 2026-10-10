@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>死亡游乐园 Overpass - 服役地图攻略</title>
+    <meta name="description" content="反恐精英中文网：死亡游乐园 Overpass 地图专栏，攻略内容正在整理中。">
+    <meta name="theme-color" content="#F3F4F4" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#111315" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="../../assets/images/logo/dark-logo.svg" type="image/svg+xml">
+
+    <!-- 【路径】本页在 guides/servicemaps/ 内，用 ../../ 退回站点根目录。 -->
+    <script src="../../assets/js/theme-init.js"></script>
+    <!-- ↑全站公共：首帧前定主题。必须同步、必须在头部，不能加 defer。 -->
+    <!-- 公共样式和页面样式通过显式 CSS layer 保持覆盖关系。 -->
+    <link rel="stylesheet" href="../../assets/css/common.css">
+    <link rel="stylesheet" href="../../assets/css/map-guides.css">
+    <!-- ↑地图页私有样式：内容区留白与章节分隔。 -->
+</head>
+<body>
+    <a class="skip-link" href="#main">跳转到主要内容</a>
+
+    <!-- ↓ 全站统一导航条（公共层 common.css） -->
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="site-logo" href="../../index.html" aria-label="反恐精英中文网首页">
+                <img src="../../assets/images/logo/dark-logo.svg" alt="">反恐精英中文网
+            </a>
+
+            <nav class="nav-home" aria-label="网站主导航">
+                <div class="nav-item">
+                    <button class="nav-trigger" type="button">攻略专区</button>
+                    <ul class="nav-dropdown">
+                        <li><a href="../../guides/rookie-guides.html">新手教学</a></li>
+                        <li><a href="../../guides/map-guides.html">服役地图</a></li>
+                        <li><a href="../../guides/super-guides.html">进阶教学</a></li>
+                    </ul>
+                </div>
+                <div class="nav-item">
+                    <button class="nav-trigger" type="button">CS赛事</button>
+                    <ul class="nav-dropdown">
+                        <li><a href="https://www.hltv.org/" target="_blank" rel="noopener noreferrer">HLTV</a></li>
+                        <!-- ↑rel="noopener" 必须加：新标签页拿到 window.opener 后可以篡改原页面地址，
+                             这是 target="_blank" 的一个已知安全风险。 -->
+                        <li>职业信息</li>
+                    </ul>
+                </div>
+                <div class="nav-item">
+                    <button class="nav-trigger" type="button">玩家创作</button>
+                    <ul class="nav-dropdown">
+                        <li><a href="../../media/hlae.html">HLAE</a></li>
+                        <li>影视美学</li>
+                    </ul>
+                </div>
+                <div class="nav-item">
+                    <button class="nav-trigger" type="button">交易市场</button>
+                    <ul class="nav-dropdown">
+                        <li>价格走势</li>
+                        <li>挂刀搬砖</li>
+                    </ul>
+                </div>
+                <div class="nav-item">
+                    <button class="nav-trigger" type="button">社区贡献</button>
+                    <ul class="nav-dropdown">
+                        <li>网站公告</li>
+                        <li>社区游戏</li>
+                        <li>特别致谢</li>
+                        <li>玩家合影</li>
+                    </ul>
+                </div>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="search-trigger" type="button" aria-label="打开网站搜索" aria-controls="site-search-overlay" aria-expanded="false"><img src="../../assets/images/icons/search.svg" alt=""></button>
+
+                <span class="site-tool-slot" id="site-theme-control"></span>
+
+                <!-- 用户登录入口先移除：login.html 还不存在，留着注释会指向一个死链接。
+                     页面做好之后按下面这段加回来即可（CSS 里的 .login-button 样式一直保留着）：
+                     <a class="login-button" href="../../login.html">
+                         <img src="../../assets/images/icons/avatar.svg" alt="用户登录">
+                     </a> -->
+
+                <span class="site-tool-slot" id="site-audio-control"></span>
+            </div>
+        </div>
+    </header>
+
+    <main id="main" class="map-detail-page">
+        <a class="map-back-link" href="../map-guides.html">← 返回地图总览</a>
+        <header class="map-detail-heading">
+            <span class="map-mark map-mark--overpass" aria-hidden="true"></span>
+            <div>
+                <p class="map-eyebrow">DE_OVERPASS / FIELD GUIDE</p>
+                <h1>死亡游乐园 <span>Overpass</span></h1>
+            </div>
+        </header>
+        <section class="map-section">
+            <h2>地图攻略</h2>
+            <p>本地图的攻略内容正在整理中。</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>自由开放的非官方反恐精英网站<br>yushucrain@gmail.com</p>
+    </footer>
+
+    <script src="../../assets/js/site.js" defer></script>
+
+    <!-- React 岛屿负责公共交互控件和媒体弹层；需使用开发服务器或构建预览。 -->
+    <div id="app-root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+
+</body>
+</html>

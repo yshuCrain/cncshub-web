@@ -1,3 +1,5 @@
+@layer foundation, pages;
+@layer pages {
 /*
   首页私有样式表 · assets/css/index.css
   ────────────────────────────────────────────────────────────────
@@ -5,10 +7,9 @@
           全站公共层（字体、主题变量、Reset、导航、页脚）已经抽到
           assets/css/common.css，本文件不再重复定义，也不再 @import。
 
-  【引入顺序】index.html 的 <head> 里必须写成：
-          <link rel="stylesheet" href="./assets/css/common.css">
-          <link rel="stylesheet" href="./assets/css/index.css">
-          公共层在前、页面层在后，本文件才能安全覆盖公共规则。
+  【引入方式】HTML 同时链接 common.css 与本文件，保证首帧样式就绪。
+          foundation / pages 层明确公共与页面规则的覆盖关系；不依赖链接顺序，
+          也不通过 @import 重复打包公共样式。
 
   【分区索引】
           01  首页骨架（粘底页脚所需的 flex 容器）
@@ -410,4 +411,6 @@ main {
     .typing-text.is-typing .typing-source { opacity: 1; }
     .typing-overlay { display: none; }
     .typing-overlay::after { animation: none; } /* 光标停止闪烁 */
+}
+
 }

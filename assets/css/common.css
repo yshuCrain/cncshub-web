@@ -1,3 +1,5 @@
+@layer foundation, pages;
+@layer foundation {
 /*
   全站公共样式表 · 反恐精英中文网
   ────────────────────────────────────────────────────────────────
@@ -7,8 +9,8 @@
               <link rel="stylesheet" href=".../assets/css/common.css">
               <link rel="stylesheet" href=".../assets/css/＜页面私有＞.css">
 
-          书写顺序决定了「公共层在前、页面层在后」，页面私有规则因此可以安全
-          覆盖公共规则，不需要 !important。
+          所有样式先声明 @layer foundation, pages：公共规则放在 foundation，
+          页面规则放在 pages。层级决定覆盖关系，构建重排链接也不会影响它。
 
   【职责边界】
           公共层：@font-face、主题变量、Reset、无障碍、页面骨架（main/footer）、
@@ -561,6 +563,14 @@ body.has-fixed-header {
 }
 
 /* 四个工具按钮共用一套尺寸与状态 */
+.site-tool-slot {
+    display: flex;
+    align-self: center;
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+}
+
 .site-header .theme-button,
 .site-header .login-button,
 .site-header .audio-button,
@@ -645,7 +655,7 @@ body.has-fixed-header {
 
    【为什么不用 hover】需求是「点击打开」。hover 展开在触屏上等价于点击后粘住，
    且鼠标划过就会误触；改成点击 + Esc / 点空白关闭，行为更可预期。
-   开关由 assets/js/site.js 的 initSearchOverlay 控制。 */
+   开关由 src/components/SiteSearch.jsx 控制，焦点与过渡共用 Modal.jsx。 */
 
 .search-overlay {
     position: fixed;
@@ -890,6 +900,11 @@ body.search-open {
         gap: 0;
     }
 
+    .site-tool-slot {
+        flex-basis: 32px;
+        width: 32px;
+    }
+
     .site-header .theme-button,
     .site-header .login-button,
     .site-header .audio-button,
@@ -988,4 +1003,6 @@ body.search-open {
     .search-overlay-form {
         transition: none;
     }
+}
+
 }

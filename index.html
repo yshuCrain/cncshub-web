@@ -23,9 +23,8 @@
          【关键】必须同步执行、必须放在头部、必须排在样式表之前：
          加 defer / async 或挪到 body 末尾，都会晚于首次绘制，失去意义。 -->
 
+    <!-- 公共样式和页面样式通过显式 CSS layer 保持覆盖关系。 -->
     <link rel="stylesheet" href="./assets/css/common.css">
-    <!-- ↑全站公共层：字体、主题变量、Reset、导航条、页脚。必须排在页面私有样式之前，
-         这样页面私有样式才能安全覆盖公共规则，不需要 !important。 -->
     <link rel="stylesheet" href="./assets/css/index.css">
     <!-- ↑首页私有样式。rel="stylesheet"表示这是一份CSS样式表。 -->
 </head>
@@ -45,54 +44,32 @@
                  要给 hero 加动效时务必先把 header 移到 hero 之外。 -->
             <header class="site-header is-overlay">
                 <div class="header-inner">
-                    <!-- ↓左侧logo，返回主页 -->
                     <a class="site-logo" href="./index.html" aria-label="反恐精英中文网首页">
-                        <!-- aria-label是HTML属性，用来给元素提供**供屏幕阅读器读取的名称**
-                        帮助视障用户理解按钮、链接或输入框的用途。它不会在页面上显示文字。 -->
-                        <img src="./assets/images/logo/dark-logo.svg" alt="weblogo">反恐精英中文网
+                        <img src="./assets/images/logo/dark-logo.svg" alt="">反恐精英中文网
                     </a>
-                    <!-- ↓↓↓中间导航栏↓↓↓ -->
+
                     <nav class="nav-home" aria-label="网站主导航">
                         <div class="nav-item">
                             <button class="nav-trigger" type="button">攻略专区</button>
-                                <ul class="nav-dropdown">
-                                    <!-- ↑下拉菜单 -->
-                                    <li>
-                                        <a href="./guides/rookie-guides.html">新手教学</a>
-                                    </li>
-                                    <li>
-                                        <a href="./guides/map-guides.html">服役地图</a>
-                                    </li>
-                                    <li>
-                                        <a href="./guides/super-guides.html">进阶教学</a>
-                                    </li>
-                                </ul>
+                            <ul class="nav-dropdown">
+                                <li><a href="./guides/rookie-guides.html">新手教学</a></li>
+                                <li><a href="./guides/map-guides.html">服役地图</a></li>
+                                <li><a href="./guides/super-guides.html">进阶教学</a></li>
+                            </ul>
                         </div>
                         <div class="nav-item">
                             <button class="nav-trigger" type="button">CS赛事</button>
                             <ul class="nav-dropdown">
-                                <li>
-                                    <a
-                                        href="https://www.hltv.org/"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >HLTV</a>
-                                    <!-- ↑rel="noopener" 必须加：新标签页拿到 window.opener 后可以篡改原页面地址，
-                                         这是 target="_blank" 的一个已知安全风险。 -->
-                                </li>
-                                <li>
-                                    <a href="#">职业信息</a>
-                                </li>
+                                <li><a href="https://www.hltv.org/" target="_blank" rel="noopener noreferrer">HLTV</a></li>
+                                <!-- ↑rel="noopener" 必须加：新标签页拿到 window.opener 后可以篡改原页面地址，
+                                     这是 target="_blank" 的一个已知安全风险。 -->
+                                <li>职业信息</li>
                             </ul>
                         </div>
                         <div class="nav-item">
                             <button class="nav-trigger" type="button">玩家创作</button>
                             <ul class="nav-dropdown">
-                                <!-- ↓专栏页 -->
-                                <li>
-                                    <a href="./media/hlae.html">HLAE</a>
-                                </li>
-                                <!-- ↓专栏页 -->
+                                <li><a href="./media/hlae.html">HLAE</a></li>
                                 <li>影视美学</li>
                             </ul>
                         </div>
@@ -113,43 +90,19 @@
                             </ul>
                         </div>
                     </nav>
-                    <!-- ↓ 右侧工具 -->
+
                     <div class="nav-actions">
-                        <!-- ↓ 搜索框 -->
                         <button class="search-trigger" type="button" aria-label="打开网站搜索" aria-controls="site-search-overlay" aria-expanded="false"><img src="./assets/images/icons/search.svg" alt=""></button>
-                        <!-- ↓ 主题切换：两个图标都写在 HTML 里，由 CSS 按主题显隐。
-                             比用 JS 换 src 更快——页面一绘制就是正确的图标，不会闪一下。 -->
-                        <button
-                            class="theme-button"
-                            id="theme-button"
-                            type="button"
-                            aria-label="深色主题"
-                            aria-pressed="false">
-                            <img class="icon icon-moon" src="./assets/images/icons/moon.svg" alt="">
-                            <img class="icon icon-sun" src="./assets/images/icons/sun.svg" alt="">
-                        </button>
+
+                        <span class="site-tool-slot" id="site-theme-control"></span>
+
                         <!-- 用户登录入口先移除：login.html 还不存在，留着注释会指向一个死链接。
                              页面做好之后按下面这段加回来即可（CSS 里的 .login-button 样式一直保留着）：
                              <a class="login-button" href="./login.html">
                                  <img src="./assets/images/icons/avatar.svg" alt="用户登录">
                              </a> -->
-                        <!-- ↓ 点击音频图标播放音乐 -->
-                        <audio
-                            id="theme-audio"
-                            src="./assets/audios/Valve Studio Orchestra - Game Time.flac"
-                            loop
-                            preload="none">
-                        </audio>
-                        <button
-                            type="button"
-                            class="audio-button"
-                            id="audio-button"
-                            aria-label="播放背景音乐">
-                            <img
-                                id="audio-icon"
-                                src="./assets/images/icons/music-off.svg"
-                                alt="音乐默认关闭">
-                        </button>
+
+                        <span class="site-tool-slot" id="site-audio-control"></span>
                     </div>
                 </div>
             </header>
@@ -230,12 +183,11 @@
     </main>
     <!-- ↓页脚 -->
     <footer>
-        <p>自由开放的非官方反恐精英网站<br>
-        yushucrain@gmail.com</p>
+        <p>自由开放的非官方反恐精英网站<br>yushucrain@gmail.com</p>
     </footer>
 
 <!-- ↓ JS：三段内联脚本已合并外置；其中主题/音频部分又进一步上移到全站公共脚本 -->
-<script src="./assets/js/search-index.js" defer></script>
+
 <script src="./assets/js/site.js" defer></script>
 <!-- ↑全站公共交互：主题切换、背景音乐开关。每个页面都要引入。 -->
 <script src="./assets/js/index.js" defer></script>
@@ -244,22 +196,9 @@
      所以脚本里可以直接查询元素，不必再包一层 DOMContentLoaded。
      外置还能被浏览器缓存，改页面时不用重新下载 JS。 -->
 
-    <!-- ↓ 全站搜索弹层。必须挂在 <body> 直接子级：
-         .site-header 带 transform（滚动显隐），会成为 position:fixed 后代的包含块，
-         弹层若留在导航里，inset:0 只会解析出导航条那点高度，撑不满视口。 -->
-    <div class="search-overlay" id="site-search-overlay" role="dialog" aria-modal="true"
-         aria-label="网站搜索" hidden>
-        <form class="search-overlay-form" action="#" method="get" role="search">
-            <input class="search-overlay-input" type="search" name="q"
-                   placeholder="输入关键词搜索内容" aria-label="网站内容搜索"
-                   autocomplete="off" required>
-            <button class="search-overlay-submit" type="submit" aria-label="提交搜索">
-                <img src="./assets/images/icons/search.svg" alt="">
-            </button>
-        </form>
-        <p class="search-overlay-hint">按 ESC 或点击空白处关闭</p>
-        <button class="search-overlay-close" type="button" aria-label="关闭搜索"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" aria-hidden="true"><path d="M5 5 19 19"/><path d="M19 5 5 19"/></svg></button>
-    </div>
+    <!-- React 岛屿负责公共交互控件和媒体弹层；需使用开发服务器或构建预览。 -->
+    <div id="app-root"></div>
+    <script type="module" src="/src/main.jsx"></script>
 
 </body>
 </html>

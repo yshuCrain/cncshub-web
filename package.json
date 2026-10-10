@@ -1,0 +1,28 @@
+{
+  "name": "cncshub-web",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "predev": "npm run prepare:site",
+    "build": "vite build",
+    "prebuild": "npm run prepare:site && npm run check && npm test",
+    "preview": "vite preview",
+    "index": "node scripts/build-search-index.cjs",
+    "header": "node scripts/build-header.cjs",
+    "components": "node scripts/build-components.cjs",
+    "dust2": "node scripts/build-dust2.cjs",
+    "prepare:site": "npm run dust2 && npm run components && npm run index",
+    "check": "node scripts/check-site.cjs",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.2",
+    "vite": "^8.3.4"
+  },
+  "dependencies": {
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  }
+}

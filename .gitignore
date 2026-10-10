@@ -53,5 +53,24 @@ desktop.ini
 # !assets/images/**/*.svg
 # !assets/fonts/**/*.woff2
 
+# 原创几何地图标志是可编辑的矢量源码，随页面一起维护。
+!assets/images/servicemaps/marks/*.svg
+!assets/images/rookie-guides/head-height-lineart.svg
+
+# Dust2 教学正文依赖的已确认素材。
+!assets/images/servicemaps/dust2/*.png
+!assets/images/servicemaps/dust2/*.webp
+
 # 本地 SSH 密钥
 /.ssh/
+
+# ---------------- Node / Vite 构建层 ----------------
+# node_modules 是「脚手架仓库」：只要执行 npm install 就能一模一样还原，
+# 它体积大、变动频繁，必须进 gitignore，否则一次安装就能刷出上千条改动。
+node_modules/
+
+# dist 是 Vite 的构建产物，属于「编译结果」而非源码。
+# 同理还有 Vite 的本地缓存目录。
+dist/
+.vite/
+*.local

@@ -10,7 +10,7 @@
               而 <script type="module"> 在 file:// 协议下会被 CORS 策略拦截。
               因此这里没有 import/export，改用下面「模块清单 + 统一初始化循环」的约定。
 
-  【模块清单】8 个模块互不依赖，可单独删除任一而不影响其余：
+  【模块清单】7 个模块互不依赖，可单独删除任一而不影响其余：
     01  initControlGuide    首屏交互键鼠（CS2 默认键位图 / 实体按键与鼠标联动）
     02  initChapterRail     右侧章节刻度导航（滚动联动高亮）
     03  initAimAxes         瞄准图 XY 坐标轴绘制动画
@@ -18,7 +18,7 @@
     05  initCrosshairCopy   准心参数复制与复制成功提示
     06  initBuyGuide        购买界面框选与标注动画
     07  initTextNotes       正文文字注释气泡
-    08  initMediaLightbox   媒体放大查看（图片 / 视频）
+
 
   【编写约定】
     1. 命名：对外可见的入口统一用 initXxx 前缀，内部辅助函数用动词短语，不使用缩写。
@@ -34,6 +34,7 @@
     // 【调参区】时间单位：毫秒；视频示意周期单位：秒；鼠标位移单位：CSS 像素。
     const CONFIG = {
         railThreshold: 0.3, // 刻度在视口上方 30% 位置切换当前章节
+        chapterResetMs: 400, // 锚点跳转时，结束上一轮章节内部的按键滚动
         keyFlashMs: 160,   // 点击虚拟键帽时的亮起时长
         wheelIndicatorMs: 520, // 滚轮高亮与方向箭头的停留时长
         hintHoldMs: 900,   // 实体按键全部松开后，提示浮层的停留时长
@@ -41,7 +42,7 @@
         strafeCycle: 5.6,  // 急停演示周期；动作分段见 renderDemo
         recoilCycle: 5.6,  // 压枪演示周期；动作分段见 renderDemo
         recoilRight: 14,   // 鼠标向右偏移距离
-        recoilDown: 70     // 鼠标向下移动距离
+        recoilDown: 32     // 鼠标向下移动距离，保持在线框示意区内
     };
 
     // ==================== 01 首屏交互键鼠 ====================
@@ -55,7 +56,7 @@
         const hint = document.getElementById("control-hint");
         const mouse = panel.querySelector(".control-mouse");
 
-        if (!hero || !stage || !hint) return;
+        if (!keyboard || !hero || !stage || !hint) return;
 
         // 【调参】键位 = CS2 当前版本的默认初始绑定（对照游戏内 设置 → 键盘）：
         //   移动 W/A/S/D · 跳跃 Space · 蹲下 左Ctrl · 静步 左Shift；
@@ -95,86 +96,88 @@
             KeyU: ["U", "队聊"],
             KeyZ: ["Z", "无线电"],
 
-            // 鼠标（CS2 默认）：左键开火、右键次要攻击、滚轮切换武器
+            // 鼠标：左键开火、右键次要攻击、滚轮切换武器。
             //（滚轮上=上一件、滚轮下=下一件，图中合并为一个分区演示）。
+            // Mouse4 是本页建议的语音绑定，不会更改游戏或浏览器设置。
             MouseLeft: ["LMB", "开火"],
             MouseRight: ["RMB", "次要攻击"],
+            Mouse4: ["Mouse4", "语音"],
+            Mouse5: ["Mouse5", "侧键"],
             Wheel: ["滚轮", "切换武器"]
         };
 
-        // 每项为：[按键代码或装饰文字，宽度单位 u，键帽显示文字(可选)]。
-        // 1u = 标准键帽宽度；布局对齐标准 60% 键盘，每行合计 15u，
-        // 保证各行左右边缘与纵向列线严格对齐（参考标准 ANSI 键盘轮廓）。
-        // 【功能数据】展示用键位，不会更改用户游戏内设置。
+        // 按用户提供的 675 × 244 参考图描出键帽外缘，键盘坐标范围 648 × 220。
+        // 每项：[代码、左侧坐标、外缘宽度、显示文字(可选)]；行高也保持原图比例。
+        // 坐标属于整个键鼠 SVG，视窗变化时只缩放共同的 viewBox。
         const rows = [
-            // ` 1 2 3 4 5 6 7 8 9 0 - = 退格(2u)
             [
-                ["Backquote"], ["Digit1"], ["Digit2"], ["Digit3"],
-                ["Digit4"], ["Digit5"], ["6"], ["7"], ["8"], ["9"], ["0"],
-                ["-"], ["="], ["Backspace", 2, "Back"]
+                ["Backquote", 0, 40], ["Digit1", 45, 40], ["Digit2", 89, 40],
+                ["Digit3", 134, 40], ["Digit4", 178, 40], ["Digit5", 223, 40],
+                ["6", 268, 39], ["7", 312, 40], ["8", 357, 39], ["9", 401, 40],
+                ["0", 445, 40], ["-", 490, 40], ["=", 535, 39], ["Backspace", 579, 69, "Back"]
             ],
-            // Tab(1.5u) Q W E R T Y U I O P [ ] \(1.5u)
             [
-                ["Tab", 1.5], ["KeyQ"], ["KeyW"], ["KeyE"], ["KeyR"],
-                ["KeyT"], ["KeyY"], ["KeyU"], ["I"], ["O"], ["P"],
-                ["["], ["]"], ["Backslash", 1.5, "\\"]
+                ["Tab", 0, 62], ["KeyQ", 67, 40], ["KeyW", 112, 39], ["KeyE", 156, 40],
+                ["KeyR", 200, 40], ["KeyT", 245, 40], ["KeyY", 290, 39], ["KeyU", 334, 40],
+                ["I", 379, 39], ["O", 423, 40], ["P", 468, 39], ["[", 512, 40],
+                ["]", 557, 39], ["Backslash", 601, 47, "\\"]
             ],
-            // Caps(1.75u) A S D F G H J K L ; ' Enter(2.25u)
             [
-                ["Caps", 1.75], ["KeyA"], ["KeyS"], ["KeyD"], ["KeyF"],
-                ["KeyG"], ["H"], ["J"], ["KeyK"], ["L"], [";"], ["'"],
-                ["Enter", 2.25]
+                ["Caps", 0, 70], ["KeyA", 74, 39], ["KeyS", 118, 40], ["KeyD", 163, 39],
+                ["KeyF", 207, 40], ["KeyG", 252, 40], ["H", 296, 40], ["J", 341, 40],
+                ["KeyK", 385, 40], ["L", 430, 40], [";", 474, 40], ["'", 519, 40],
+                ["Enter", 564, 83]
             ],
-            // Shift(2.25u) Z X C V B N M , . / Shift(2.75u)
             [
-                ["ShiftLeft", 2.25], ["KeyZ"], ["KeyX"], ["KeyC"], ["KeyV"],
-                ["KeyB"], ["N"], ["KeyM"], [","], ["."], ["/"],
-                ["ShiftRight", 2.75, "Shift"]
+                ["ShiftLeft", 1, 97], ["KeyZ", 103, 40], ["KeyX", 148, 40], ["KeyC", 192, 40],
+                ["KeyV", 237, 40], ["KeyB", 281, 40], ["N", 326, 40], ["KeyM", 371, 39],
+                [",", 415, 40], [".", 460, 39], ["/", 504, 40], ["ShiftRight", 550, 97, "Shift"]
             ],
-            // Ctrl(1.25u) Win(1.25u) Alt(1.25u) Space(7.5u) Alt(1.25u) Fn(1.25u) Ctrl(1.25u)
             [
-                ["ControlLeft", 1.25], ["Win", 1.25], ["Alt", 1.25],
-                ["Space", 7.5], ["Alt", 1.25], ["Fn", 1.25],
-                ["ControlRight", 1.25, "Ctrl"]
+                ["ControlLeft", 0, 53], ["Win", 59, 40], ["Alt", 103, 40], ["FnLeft", 148, 40, "Fn"],
+                ["Space", 193, 262], ["AltRight", 460, 39, "Alt"], ["WinRight", 504, 40, "Win"],
+                ["Fn", 548, 40], ["ControlRight", 594, 53, "Ctrl"]
             ]
         ];
+        const rowBounds = [[0, 40], [46, 39], [91, 39], [135, 40], [180, 40]];
+        const svgNamespace = "http://www.w3.org/2000/svg";
+        function svgElement(tag, attributes) {
+            const element = document.createElementNS(svgNamespace, tag);
+            Object.entries(attributes).forEach(([name, value]) => element.setAttribute(name, value));
+            return element;
+        }
 
-        rows.forEach((row) => {
-            const rowElement = document.createElement("div");
-            rowElement.className = "control-key-row";
+        rows.forEach((row, index) => {
+            const [top, height] = rowBounds[index];
+            const rowElement = svgElement("g", { class: "control-key-row" });
 
-            row.forEach(([code, width = 1, label]) => {
+            row.forEach(([code, left, width, label]) => {
                 const binding = controls[code];
-                const key = document.createElement(binding ? "button" : "span");
-
-                key.className = "control-key";
-                // 宽度换算为 0.25u 网格格数：1u = 4 格，由键盘网格统一对齐。
-                key.style.gridColumn = `span ${Math.round(width * 4)}`;
+                const key = svgElement("g", { class: "control-key", "data-key": code });
+                key.append(svgElement("rect", {
+                    class: "key-shape", x: left + 0.5, y: top + 0.5,
+                    width: width - 1, height: height - 1
+                }));
+                const cap = svgElement("text", {
+                    class: "key-cap", x: left + width / 2,
+                    y: top + height / 2 - (binding ? 6 : 0)
+                });
+                cap.textContent = binding?.[0] ?? label ??
+                    (code.startsWith("Key") ? code.slice(3) : code);
+                key.append(cap);
 
                 if (binding) {
-                    key.type = "button";
                     key.dataset.control = code;
-
-                    const cap = document.createElement("span");
-                    cap.className = "key-cap";
-                    cap.textContent = binding[0];
-                    key.append(cap);
-
-                    // 功能名直接印在键帽上：说明带删除后，键位说明只出现在这里。
-                    if (binding[1]) {
-                        const name = document.createElement("span");
-                        name.className = "key-fn";
-                        name.textContent = binding[1];
-                        key.append(name);
-                    }
-
+                    key.setAttribute("role", "button");
+                    key.setAttribute("tabindex", "0");
+                    const name = svgElement("text", {
+                        class: "key-fn", x: left + width / 2, y: top + height / 2 + 8
+                    });
+                    name.textContent = binding[1];
+                    key.append(name);
                     key.setAttribute("aria-label", `${binding[0]}：${binding[1]}`);
                 } else {
                     key.classList.add("is-placeholder");
-                    // 未绑定的装饰键显示键帽字符本身；
-                    // 「KeyX」这类事件代码剥掉前缀，避免长文本撑破键帽。
-                    key.textContent = label ??
-                        (code.startsWith("Key") ? code.slice(3) : code);
                     key.setAttribute("aria-hidden", "true");
                 }
 
@@ -232,8 +235,8 @@
 
             // 提示浮层贴在键帽正上方；第一行放不下时落到键帽下方。
             const stageRect = stage.getBoundingClientRect();
-            // 滚轮提示放在整个鼠标上方，避开顶部的向上箭头。
-            const keyRect = (code === "Wheel" && mouse ? mouse : node).getBoundingClientRect();
+            // 滚轮与侧键提示放在整个鼠标上方，避开图内文字和方向箭头。
+            const keyRect = (["Wheel", "Mouse4", "Mouse5"].includes(code) && mouse ? mouse : node).getBoundingClientRect();
 
             const left = Math.max(8, Math.min(
                 keyRect.left - stageRect.left + keyRect.width / 2 - hint.offsetWidth / 2,
@@ -307,7 +310,7 @@
             if (!controls[event.code] || !keyNodes.has(event.code)) return;
 
             // Space 默认会滚动页面、把演示打断，这里拦下；
-            // 但焦点在键帽按钮上时保留其激活按钮的默认行为。
+            // SVG 按键聚焦时，由组件自身的键盘处理器负责激活。
             const onKeycap = event.target instanceof Element &&
                 event.target.closest(".control-key");
 
@@ -341,10 +344,11 @@
             });
 
             // SVG 分区可聚焦：Enter/Space 触发与点击一致的反馈。
-            if (button.classList.contains("control-mouse-part")) {
+            if (button instanceof SVGElement) {
                 button.addEventListener("keydown", (event) => {
                     if (event.code === "Enter" || event.code === "Space") {
                         event.preventDefault();
+                        event.stopPropagation();
                         flashControl(button.dataset.control);
                         showHint(button.dataset.control);
                     }
@@ -353,7 +357,7 @@
         });
 
         // ---- 实体鼠标联动 ----
-        // 与实体按键同一套语义：首屏可见时，按下左/右键点亮对应分区，
+        // 与实体按键同一套语义：首屏可见时，按下左/右键或侧键点亮对应分区，
         // 滚动滚轮闪亮滚轮分区；不拦截任何浏览器默认行为（右键菜单照常）。
         function pressPointer(code) {
             if (!controls[code] || !keyNodes.has(code)) return;
@@ -382,12 +386,16 @@
 
             if (event.button === 0) pressPointer("MouseLeft");
             if (event.button === 2) pressPointer("MouseRight");
+            if (event.button === 3) pressPointer("Mouse4");
+            if (event.button === 4) pressPointer("Mouse5");
         });
 
         document.addEventListener("mouseup", (event) => {
             // mouseup 不看 heroActive：按下后滚出首屏也要能正常抬起。
             if (event.button === 0) releasePointer("MouseLeft");
             if (event.button === 2) releasePointer("MouseRight");
+            if (event.button === 3) releasePointer("Mouse4");
+            if (event.button === 4) releasePointer("Mouse5");
         });
 
         document.addEventListener("wheel", (event) => {
@@ -428,13 +436,52 @@
         if (!sections.length || !links.length) return;
 
         let currentId = null;
-        let preferredId = location.hash.slice(1);
-        const navigationLinks = [...links, ...document.querySelectorAll(".guide-index a")];
-        navigationLinks.forEach(link => link.addEventListener("click", () => {
+        let resetFrame = null;
+        const chapterId = () => location.hash === "#explore" ? "aiming" : location.hash.slice(1);
+        let preferredId = chapterId();
+        const navigationLinks = [...links, document.querySelector(".explore-button")].filter(Boolean);
+        navigationLinks.forEach(link => link.addEventListener("click", event => {
+            if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
             preferredId = link.hash.slice(1);
-            setActive(preferredId);
+            prepareNavigation(preferredId);
         }));
         let scheduled = false;
+
+        // 点击选中的栏目保留伸长与强调色，直到选择下一项。
+        // 滚动产生的当前章节标记仍由 setActive 独立更新。
+        function setSelected(id) {
+            links.forEach(link => link.classList.toggle("is-selected", link.hash === `#${id}`));
+        }
+
+        function prepareNavigation(id) {
+            const section = sections.find(section => section.id === id);
+            if (!section) return;
+            stopNavigationReset();
+            section.scrollTo({ top: 0, behavior: "instant" });
+            // 原生 PageDown 滚动可能继续数帧。跳转期间保持正文从顶端开始；
+            // 用户发起新的滚动或按键操作后立即交还控制权。
+            if (section.scrollHeight > section.clientHeight + 1) {
+                const resetUntil = performance.now() + CONFIG.chapterResetMs;
+                const reset = () => {
+                    section.scrollTo({ top: 0, behavior: "instant" });
+                    resetFrame = performance.now() < resetUntil ? requestAnimationFrame(reset) : null;
+                };
+                resetFrame = requestAnimationFrame(reset);
+            }
+            setSelected(id);
+            setActive(id);
+            // 原生锚点负责滚动与历史；公共导航在跳转过程中收起，避免遮住章节标题。
+            document.dispatchEvent(new Event("site:section-navigation"));
+        }
+
+        function stopNavigationReset() {
+            if (resetFrame !== null) cancelAnimationFrame(resetFrame);
+            resetFrame = null;
+        }
+        document.addEventListener("wheel", stopNavigationReset, { passive: true });
+        document.addEventListener("touchstart", stopNavigationReset, { passive: true });
+        document.addEventListener("pointerdown", stopNavigationReset, { passive: true });
+        document.addEventListener("keydown", stopNavigationReset);
 
         function setActive(id) {
             if (id === currentId) return;
@@ -455,6 +502,11 @@
 
         function updateNavigation() {
             scheduled = false;
+
+            sections.forEach(section => {
+                if (section.scrollHeight > section.clientHeight + 1) section.tabIndex = 0;
+                else section.removeAttribute("tabindex");
+            });
 
             // 章节顶部经过视口上方约 30% 的位置时，切换当前章节。
             const referenceLine = window.innerHeight * CONFIG.railThreshold;
@@ -493,6 +545,12 @@
         window.addEventListener("scroll", scheduleUpdate, { passive: true });
         window.addEventListener("resize", scheduleUpdate);
         window.addEventListener("load", scheduleUpdate);
+        window.addEventListener("hashchange", () => {
+            preferredId = chapterId();
+            prepareNavigation(preferredId);
+            setSelected(preferredId);
+            scheduleUpdate();
+        });
 
         // 字体或图片加载导致正文尺寸变化后，重新判断所在章节。
         if ("ResizeObserver" in window) {
@@ -501,15 +559,17 @@
             if (main) observer.observe(main);
         }
 
+        prepareNavigation(preferredId);
+        setSelected(preferredId);
         updateNavigation();
     }
 
-    // ==================== 03 图片 XY 轴：与视频互不依赖 ====================
+    // ==================== 03 线稿 XY 轴：与视频互不依赖 ====================
     function initAimAxes() {
         const root = document.getElementById("aiming");
         if (!root) return;
 
-        /* ---------- 图片 XY 轴 ---------- */
+        /* ---------- 线稿 XY 轴 ---------- */
 
         const figure = root.querySelector("#head-height-demo");
         if (!figure) return;
@@ -519,7 +579,7 @@
         if (!axes || !replay) return;
 
         // 【调参】x/y 是各人物脚下原点；width/height 控制参考轴长度。
-        // 使用与图片相同比例的坐标系，位置对应五个人物。
+        // 线稿和坐标轴使用同一个 SVG 坐标系，五个人物的脚下位置保持一致。
         const axisGroups = [
             { x: 435, y: 787, width: 85, height: 158 },
             { x: 701, y: 748, width: 58, height: 107 },
@@ -935,139 +995,11 @@
         figure.classList.add("is-ready");
 
         // 观察图片区域，避免章节很长时难以达到触发比例。
-        observer.observe(figure.querySelector(".buy-scroll"));
+        observer.observe(figure.querySelector(".buy-preview"));
 
     }
 
     // ==================== 08 媒体放大查看 ====================
-    function initMediaLightbox() {
-        const lightbox = document.getElementById("media-lightbox");
-        if (!lightbox) return;
-
-        const stage = lightbox.querySelector(".lightbox-stage");
-        const caption = lightbox.querySelector(".lightbox-caption");
-        const closeButton = lightbox.querySelector(".lightbox-close");
-        const fitButton = lightbox.querySelector(".lightbox-fit");
-        const backgrounds = [...document.body.children]
-            .filter(node => node !== lightbox && !node.matches("script, style, link"));
-        const previousInert = new Map();
-        let lastFocused = null;
-
-        function closeLightbox() {
-            if (lightbox.hidden) return;
-            stage.querySelectorAll("video").forEach(video => video.pause());
-            stage.replaceChildren();
-            caption.textContent = "";
-            lightbox.hidden = true;
-            document.body.classList.remove("lightbox-open");
-            backgrounds.forEach(node => { node.inert = previousInert.get(node) ?? false; });
-            previousInert.clear();
-            if (lastFocused instanceof HTMLElement && lastFocused.isConnected) {
-                lastFocused.focus({ preventScroll: true });
-            }
-            lastFocused = null;
-        }
-
-        function openLightbox(type, src, label) {
-            let media;
-            if (type === "diagram") {
-                const source = document.querySelector(src);
-                if (!source) return;
-                media = source.cloneNode(true);
-                media.removeAttribute("id");
-                media.removeAttribute("aria-labelledby");
-                media.setAttribute("aria-label", label);
-                media.querySelectorAll("[id]").forEach(node => node.removeAttribute("id"));
-                media.style.setProperty("--buy-accent", getComputedStyle(source).getPropertyValue("--buy-accent"));
-            } else {
-                media = document.createElement(type === "video" ? "video" : "img");
-            }
-
-            stage.replaceChildren(media);
-            stage.classList.remove("is-fitted");
-            stage.style.removeProperty("--image-width");
-            stage.scrollTop = 0;
-            stage.scrollLeft = 0;
-            fitButton.hidden = type === "video";
-            fitButton.textContent = "适应宽度";
-            fitButton.setAttribute("aria-pressed", "false");
-
-            if (type === "video") {
-                media.controls = true;
-                media.autoplay = true;
-                media.loop = true;
-                media.muted = true;
-                media.playsInline = true;
-                media.preload = "auto";
-                media.setAttribute("aria-label", label);
-                media.src = src;
-            } else if (type === "image") {
-                media.alt = label;
-                media.decoding = "async";
-                media.addEventListener("load", () => {
-                    if (stage.contains(media)) {
-                        stage.style.setProperty("--image-width", `${media.naturalWidth}px`);
-                        if (media.naturalWidth > 1440) setFitted(true);
-                    }
-                }, { once: true });
-                media.src = src;
-            } else {
-                stage.style.setProperty("--image-width", `${media.viewBox.baseVal.width}px`);
-                setFitted(true);
-            }
-
-            // 关闭缩略视频，避免放大播放与页面预览同时发声或播放。
-            document.querySelectorAll(".lesson-media video").forEach(video => video.pause());
-            caption.textContent = label;
-            lastFocused = document.activeElement;
-            backgrounds.forEach(node => {
-                previousInert.set(node, node.inert);
-                node.inert = true;
-            });
-            lightbox.hidden = false;
-            document.body.classList.add("lightbox-open");
-            closeButton.focus({ preventScroll: true });
-        }
-
-        document.addEventListener("click", event => {
-            const trigger = event.target.closest(".zoom-trigger");
-            if (!trigger) return;
-            event.preventDefault();
-            openLightbox(trigger.dataset.type, trigger.dataset.src, trigger.dataset.caption || trigger.getAttribute("aria-label"));
-        });
-        function setFitted(fitted) {
-            stage.classList.toggle("is-fitted", fitted);
-            fitButton.textContent = fitted ? "原尺寸" : "适应宽度";
-            fitButton.setAttribute("aria-pressed", String(fitted));
-            stage.scrollLeft = 0;
-        }
-        fitButton.addEventListener("click", () => setFitted(!stage.classList.contains("is-fitted")));
-        lightbox.addEventListener("click", event => {
-            if (event.target === lightbox) closeLightbox();
-        });
-        closeButton.addEventListener("click", closeLightbox);
-        document.addEventListener("keydown", event => {
-            if (lightbox.hidden) return;
-            if (event.key === "Escape") {
-                event.preventDefault();
-                closeLightbox();
-            } else if (event.key === "Tab") {
-                const focusable = [...lightbox.querySelectorAll("button:not([hidden]), video, [tabindex='0']")]
-                    .filter(node => node.getClientRects().length > 0);
-                const first = focusable[0];
-                const last = focusable[focusable.length - 1];
-                if (event.shiftKey && document.activeElement === first) {
-                    event.preventDefault();
-                    last.focus();
-                } else if (!event.shiftKey && document.activeElement === last) {
-                    event.preventDefault();
-                    first.focus();
-                }
-            }
-        });
-    }
-
-
     // ==================== 07 正文文字注释气泡 ====================
     function initTextNotes() {
         const triggers = document.querySelectorAll(".note-trigger");
@@ -1179,7 +1111,7 @@
 
     // 【关键】各板块独立初始化，控制台保留错误，防止一个板块阻断其余功能。
     // 这里的调用顺序与上方「定义顺序」不完全一致（06 排在 05 之前）是历史形成的。
-    // 8 个模块独立初始化，保持教学演示与媒体查看的调用顺序。
+    // 7 个模块独立初始化，保持教学演示与媒体查看的调用顺序。
     for (const initialize of [
         initControlGuide,   // 01 首屏交互键鼠
         initChapterRail,    // 02 章节刻度导航
@@ -1187,8 +1119,7 @@
         initLessonVideos,   // 04 视频与操作示意
         initBuyGuide,       // 06 购买界面标注
         initCrosshairCopy,  // 05 准心复制
-        initTextNotes,      // 07 文字注释气泡
-        initMediaLightbox   // 08 媒体放大查看
+        initTextNotes      // 07 文字注释气泡
     ]) {
         try {
             initialize();

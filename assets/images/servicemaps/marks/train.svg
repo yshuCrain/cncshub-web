@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 144" fill="currentColor">
+  <title>Train — locomotive and rails</title>
+  <path fill-rule="evenodd" d="M34 24 50 8h60l16 16v78H34ZM50 30v28h22V30Zm38 0v28h22V30ZM54 74v10h52V74Z"/>
+  <circle cx="50" cy="116" r="12"/>
+  <circle cx="110" cy="116" r="12"/>
+  <path d="M24 136h112v8H24Zm16-8h14l-5 8H34Zm66 0h14l6 8h-15Z"/>
+</svg>
